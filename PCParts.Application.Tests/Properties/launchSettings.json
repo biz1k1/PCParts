@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PCParts.Storage.Tests": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
