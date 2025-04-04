@@ -22,7 +22,6 @@
 **/secrets.dev.yaml
 **/values.dev.yaml
 LICENSE
-**/.containers/api-db/
 README.md
 !**/.gitignore
 !.git/HEAD
