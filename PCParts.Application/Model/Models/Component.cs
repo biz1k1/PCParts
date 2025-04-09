@@ -7,5 +7,5 @@ public class Component
     public string Name { get; set; } = null!;
     public Category Category { get; set; }
 
-    public ICollection<Specification> Specifications { get; set; } = [];
+    public ICollection<SpecificationValue> SpecificationValue { get; set; } = [];
 }

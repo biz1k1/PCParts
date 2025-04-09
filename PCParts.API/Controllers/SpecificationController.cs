@@ -30,11 +30,11 @@ public class SpecificationController : ControllerBase
         [FromBody] CreateSpecification request,
         CancellationToken cancellationToken)
     {
-        var command = new CreateSpecificationCommand(request.ComponentId, request.Name, request.Value, request.Type);
+        var command = new CreateSpecificationCommand(request.CategoryId, request.Name, request.Type);
         var specification = await _specificationService.CreateSpecification(command, cancellationToken);
         return Created("Components/{componentId}", _mapper.Map<Specification>(specification));
     }
-
+    
     [HttpPatch]
     [ProducesResponseType(200, Type = typeof(Specification))]
     [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]

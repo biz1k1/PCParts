@@ -6,6 +6,5 @@ public class CreateSpecification
 {
     public string Name { get; init; }
     public SpecificationDataType Type { get; init; }
-    public string Value { get; init; }
-    public Guid ComponentId { get; init; }
+    public Guid CategoryId { get; init; }
 }

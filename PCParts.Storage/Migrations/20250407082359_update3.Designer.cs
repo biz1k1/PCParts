@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PCParts.Storage;
@@ -11,9 +12,11 @@ using PCParts.Storage;
 namespace PCParts.Storage.Migrations
 {
     [DbContext(typeof(PgContext))]
-    partial class PgContextModelSnapshot : ModelSnapshot
+    [Migration("20250407082359_update3")]
+    partial class update3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,9 +94,6 @@ namespace PCParts.Storage.Migrations
                     b.Property<Guid>("ComponentId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("SpecificationId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("text");
@@ -102,9 +102,7 @@ namespace PCParts.Storage.Migrations
 
                     b.HasIndex("ComponentId");
 
-                    b.HasIndex("SpecificationId");
-
-                    b.ToTable("SpecificationValue");
+                    b.ToTable("SpecificationsValue");
                 });
 
             modelBuilder.Entity("PCParts.Domain.Entities.Component", b =>
@@ -137,15 +135,7 @@ namespace PCParts.Storage.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PCParts.Domain.Entities.Specification", "Specification")
-                        .WithMany("SpecificationValues")
-                        .HasForeignKey("SpecificationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Component");
-
-                    b.Navigation("Specification");
                 });
 
             modelBuilder.Entity("PCParts.Domain.Entities.Category", b =>
@@ -156,11 +146,6 @@ namespace PCParts.Storage.Migrations
                 });
 
             modelBuilder.Entity("PCParts.Domain.Entities.Component", b =>
-                {
-                    b.Navigation("SpecificationValues");
-                });
-
-            modelBuilder.Entity("PCParts.Domain.Entities.Specification", b =>
                 {
                     b.Navigation("SpecificationValues");
                 });

@@ -2,4 +2,4 @@
 
 namespace PCParts.Application.Model.Command;
 
-public record CreateSpecificationCommand(Guid ComponentId, string? Name, string? Value, SpecificationDataType DataType);
+public record CreateSpecificationCommand(Guid CategoryId, string? Name, SpecificationDataType DataType);

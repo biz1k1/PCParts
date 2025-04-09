@@ -39,7 +39,7 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>
             {
                 {
                     "ConnectionStrings:DefaultConnection",
-                    "Host=127.0.0.1; Username=postgres; Password=postgres;Port=5432;Database=pcparts;"
+                    "Host=localhost; Username=postgres; Password=postgres;Port=5432;Database=pcparts;"
                 }
             });
         });
@@ -54,7 +54,8 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>
             var db = scope.ServiceProvider.GetRequiredService<PgContext>();
 
             // Применяем миграции перед запуском тестов
-            db.Database.Migrate();
+            //db.Database.Migrate();
         });
+        builder.UseEnvironment("Testing");
     }
 }

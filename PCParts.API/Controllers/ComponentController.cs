@@ -51,7 +51,7 @@ public class ComponentController : ControllerBase
     {
         var command = new CreateComponentCommand(request.Name, request.CategoryId);
         var component = await _componentService.CreateComponent(command, cancellationToken);
-        return CreatedAtAction(nameof(GetComponent), new { categoryId = component.Id }, _mapper.Map<Component>(component));
+        return CreatedAtAction(nameof(GetComponent), new { componentId = component.Id }, _mapper.Map<Component>(component));
     }
 
     [HttpPatch]

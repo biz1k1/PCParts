@@ -1,4 +1,5 @@
-﻿using PCParts.Application.AbstractionStorage;
+﻿using System.ComponentModel;
+using PCParts.Application.AbstractionStorage;
 using PCParts.Application.Helpers;
 using PCParts.Application.Model.Command;
 using PCParts.Application.Model.Models;
@@ -10,6 +11,7 @@ using PCParts.Domain.Exceptions;
 namespace PCParts.Application.Services.SpecificationService;
 public class SpecificationService : ISpecificationService
 {
+    private readonly ICategoryStorage _categoryStorage;
     private readonly IComponentStorage _componentStorage;
     private readonly IQueryBuilderService _queryBuilderService;
     private readonly ISpecificationStorage _specificationStorage;
@@ -18,11 +20,13 @@ public class SpecificationService : ISpecificationService
     public SpecificationService(
         ISpecificationStorage specificationStorage,
         IComponentStorage componentStorage,
+        ICategoryStorage categoryStorage,
         IValidationService validationService,
         IQueryBuilderService queryBuilderService)
     {
         _specificationStorage = specificationStorage;
         _componentStorage = componentStorage;
+        _categoryStorage = categoryStorage;
         _validationService = validationService;
         _queryBuilderService = queryBuilderService;
     }
@@ -32,14 +36,31 @@ public class SpecificationService : ISpecificationService
     {
         await _validationService.Validate(command);
 
-        var component = await _componentStorage.GetComponent(command.ComponentId, null, cancellationToken);
-        if (component is null)
+        var category = await _categoryStorage.GetCategory(command.CategoryId, cancellationToken);
+        if (category is null)
         {
-            throw new ComponentNotFoundException(command.ComponentId);
+            throw new CategoryNotFoundException(command.CategoryId);
         }
 
-        var specification = await _specificationStorage.CreateSpecification(command.ComponentId,
-            command.Name, command.DataType, command.Value, cancellationToken);
+        var specification = await _specificationStorage.CreateSpecification(command.CategoryId,
+            command.Name, command.DataType, cancellationToken);
+        return specification;
+    }
+
+    public async Task<SpecificationValue> CreateSpecificationValue(CreateSpecificationValueCommand command,
+        CancellationToken cancellationToken)
+    {
+        await _validationService.Validate(command);
+
+        string[] includes = [];
+        var component = await _componentStorage.GetComponent(command.componentId, includes, cancellationToken);
+        if (component is null)
+        {
+            throw new ComponentNotFoundException(command.componentId);
+        }
+
+        var specification = await _specificationStorage.CreateSpecificationValue(command.componentId,
+            command.specificationId,command.value, cancellationToken);
         return specification;
     }
 
@@ -63,12 +84,6 @@ public class SpecificationService : ISpecificationService
         if (specification is null)
         {
             throw new SpecificationNotFoundException(command.Id);
-        }
-
-        var validType = ValidationHelper.IsValueValid((SpecificationDataType)command.Type, specification.Value.ToString());
-        if (validType is false)
-        {
-            throw new InvalidSpecificationTypeException(specification.Value, specification.Type);
         }
 
         var query = _queryBuilderService.BuildSpecificationUpdateQuery(command);

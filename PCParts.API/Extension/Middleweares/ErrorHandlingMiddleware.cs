@@ -37,7 +37,7 @@ public class ErrorHandlingMiddleware(RequestDelegate next)
                 default:
                     problemDetails = problemDetailsFactory.CreateProblemDetails(
                         httpContext, StatusCodes.Status500InternalServerError,
-                        $"Unhandled error! Please contact us.");
+                        $"Unhandled error! Please contact us. Erorr: {exception.Message}/ {exception.InnerException}");
                     logger.LogError(exception, "Unhandled exception occured");
                     break;
             }

@@ -34,27 +34,28 @@ public class CategoryStorage : ICategoryStorage
         await _pgContext.Categories.AddAsync(category, cancellationToken);
         await _pgContext.SaveChangesAsync(cancellationToken);
 
-        return await _pgContext.Categories
+        var newCategory = await _pgContext.Categories
             .AsNoTracking()
             .Where(x => x.Id == categoryId)
-            .ProjectTo<Category>(_mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
+        return _mapper.Map<Category>(category); ;
     }
 
     public async Task<IEnumerable<Category>> GetCategories(CancellationToken cancellationToken)
     {
-        return await _pgContext.Categories
+        var categories= await _pgContext.Categories
             .AsNoTracking()
-            .ProjectTo<Category>(_mapper.ConfigurationProvider)
+            .Include(x=>x.Components)
             .ToArrayAsync(cancellationToken);
+        return _mapper.Map<IEnumerable<Category>>(categories);
     }
 
     public async Task<Category?> GetCategory(Guid id, CancellationToken cancellationToken)
     {
-        return await _pgContext.Categories
+        var category = await _pgContext.Categories
             .Where(x => x.Id == id)
-            .ProjectTo<Category>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
+        return _mapper.Map<Category>(category);
     }
 
     public async Task<Category> UpdateCategory(UpdateCategoryCommand command, CancellationToken cancellationToken)
@@ -65,11 +66,12 @@ public class CategoryStorage : ICategoryStorage
             new NpgsqlParameter("@Name", command.Name),
             new NpgsqlParameter("@Id", command.Id));
 
-        return await _pgContext.Categories
+        var category= await _pgContext.Categories
             .AsNoTracking()
             .Where(x => x.Id == command.Id)
             .ProjectTo<Category>(_mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
+        return _mapper.Map<Category>(category);
     }
 
     public async Task RemoveCategory(Category category, CancellationToken cancellationToken)

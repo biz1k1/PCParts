@@ -48,9 +48,9 @@ public class ComponentStorage : IComponentStorage
 
         if (includes?.Contains("Category") is true) query = query.Include(c => c.Category);
 
-        if (includes?.Contains("Specification") is true) query = query.Include(c => c.Specifications);
-
         var component = await query
+            .Where(x=>x.Id==componentId)
+            .Include(x=>x.SpecificationValues)
             .FirstOrDefaultAsync(x => x.Id == componentId, cancellationToken);
         return _mapper.Map<Component>(component);
     }
@@ -59,7 +59,8 @@ public class ComponentStorage : IComponentStorage
     {
         var components= await _pgContext.Components
             .AsNoTracking()
-            .Include(x => x.Specifications)
+            .Include(x => x.SpecificationValues)
+            .ThenInclude(x=>x.Specification)
             .ToArrayAsync(cancellationToken);
         return _mapper.Map<Component[]>(components);
     }

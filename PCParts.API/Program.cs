@@ -25,7 +25,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.ApplyMigration();
+    if (!app.Environment.IsEnvironment("Testing"))
+    {
+        app.ApplyMigration();
+    }
 }
 
 app.UseHttpsRedirection();

@@ -1,16 +1,18 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
 namespace PCParts.Storage.Tests;
 
-public class CategoryControllerShould : IClassFixture<WebApplicationFactory<Program>>
+public class CategoryControllerShould : IClassFixture<ApiWebApplicationFactory>
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly ApiWebApplicationFactory _factory;
     private readonly ITestOutputHelper _output;
 
     public CategoryControllerShould(
-        WebApplicationFactory<Program> factory,
+        ApiWebApplicationFactory factory,
         ITestOutputHelper output)
     {
         _factory = factory;
@@ -28,6 +30,15 @@ public class CategoryControllerShould : IClassFixture<WebApplicationFactory<Prog
 
         var result = await response.Content.ReadAsStringAsync();
 
-        //result.Should().Be("[]");
+        result.Should().Be("[]");
+    }
+    [Fact]
+    public async Task Database_Should_BeAvailable()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<PgContext>();
+
+        var canConnect = await db.Database.CanConnectAsync();
+        canConnect.Should().BeTrue();
     }
 }

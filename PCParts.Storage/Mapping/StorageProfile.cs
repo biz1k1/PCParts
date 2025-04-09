@@ -14,11 +14,16 @@ public class StorageProfile : Profile
         CreateMap<Specification, Application.Model.Models.Specification>().ReverseMap();
 
 
-        CreateMap<Specification, Application.Model.Models.Specification>()
-            .ForMember(dest => dest.Value, opt => opt.MapFrom<Resolver>());
+        //CreateMap<Specification, Application.Model.Models.Specification>()
+        //    .ForMember(dest => dest.Value, opt => opt.MapFrom<Resolver>());
 
-        // Маппинг для Component -> ComponentDTO с вложенными SpecificationDTO
         CreateMap<Component, Application.Model.Models.Component>()
-            .ForMember(dest => dest.Specifications, opt => opt.MapFrom(src => src.Specifications));
+            .ForMember(dest => dest.SpecificationValue, opt => opt.MapFrom(src => src.SpecificationValues));
+
+        CreateMap<SpecificationValue, Application.Model.Models.Specification>().ReverseMap();
+        CreateMap<SpecificationValue, Application.Model.Models.SpecificationValue>().ReverseMap();
+
+        CreateMap<Specification, Application.Model.Models.SpecificationValue>()
+            .ForMember(x=>x.SpecificationName, x=>x.MapFrom(x=>x.Name));
     }
 }

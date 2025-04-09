@@ -12,4 +12,5 @@ public class PgContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Component> Components { get; set; }
     public DbSet<Specification> Specifications { get; set; }
+    public DbSet<SpecificationValue> SpecificationsValue { get; set; }
 }
