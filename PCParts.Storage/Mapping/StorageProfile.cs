@@ -16,5 +16,8 @@ public class StorageProfile : Profile
         CreateMap<Specification, Application.Model.Models.Specification>()
             .ForMember(x => x.Type, x => x.MapFrom(x => x.DataType))
             .ReverseMap();
+
+        CreateMap<SpecificationValue, Application.Model.Models.SpecificationValue>()
+            .ForMember(dest => dest.Value, opt => opt.MapFrom<Resolver>());
     }
 }
