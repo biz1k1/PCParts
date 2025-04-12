@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PCParts.Storage;
@@ -11,9 +12,11 @@ using PCParts.Storage;
 namespace PCParts.Storage.Migrations
 {
     [DbContext(typeof(PgContext))]
-    partial class PgContextModelSnapshot : ModelSnapshot
+    [Migration("20250412104638_update_constraints")]
+    partial class update_constraints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

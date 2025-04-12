@@ -54,7 +54,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPatch]
-    [ProducesResponseType(200, Type = typeof(Category))]
+    [ProducesResponseType(200, Type = typeof(UpdateCategory))]
     [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]
     [ProducesResponseType(404, Type = typeof(ErrorResponseBody))]
     public async Task<IActionResult> UpdateCategory(

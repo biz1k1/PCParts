@@ -2,7 +2,7 @@
 
 namespace PCParts.API.Model.Models;
 
-public class CreateSpecification
+public record CreateSpecification
 {
     public string Name { get; init; }
     public SpecificationDataType Type { get; init; }

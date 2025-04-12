@@ -1,6 +1,6 @@
 ﻿namespace PCParts.API.Model.Models;
 
-public class UpdateComponent
+public record UpdateComponent
 {
     public Guid Id { get; init; }
     public string? Name { get; init; }

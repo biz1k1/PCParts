@@ -4,5 +4,5 @@ public record Category
 {
     public Guid Id { get; init; }
     public string Name { get; init; }
-    public ICollection<Component> Components { get; set; }
+    public ICollection<Component> Components { get; init; }
 }

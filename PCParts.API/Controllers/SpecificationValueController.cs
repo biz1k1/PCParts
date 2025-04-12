@@ -23,7 +23,7 @@ public class SpecificationValueController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(201, Type = typeof(Specification))]
+    [ProducesResponseType(201, Type = typeof(SpecificationValue))]
     [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]
     [ProducesResponseType(404, Type = typeof(ErrorResponseBody))]
     public async Task<IActionResult> CreateSpecificationValue(
@@ -36,7 +36,7 @@ public class SpecificationValueController : ControllerBase
     }
 
     [HttpPatch]
-    [ProducesResponseType(201, Type = typeof(Specification))]
+    [ProducesResponseType(201, Type = typeof(SpecificationValue))]
     [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]
     [ProducesResponseType(404, Type = typeof(ErrorResponseBody))]
     public async Task<IActionResult> UpdateSpecificationValue(

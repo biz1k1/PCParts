@@ -2,6 +2,6 @@
 
 public record CreateComponent
 {
-    public string Name { get; init; } = null!;
+    public string Name { get; init; }
     public Guid CategoryId { get; init; }
 }

@@ -1,9 +1,9 @@
 ﻿namespace PCParts.Application.Model.Models;
 
-public record SpecificationValue
+public class SpecificationValue
 {
-    public Guid Id { get; init; }
-    public string SpecificationName { get; init; }
+    public Guid Id { get; set; }
+    public string SpecificationName { get; set; }
     public object Value { get; init; }
-    public Specification Specification { get; init; }
+    public Specification Specification { get; set; }
 }

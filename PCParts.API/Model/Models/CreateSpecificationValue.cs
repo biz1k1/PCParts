@@ -1,8 +1,8 @@
 ﻿namespace PCParts.API.Model.Models;
 
-public class CreateSpecificationValue
+public record CreateSpecificationValue
 {
-    public Guid ComponentId { get; set; }
-    public Guid SpeicificationId { get; set; }
-    public string Value { get; set; }
+    public Guid ComponentId { get; init; }
+    public Guid SpeicificationId { get; init; }
+    public string Value { get; init; }
 }

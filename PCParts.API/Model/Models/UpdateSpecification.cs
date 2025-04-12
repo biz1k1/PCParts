@@ -2,7 +2,7 @@
 
 namespace PCParts.API.Model.Models;
 
-public class UpdateSpecification
+public record UpdateSpecification
 {
     public Guid Id { get; init; }
     public string? Name { get; init; }
