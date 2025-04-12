@@ -34,7 +34,7 @@ public class QueryBuilderService : IQueryBuilderService
         var parameters = new List<object>();
         parameters.Add(new NpgsqlParameter("@Id", command.Id));
         parameters.Add(new NpgsqlParameter("@Name", command.Name ?? (object)DBNull.Value));
-        parameters.Add(new NpgsqlParameter("@Type", command.Type.HasValue ? (object)(int)command.Type.Value : DBNull.Value));
+        parameters.Add(new NpgsqlParameter("@Type", command.Type.HasValue ? (int)command.Type.Value : DBNull.Value));
 
         var query =
             @"UPDATE ""Specification"" 

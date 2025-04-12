@@ -69,6 +69,7 @@ public class ComponentServiceShould
         actual.Should().BeSameAs(component);
         _storageComponent.Verify(x => x.GetComponent(componentId, CancellationToken.None), Times.Once);
     }
+
     [Fact]
     public async Task ReturnCreatedComponent()
     {
@@ -103,19 +104,20 @@ public class ComponentServiceShould
     public async Task ReturnUpdatedComponent()
     {
         var category = new Category { Id = Guid.Parse("86bc4fa7-7c86-4685-9131-8436220a8dba") };
-        var component = new Component { Id = Guid.Parse("a5186d90-49f9-4baf-928b-b2ad117df55a"), Name = "name", Category = category };
+        var component = new Component
+            { Id = Guid.Parse("a5186d90-49f9-4baf-928b-b2ad117df55a"), Name = "name", Category = category };
         var command = new UpdateComponentCommand(component.Id, null, category.Id);
         var query = new UpdateQuery();
 
-        var updateComponentSetup = _storageComponent.Setup(x => 
+        var updateComponentSetup = _storageComponent.Setup(x =>
             x.UpdateComponent(It.IsAny<UpdateQuery>(), It.IsAny<CancellationToken>()));
         updateComponentSetup.ReturnsAsync(component);
 
-        var getCategorySetup = _storageCategory.Setup(x => 
+        var getCategorySetup = _storageCategory.Setup(x =>
             x.GetCategory(It.IsAny<Guid>(), CancellationToken.None));
         getCategorySetup.ReturnsAsync(category);
 
-        var getComponentSetup = _storageComponent.Setup(x => 
+        var getComponentSetup = _storageComponent.Setup(x =>
             x.GetComponent(It.IsAny<Guid>(), CancellationToken.None));
         getComponentSetup.ReturnsAsync(component);
 
@@ -134,7 +136,7 @@ public class ComponentServiceShould
     public async Task ThrowCategoryNotFoundException_WhenCreateComponent_IfCategoryIsNull()
     {
         var categoryId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
-        var componentCommand = new CreateComponentCommand("component",categoryId);
+        var componentCommand = new CreateComponentCommand("component", categoryId);
 
         await _sut.Invoking(x => x.CreateComponent(componentCommand, CancellationToken.None))
             .Should().ThrowAsync<CategoryNotFoundException>();
@@ -144,7 +146,7 @@ public class ComponentServiceShould
     public async Task ThrowCategoryNotFoundException_WhenUpdateComponent_IfCategoryIsNull()
     {
         var componentId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
-        var componentCommand = new UpdateComponentCommand(componentId,"component", Guid.Empty);
+        var componentCommand = new UpdateComponentCommand(componentId, "component", Guid.Empty);
         var component = new Component();
 
         var getComponentSetup = _storageComponent.Setup(x =>

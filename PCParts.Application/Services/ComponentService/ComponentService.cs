@@ -6,6 +6,7 @@ using PCParts.Application.Services.ValidationService;
 using PCParts.Domain.Exceptions;
 
 namespace PCParts.Application.Services.ComponentService;
+
 public class ComponentService : IComponentService
 {
     private readonly ICategoryStorage _categoryStorage;
@@ -42,10 +43,7 @@ public class ComponentService : IComponentService
         await _validationService.Validate(command);
 
         var category = await _categoryStorage.GetCategory(command.CategoryId, cancellationToken);
-        if (category is null)
-        {
-            throw new CategoryNotFoundException(command.CategoryId);
-        }
+        if (category is null) throw new CategoryNotFoundException(command.CategoryId);
 
         var component = await _componentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
         return component;
@@ -56,20 +54,14 @@ public class ComponentService : IComponentService
         await _validationService.Validate(command);
 
         var component = await _componentStorage.GetComponent(command.Id, cancellationToken);
-        if (component is null)
-        {
-            throw new ComponentNotFoundException(command.Id);
-        }
+        if (component is null) throw new ComponentNotFoundException(command.Id);
 
         Category? category = null;
         if (command.CategoryId is not null)
         {
             category = await _categoryStorage.GetCategory((Guid)command.CategoryId, cancellationToken);
             component.Category = category;
-            if (category is null)
-            {
-                throw new CategoryNotFoundException((Guid)command.CategoryId);
-            }
+            if (category is null) throw new CategoryNotFoundException((Guid)command.CategoryId);
         }
 
         var query = _queryBuilderService.BuildComponentUpdateQuery(command);
@@ -80,14 +72,9 @@ public class ComponentService : IComponentService
     public async Task RemoveComponent(Guid id, CancellationToken cancellationToken)
     {
         var component = await _componentStorage.GetComponent(id, cancellationToken);
-        if (component is null)
-        {
-            throw new ComponentNotFoundException(id);
-        }
+        if (component is null) throw new ComponentNotFoundException(id);
         if (component.SpecificationValues.Any())
-        {
             throw new RemoveEntityWithChildrenException(nameof(component), nameof(component.SpecificationValues));
-        }
 
         await _componentStorage.RemoveComponent(component, cancellationToken);
     }

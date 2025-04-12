@@ -5,6 +5,7 @@ using PCParts.Application.Services.ValidationService;
 using PCParts.Domain.Exceptions;
 
 namespace PCParts.Application.Services.CategoryService;
+
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryStorage _categoryStorage;
@@ -42,10 +43,7 @@ public class CategoryService : ICategoryService
         await _validationService.Validate(command);
 
         var category = await _categoryStorage.GetCategory(command.Id, cancellationToken);
-        if (category is null)
-        {
-            throw new CategoryNotFoundException(command.Id);
-        }
+        if (category is null) throw new CategoryNotFoundException(command.Id);
 
         return await _categoryStorage.UpdateCategory(command, cancellationToken);
     }
@@ -57,10 +55,9 @@ public class CategoryService : ICategoryService
         {
             throw new CategoryNotFoundException(id);
         }
+
         if (category.Components.Any())
-        {
             throw new RemoveEntityWithChildrenException(nameof(category), nameof(category.Components));
-        }
 
         await _categoryStorage.RemoveCategory(category, cancellationToken);
     }

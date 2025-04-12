@@ -3,5 +3,5 @@
 public enum DomainErrorCode
 {
     NotFound = 404,
-    Conflict=409,
+    Conflict = 409
 }

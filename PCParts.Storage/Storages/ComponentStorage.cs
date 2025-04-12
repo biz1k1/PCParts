@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using PCParts.Application.AbstractionStorage;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;
-using PCParts.Storage.Mapping;
 
 namespace PCParts.Storage.Storages;
 
@@ -46,19 +45,19 @@ public class ComponentStorage : IComponentStorage
     {
         var component = await _pgContext.Components
             .AsNoTracking()
-            .Where(x=>x.Id==componentId)
-            .Include(x=>x.SpecificationValues)
-            .ThenInclude(x=>x.Specification)
+            .Where(x => x.Id == componentId)
+            .Include(x => x.SpecificationValues)
+            .ThenInclude(x => x.Specification)
             .FirstOrDefaultAsync(x => x.Id == componentId, cancellationToken);
         return _mapper.Map<Component>(component);
     }
 
     public async Task<IEnumerable<Component>> GetComponents(CancellationToken cancellationToken)
     {
-        var components= await _pgContext.Components
+        var components = await _pgContext.Components
             .AsNoTracking()
             .Include(x => x.SpecificationValues)
-            .ThenInclude(x=>x.Specification)
+            .ThenInclude(x => x.Specification)
             .ToArrayAsync(cancellationToken);
         return _mapper.Map<Component[]>(components);
     }

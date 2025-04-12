@@ -39,21 +39,22 @@ public class CategoryStorage : ICategoryStorage
             .AsNoTracking()
             .Where(x => x.Id == categoryId)
             .FirstAsync(cancellationToken);
-        return _mapper.Map<Category>(category); ;
+        return _mapper.Map<Category>(category);
+        ;
     }
 
     public async Task<IEnumerable<Category>> GetCategories(CancellationToken cancellationToken)
     {
-        var categories= await _pgContext.Categories
+        var categories = await _pgContext.Categories
             .AsNoTracking()
-            .Include(x=>x.Components)
+            .Include(x => x.Components)
             .ToArrayAsync(cancellationToken);
         return _mapper.Map<IEnumerable<Category>>(categories);
     }
 
     public async Task<Category> GetCategory(Guid id, CancellationToken cancellationToken)
     {
-        string[] includes = {"Components"};
+        string[] includes = { "Components" };
         var category = await _pgContext.Categories
             .AsNoTracking()
             .Where(x => x.Id == id)
@@ -70,7 +71,7 @@ public class CategoryStorage : ICategoryStorage
             new NpgsqlParameter("@Name", command.Name),
             new NpgsqlParameter("@Id", command.Id));
 
-        var category= await _pgContext.Categories
+        var category = await _pgContext.Categories
             .AsNoTracking()
             .Where(x => x.Id == command.Id)
             .ProjectTo<Category>(_mapper.ConfigurationProvider)

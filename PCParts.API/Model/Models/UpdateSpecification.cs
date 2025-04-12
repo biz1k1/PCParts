@@ -1,6 +1,6 @@
 ﻿using PCParts.Domain.Enum;
 
-namespace PCParts.API.Model;
+namespace PCParts.API.Model.Models;
 
 public class UpdateSpecification
 {

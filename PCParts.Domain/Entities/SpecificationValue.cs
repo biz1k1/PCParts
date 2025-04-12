@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PCParts.Domain.Entities
+namespace PCParts.Domain.Entities;
+
+[Table("SpecificationValue")]
+public class SpecificationValue
 {
-    [Table("SpecificationValue")]
-    public class SpecificationValue
-    {
-        public Guid Id { get; set; }
-        public string Value { get; set; }
-        public Guid ComponentId { get; set; }
-        public Guid SpecificationId { get; set; }
+    public Guid Id { get; set; }
+    public string Value { get; set; }
+    public Guid ComponentId { get; set; }
+    public Guid SpecificationId { get; set; }
 
-        [ForeignKey(nameof(ComponentId))]
-        public Component Component { get; set; }
-        [ForeignKey(nameof(SpecificationId))]
+    [ForeignKey(nameof(ComponentId))] public Component Component { get; set; }
 
-        [InverseProperty(nameof(Specification.SpecificationValues))]
-        public Specification Specification { get; set; }
-    }
+    [ForeignKey(nameof(SpecificationId))]
+    [InverseProperty(nameof(Specification.SpecificationValues))]
+    public Specification Specification { get; set; }
 }

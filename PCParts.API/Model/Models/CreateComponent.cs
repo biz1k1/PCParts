@@ -1,4 +1,4 @@
-﻿namespace PCParts.API.Model;
+﻿namespace PCParts.API.Model.Models;
 
 public record CreateComponent
 {

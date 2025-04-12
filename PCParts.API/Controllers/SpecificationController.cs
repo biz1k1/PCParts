@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using PCParts.API.Model;
+using PCParts.API.Model.Models;
 using PCParts.API.Model.ResponseType;
 using PCParts.Application.Model.Command;
 using PCParts.Application.Services.SpecificationService;
@@ -46,7 +46,7 @@ public class SpecificationController : ControllerBase
         var specification = await _specificationService.CreateSpecification(command, cancellationToken);
         return Created("Components/{componentId}", _mapper.Map<Specification>(specification));
     }
-    
+
     [HttpPatch]
     [ProducesResponseType(200, Type = typeof(Specification))]
     [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]

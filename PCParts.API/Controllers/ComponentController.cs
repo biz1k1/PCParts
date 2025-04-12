@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using PCParts.API.Model;
+using PCParts.API.Model.Models;
 using PCParts.API.Model.ResponseType;
 using PCParts.Application.Model.Command;
 using PCParts.Application.Services.ComponentService;
@@ -51,7 +51,8 @@ public class ComponentController : ControllerBase
     {
         var command = new CreateComponentCommand(request.Name, request.CategoryId);
         var component = await _componentService.CreateComponent(command, cancellationToken);
-        return CreatedAtAction(nameof(GetComponent), new { componentId = component.Id }, _mapper.Map<Component>(component));
+        return CreatedAtAction(nameof(GetComponent), new { componentId = component.Id },
+            _mapper.Map<Component>(component));
     }
 
     [HttpPatch]

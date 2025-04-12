@@ -1,6 +1,4 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
@@ -32,6 +30,7 @@ public class CategoryControllerShould : IClassFixture<ApiWebApplicationFactory>
 
         result.Should().Be("[]");
     }
+
     [Fact]
     public async Task Database_Should_BeAvailable()
     {

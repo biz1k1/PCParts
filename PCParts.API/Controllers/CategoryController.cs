@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using PCParts.API.Model;
+using PCParts.API.Model.Models;
 using PCParts.API.Model.ResponseType;
 using PCParts.Application.Model.Command;
 using PCParts.Application.Services.CategoryService;

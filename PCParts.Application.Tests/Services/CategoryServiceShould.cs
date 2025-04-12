@@ -48,7 +48,7 @@ public class CategoryServiceShould
         var category = new Category { Id = Guid.Parse("a5186d90-49f9-4baf-928b-b2ad117df55a"), Name = "name" };
         var command = new UpdateCategoryCommand(Guid.Parse("a5186d90-49f9-4baf-928b-b2ad117df55a"), "name");
 
-        var getCategorySetup = _storage.Setup(x => 
+        var getCategorySetup = _storage.Setup(x =>
             x.GetCategory(It.IsAny<Guid>(), CancellationToken.None));
         getCategorySetup.ReturnsAsync(category);
 
@@ -97,7 +97,7 @@ public class CategoryServiceShould
     [Fact]
     public async Task ThrowCategoryNotFoundException_WhenUpdatedCategory_IfCategoryIsNull()
     {
-        var categoryId = new UpdateCategoryCommand(Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae"),"title");
+        var categoryId = new UpdateCategoryCommand(Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae"), "title");
 
         await _sut.Invoking(x => x.UpdateCategory(categoryId, CancellationToken.None))
             .Should().ThrowAsync<CategoryNotFoundException>();
