@@ -14,17 +14,20 @@ public class SpecificationValueService : ISpecificationValueService
     private readonly IQueryBuilderService _queryBuilderService;
     private readonly ISpecificationValueStorage _specificationValueStorage;
     private readonly IValidationService _validationService;
+    private readonly ISpecificationStorage _specificationStorage;
 
     public SpecificationValueService(
         IComponentStorage componentStorage,
         ISpecificationValueStorage specificationValueStorage,
         IValidationService validationService,
-        IQueryBuilderService queryBuilderService)
+        IQueryBuilderService queryBuilderService,
+        ISpecificationStorage specificationStorage)
     {
         _specificationValueStorage = specificationValueStorage;
         _componentStorage = componentStorage;
         _validationService = validationService;
         _queryBuilderService = queryBuilderService;
+        _specificationStorage = specificationStorage;
     }
 
     public async Task<SpecificationValue> CreateSpecificationValue(CreateSpecificationValueCommand command,
@@ -32,16 +35,20 @@ public class SpecificationValueService : ISpecificationValueService
     {
         await _validationService.Validate(command);
 
-        string[] includes = [];
         var component = await _componentStorage.GetComponent(command.componentId, cancellationToken);
         if (component is null)
         {
             throw new ComponentNotFoundException(command.componentId);
         }
+        var specification = await _specificationStorage.GetSpecification(command.specificationId, null, cancellationToken);
+        if (specification is null)
+        {
+            throw new SpecificationNotFoundException(command.specificationId);
+        }
 
-        var specification = await _specificationValueStorage.CreateSpecificationValue(command.componentId,
+        var specificationValue = await _specificationValueStorage.CreateSpecificationValue(command.componentId,
             command.specificationId, command.value, cancellationToken);
-        return specification;
+        return specificationValue;
     }
 
     public async Task<SpecificationValue> UpdateSpecificationValue(UpdateSpecificationValueCommand command,
@@ -53,14 +60,14 @@ public class SpecificationValueService : ISpecificationValueService
             new[] { "Specification" }, cancellationToken);
         if (specificationValue is null)
         {
-            throw new SpecificationValueNotFoundException(specificationValue.Id);
+            throw new SpecificationValueNotFoundException(command.Id);
         }
 
         var specificationType = specificationValue.Specification.Type;
         var validType = ValidationHelper.IsValueValid(specificationType, specificationValue.Value.ToString());
         if (!validType)
         {
-            throw new InvalidSpecificationTypeException(specificationValue.Value, (Domain.Enum.SpecificationDataType?)specificationType);
+            throw new InvalidSpecificationTypeException(specificationValue.Value,specificationType.ToString());
         }
 
         var query = _queryBuilderService.BuildSpecificationValueUpdateQuery(command);

@@ -15,7 +15,6 @@ namespace PCParts.Application.Tests.Services;
 public class SpecificationServiceShould
 {
     private readonly Mock<ICategoryStorage> _categoryStorage;
-    private readonly Mock<IComponentStorage> _componentStorage;
     private readonly Mock<IQueryBuilderService> _queryBuilder;
     private readonly Mock<ISpecificationStorage> _specificationStorage;
     private readonly Mock<ISpecificationValueStorage> _specificationValueStorage;
@@ -25,7 +24,6 @@ public class SpecificationServiceShould
     public SpecificationServiceShould()
     {
         _categoryStorage = new Mock<ICategoryStorage>();
-        _componentStorage = new Mock<IComponentStorage>();
         _specificationStorage = new Mock<ISpecificationStorage>();
         _queryBuilder = new Mock<IQueryBuilderService>();
         _validator = new Mock<IValidationService>();
@@ -137,5 +135,77 @@ public class SpecificationServiceShould
                     new UpdateSpecificationCommand(specificationId, null, SpecificationDataType.STRING),
                     CancellationToken.None))
             .Should().ThrowAsync<SpecificationNotFoundException>();
+    }
+
+    [Fact]
+    public async Task ThrowSpecificationValueNotFoundException_WhenUpdateSpecification_IfSpecificationValueFromSpecificationIsNull()
+    {
+        var specificationId= Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
+        var specification = new Specification()
+        {
+            Id=specificationId
+        };
+
+        var getSpecificationSetup = _specificationStorage.Setup(x =>
+            x.GetSpecification(It.IsAny<Guid>(), null, CancellationToken.None));
+        getSpecificationSetup.ReturnsAsync(specification);
+
+        await _sut.Invoking(x =>
+                x.UpdateSpecification(new UpdateSpecificationCommand(specificationId, null, SpecificationDataType.STRING), CancellationToken.None))
+            .Should().ThrowAsync<SpecificationValueNotFoundException>();
+    }
+
+    [Fact]
+    public async Task ThrowInvalidSpecificationTypeException_WhenUpdateSpecification_IfCommandTypeInvalid()
+    {
+        var specificationId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
+        var specification = new Specification()
+        {
+            Id = specificationId,
+            SpecificationValues = new List<SpecificationValue>()
+            
+        };
+
+        var getSpecificationSetup = _specificationStorage.Setup(x =>
+            x.GetSpecification(It.IsAny<Guid>(), null, CancellationToken.None));
+        getSpecificationSetup.ReturnsAsync(specification);
+
+        await _sut.Invoking(x =>
+                x.UpdateSpecification(new UpdateSpecificationCommand(specificationId, null, null), CancellationToken.None))
+            .Should().ThrowAsync<SpecificationValueNotFoundException>();
+    }
+
+    [Fact]
+    public async Task ThrowCategoryNotFoundException_WhenGetSpecificationByCategory_IfSpecificationIsNull()
+    {
+        await _sut.Invoking(x =>
+                x.GetSpecificationsByCategory(Guid.Empty, CancellationToken.None))
+            .Should().ThrowAsync<CategoryNotFoundException>();
+    }
+
+    [Fact]
+    public async Task ThrowSpecificationNotFoundException_WhenRemoveSpecification_IfSpecificationIsNull()
+    {
+        await _sut.Invoking(x =>
+                x.RemoveSpecification(Guid.Empty, CancellationToken.None))
+            .Should().ThrowAsync<SpecificationNotFoundException>();
+    }
+
+    [Fact]
+    public async Task ThrowRemoveEntityWithChildrenException_WhenRemoveSpecification_IfSpecificationValuesFromSpecificationIsNull()
+    {
+        var specificationId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
+        var specification = new Specification()
+        {
+            Id = specificationId
+        };
+
+        var getSpecificationSetup = _specificationStorage.Setup(x =>
+            x.GetSpecification(It.IsAny<Guid>(), It.IsAny<string[]>(), CancellationToken.None));
+        getSpecificationSetup.ReturnsAsync(specification);
+
+        await _sut.Invoking(x =>
+                x.RemoveSpecification(specificationId, CancellationToken.None))
+            .Should().ThrowAsync<RemoveEntityWithChildrenException>();
     }
 }

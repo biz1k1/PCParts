@@ -96,7 +96,7 @@ public class SpecificationService : ISpecificationService
             var validType = ValidationHelper.IsValueValid(command.Type, specificationValue.Value.ToString());
             if (!validType)
             {
-                throw new InvalidSpecificationTypeException(specificationValue.Value, (Domain.Enum.SpecificationDataType?)command.Type);
+                throw new InvalidSpecificationTypeException(specificationValue.Value, command.Type.ToString());
             }
         }
 
