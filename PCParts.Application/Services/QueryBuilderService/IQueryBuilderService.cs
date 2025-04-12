@@ -7,4 +7,5 @@ public interface IQueryBuilderService
 {
     UpdateQuery BuildComponentUpdateQuery(UpdateComponentCommand command);
     UpdateQuery BuildSpecificationUpdateQuery(UpdateSpecificationCommand command);
+    UpdateQuery BuildSpecificationValueUpdateQuery(UpdateSpecificationValueCommand command);
 }

@@ -2,4 +2,4 @@
 
 namespace PCParts.Application.Model.Command;
 
-public record UpdateSpecificationCommand(Guid Id, string? Name, string? Value, SpecificationDataType? Type);
+public record UpdateSpecificationCommand(Guid Id, string? Name, SpecificationDataType? Type);

@@ -4,5 +4,5 @@ public record Component
 {
     public Guid Id { get; init; }
     public string Name { get; init; }
-    public ICollection<SpecificationValue> SpecificationValue { get; set; } = [];
+    public ICollection<SpecificationValue> SpecificationValues { get; set; } = [];
 }

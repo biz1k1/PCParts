@@ -34,15 +34,34 @@ public class QueryBuilderService : IQueryBuilderService
         var parameters = new List<object>();
         parameters.Add(new NpgsqlParameter("@Id", command.Id));
         parameters.Add(new NpgsqlParameter("@Name", command.Name ?? (object)DBNull.Value));
-        parameters.Add(new NpgsqlParameter("@Value", command.Value ?? (object)DBNull.Value));
         parameters.Add(new NpgsqlParameter("@Type", command.Type.HasValue ? (object)(int)command.Type.Value : DBNull.Value));
 
         var query =
             @"UPDATE ""Specification"" 
                 SET 
                     ""Name""=COALESCE(@Name, ""Name""),
-                    ""Value""=COALESCE(@Value, ""Value""),
                     ""DataType""=COALESCE(@Type, ""DataType"")
+                WHERE ""Id"" =@Id;";
+        var updateQuery = new UpdateQuery
+        {
+            Id = command.Id,
+            Parameters = parameters.ToArray(),
+            Query = query
+        };
+
+        return updateQuery;
+    }
+
+    public UpdateQuery BuildSpecificationValueUpdateQuery(UpdateSpecificationValueCommand command)
+    {
+        var parameters = new List<object>();
+        parameters.Add(new NpgsqlParameter("@Id", command.Id));
+        parameters.Add(new NpgsqlParameter("@Value", command.Value ?? (object)DBNull.Value));
+
+        var query =
+            @"UPDATE ""SpecificationValue"" 
+                SET 
+                    ""Value""=COALESCE(@Value, ""Value"")
                 WHERE ""Id"" =@Id;";
         var updateQuery = new UpdateQuery
         {

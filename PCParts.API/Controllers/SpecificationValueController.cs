@@ -4,21 +4,22 @@ using PCParts.API.Model;
 using PCParts.API.Model.ResponseType;
 using PCParts.Application.Model.Command;
 using PCParts.Application.Services.SpecificationService;
+using PCParts.Application.Services.SpecificationValueService;
 
 namespace PCParts.API.Controllers
 {
     [ApiController]
-    [Route("SpecificationsValue")]
+    [Route("SpecificationsValues")]
     public class SpecificationValueController: ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly ISpecificationService _specificationService;
+        private readonly ISpecificationValueService _specificationValueService;
 
         public SpecificationValueController(
-            ISpecificationService specificationService,
+            ISpecificationValueService specificationValueService,
             IMapper mapper)
         {
-            _specificationService = specificationService;
+            _specificationValueService = specificationValueService;
             _mapper = mapper;
         }
         [HttpPost]
@@ -30,8 +31,20 @@ namespace PCParts.API.Controllers
             CancellationToken cancellationToken)
         {
             var command = new CreateSpecificationValueCommand(request.ComponentId,request.SpeicificationId, request.Value);
-            var specification = await _specificationService.CreateSpecificationValue(command, cancellationToken);
+            var specification = await _specificationValueService.CreateSpecificationValue(command, cancellationToken);
             return Created("Components/{componentId}", _mapper.Map<SpecificationValue>(specification));
+        }
+        [HttpPatch]
+        [ProducesResponseType(201, Type = typeof(Specification))]
+        [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]
+        [ProducesResponseType(404, Type = typeof(ErrorResponseBody))]
+        public async Task<IActionResult> UpdateSpecificationValue(
+            [FromBody] UpdateSpecificationValue request,
+            CancellationToken cancellationToken)
+        {
+            var command = new UpdateSpecificationValueCommand(request.Id, request.Value);
+            var specification = await _specificationValueService.UpdateSpecificationValue(command, cancellationToken);
+            return Ok(_mapper.Map<SpecificationValue>(specification));
         }
     }
 }

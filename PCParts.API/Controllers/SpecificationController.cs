@@ -22,6 +22,18 @@ public class SpecificationController : ControllerBase
         _mapper = mapper;
     }
 
+    [HttpGet("{categoryId:guid}")]
+    [ProducesResponseType(201, Type = typeof(Specification))]
+    [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]
+    [ProducesResponseType(404, Type = typeof(ErrorResponseBody))]
+    public async Task<IActionResult> GetSpecificationsByCategory(
+        Guid categoryId,
+        CancellationToken cancellationToken)
+    {
+        var specifications = await _specificationService.GetSpecificationsByCategory(categoryId, cancellationToken);
+        return Ok(_mapper.Map<IEnumerable<Specification>>(specifications));
+    }
+
     [HttpPost]
     [ProducesResponseType(201, Type = typeof(Specification))]
     [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]
@@ -43,13 +55,14 @@ public class SpecificationController : ControllerBase
         [FromBody] UpdateSpecification request,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateSpecificationCommand(request.Id, request.Name, request.Value, request.Type);
+        var command = new UpdateSpecificationCommand(request.Id, request.Name, request.Type);
         var specification = await _specificationService.UpdateSpecification(command, cancellationToken);
         return Ok(_mapper.Map<Specification>(specification));
     }
+
+    [HttpDelete("{specificationId:guid}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404, Type = typeof(ErrorResponseBody))]
-    [HttpDelete("{specificationId:guid}")]
     public async Task<IActionResult> RemoveSpecification(
         Guid specificationId,
         CancellationToken cancellationToken)

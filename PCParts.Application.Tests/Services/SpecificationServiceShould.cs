@@ -34,7 +34,6 @@ public class SpecificationServiceShould
 
         _sut = new SpecificationService(
             _storageSpecification.Object,
-            _componentStorage.Object,
             _categoryStorage.Object,
             _validator.Object,
             _queryBuilder.Object);

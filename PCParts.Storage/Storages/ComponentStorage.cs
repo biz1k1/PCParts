@@ -42,15 +42,13 @@ public class ComponentStorage : IComponentStorage
             .FirstAsync(cancellationToken);
     }
 
-    public async Task<Component> GetComponent(Guid componentId, string[] includes, CancellationToken cancellationToken)
+    public async Task<Component> GetComponent(Guid componentId, CancellationToken cancellationToken)
     {
-        var query = _pgContext.Components.AsQueryable();
-
-        if (includes?.Contains("Category") is true) query = query.Include(c => c.Category);
-
-        var component = await query
+        var component = await _pgContext.Components
+            .AsNoTracking()
             .Where(x=>x.Id==componentId)
             .Include(x=>x.SpecificationValues)
+            .ThenInclude(x=>x.Specification)
             .FirstOrDefaultAsync(x => x.Id == componentId, cancellationToken);
         return _mapper.Map<Component>(component);
     }

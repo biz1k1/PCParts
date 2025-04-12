@@ -62,12 +62,12 @@ public class ComponentServiceShould
         };
 
         var returnComponentSetup = _storageComponent.Setup(x =>
-            x.GetComponent(It.IsAny<Guid>(), It.IsAny<string[]>(), It.IsAny<CancellationToken>()));
+            x.GetComponent(It.IsAny<Guid>(), It.IsAny<CancellationToken>()));
         returnComponentSetup.ReturnsAsync(component);
 
         var actual = await _sut.GetComponent(componentId, CancellationToken.None);
         actual.Should().BeSameAs(component);
-        _storageComponent.Verify(x => x.GetComponent(componentId, includes, CancellationToken.None), Times.Once);
+        _storageComponent.Verify(x => x.GetComponent(componentId, CancellationToken.None), Times.Once);
     }
     [Fact]
     public async Task ReturnCreatedComponent()
@@ -116,7 +116,7 @@ public class ComponentServiceShould
         getCategorySetup.ReturnsAsync(category);
 
         var getComponentSetup = _storageComponent.Setup(x => 
-            x.GetComponent(It.IsAny<Guid>(), It.IsAny<string[]>(), CancellationToken.None));
+            x.GetComponent(It.IsAny<Guid>(), CancellationToken.None));
         getComponentSetup.ReturnsAsync(component);
 
         var getQuerySetup = _queryBuilder.Setup(x =>
@@ -126,7 +126,7 @@ public class ComponentServiceShould
         var actual = await _sut.UpdateComponent(command, CancellationToken.None);
         actual.Should().BeSameAs(component);
         _storageComponent.Verify(x => x.UpdateComponent(query, CancellationToken.None), Times.Once);
-        _storageComponent.Verify(x => x.GetComponent(component.Id, null, CancellationToken.None), Times.Once);
+        _storageComponent.Verify(x => x.GetComponent(component.Id, CancellationToken.None), Times.Once);
         _storageCategory.Verify(x => x.GetCategory(category.Id, CancellationToken.None), Times.Once);
     }
 
@@ -148,7 +148,7 @@ public class ComponentServiceShould
         var component = new Component();
 
         var getComponentSetup = _storageComponent.Setup(x =>
-            x.GetComponent(It.IsAny<Guid>(), It.IsAny<string[]>(), CancellationToken.None));
+            x.GetComponent(It.IsAny<Guid>(), CancellationToken.None));
         getComponentSetup.ReturnsAsync(component);
 
         await _sut.Invoking(x => x.UpdateComponent(componentCommand, CancellationToken.None))

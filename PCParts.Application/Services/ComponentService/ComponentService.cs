@@ -33,8 +33,7 @@ public class ComponentService : IComponentService
 
     public async Task<Component> GetComponent(Guid componentId, CancellationToken cancellationToken)
     {
-        string[] includes = ["Specification", "Category"];
-        var component = await _componentStorage.GetComponent(componentId, includes, cancellationToken);
+        var component = await _componentStorage.GetComponent(componentId, cancellationToken);
         return component;
     }
 
@@ -56,7 +55,7 @@ public class ComponentService : IComponentService
     {
         await _validationService.Validate(command);
 
-        var component = await _componentStorage.GetComponent(command.Id, null, cancellationToken);
+        var component = await _componentStorage.GetComponent(command.Id, cancellationToken);
         if (component is null)
         {
             throw new ComponentNotFoundException(command.Id);
@@ -80,10 +79,14 @@ public class ComponentService : IComponentService
 
     public async Task RemoveComponent(Guid id, CancellationToken cancellationToken)
     {
-        var component = await _componentStorage.GetComponent(id, null, cancellationToken);
+        var component = await _componentStorage.GetComponent(id, cancellationToken);
         if (component is null)
         {
             throw new ComponentNotFoundException(id);
+        }
+        if (component.SpecificationValues.Any())
+        {
+            throw new RemoveEntityWithChildrenException(nameof(component), nameof(component.SpecificationValues));
         }
 
         await _componentStorage.RemoveComponent(component, cancellationToken);

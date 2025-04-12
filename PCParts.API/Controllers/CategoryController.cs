@@ -63,7 +63,7 @@ public class CategoryController : ControllerBase
     {
         var updateCommand = new UpdateCategoryCommand(request.Id, request.Name);
         var category = await _categoryService.UpdateCategory(updateCommand, cancellationToken);
-        return Ok(_mapper.Map<IEnumerable<Category>>(category));
+        return Ok(_mapper.Map<Category>(category));
     }
 
     [HttpDelete("{categoryId:guid}")]

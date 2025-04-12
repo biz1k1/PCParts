@@ -8,6 +8,7 @@ using PCParts.Application.Services.CategoryService;
 using PCParts.Application.Services.ComponentService;
 using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Application.Services.SpecificationService;
+using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
 using PCParts.Storage;
 using PCParts.Storage.Mapping;
@@ -26,6 +27,8 @@ public static class ServiceCollectionExtension
             .AddScoped<IComponentService, ComponentService>()
             .AddScoped<ISpecificationService, SpecificationService>()
             .AddScoped<ISpecificationStorage, SpecificationStorage>()
+            .AddScoped<ISpecificationValueStorage, SpecificationValueStorage>()
+            .AddScoped<ISpecificationValueService, SpecificationValueService>()
             .AddScoped<IValidationService, ValidationService>()
             .AddScoped<IQueryBuilderService, QueryBuilderService>()
             .AddDbContextPool<PgContext>(options => options

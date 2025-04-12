@@ -5,6 +5,7 @@ using PCParts.Application.AbstractionStorage;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;
 using PCParts.Domain.Enum;
+using PCParts.Storage.Extensions;
 
 namespace PCParts.Storage.Storages;
 
@@ -21,6 +22,14 @@ public class SpecificationStorage : ISpecificationStorage
         _mapper = mapper;
     }
 
+    public async Task<IEnumerable<Specification>> GetSpecificationsByCategory(Guid categoryId, CancellationToken cancellationToken)
+    {
+        var specifications= await _pgContext.Specifications
+            .AsNoTracking()
+            .Where(x => x.CategoryId == categoryId)
+            .ToArrayAsync(cancellationToken);
+        return _mapper.Map<Specification[]>(specifications);
+    }
     public async Task<Specification> CreateSpecification(Guid categoryId, string name, 
         SpecificationDataType dataType, CancellationToken cancellationToken)
     {
@@ -44,35 +53,14 @@ public class SpecificationStorage : ISpecificationStorage
             .FirstAsync(cancellationToken);
     }
 
-    public async Task<SpecificationValue> CreateSpecificationValue(Guid componentId, 
-        Guid specificationId, string value, CancellationToken cancellationToken)
+    public async Task<Specification> GetSpecification(Guid id, string[] includes, CancellationToken cancellationToken)
     {
-        var specificationValueId = Guid.NewGuid();
-
-        var specification = new Domain.Entities.SpecificationValue()
-        {
-            Id = specificationValueId,
-            Value = value,
-            SpecificationId = specificationId,
-            ComponentId = componentId,
-        };
-
-        await _pgContext.SpecificationsValue.AddAsync(specification, cancellationToken);
-        await _pgContext.SaveChangesAsync(cancellationToken);
-
-        return await _pgContext.SpecificationsValue
+        var specification = await _pgContext.Specifications
             .AsNoTracking()
-            .Where(x => x.Id == specificationValueId)
-            .ProjectTo<SpecificationValue>(_mapper.ConfigurationProvider)
-            .FirstAsync(cancellationToken);
-    }
-
-    public async Task<Specification> GetSpecification(Guid id, CancellationToken cancellationToken)
-    {
-        return await _pgContext.Specifications
             .Where(x => x.Id == id)
-            .ProjectTo<Specification>(_mapper.ConfigurationProvider)
-            .FirstAsync(cancellationToken);
+            .ApplyInclude(includes)
+            .FirstOrDefaultAsync(cancellationToken);
+        return _mapper.Map<Specification>(specification); 
     }
 
     public async Task RemoveSpecification(Specification specification, CancellationToken cancellationToken)
@@ -84,10 +72,11 @@ public class SpecificationStorage : ISpecificationStorage
     public async Task<Specification> UpdateSpecification(UpdateQuery query, CancellationToken cancellationToken)
     {
         await _pgContext.Database.ExecuteSqlRawAsync(query.Query, query.Parameters);
-        return await _pgContext.Specifications
+
+        var updatedSpecification= await _pgContext.Specifications
             .AsNoTracking()
             .Where(x => x.Id == query.Id)
-            .ProjectTo<Specification>(_mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
+        return _mapper.Map<Specification>(updatedSpecification);
     }
 }

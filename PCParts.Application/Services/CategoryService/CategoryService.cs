@@ -57,6 +57,10 @@ public class CategoryService : ICategoryService
         {
             throw new CategoryNotFoundException(id);
         }
+        if (category.Components.Any())
+        {
+            throw new RemoveEntityWithChildrenException(nameof(category), nameof(category.Components));
+        }
 
         await _categoryStorage.RemoveCategory(category, cancellationToken);
     }

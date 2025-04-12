@@ -11,19 +11,13 @@ public class StorageProfile : Profile
         CreateMap<Component, Application.Model.Models.Component>()
             .ForMember(x => x.Category, x => x.MapFrom(x => x.Category))
             .ReverseMap();
-        CreateMap<Specification, Application.Model.Models.Specification>().ReverseMap();
+
+        CreateMap<Domain.Entities.SpecificationValue, Application.Model.Models.SpecificationValue>();
+        CreateMap<Domain.Entities.Specification, Application.Model.Models.Specification>()
+            .ForMember(x=>x.Type,x=>x.MapFrom(x=>x.DataType))
+            .ReverseMap();
 
 
-        //CreateMap<Specification, Application.Model.Models.Specification>()
-        //    .ForMember(dest => dest.Value, opt => opt.MapFrom<Resolver>());
 
-        CreateMap<Component, Application.Model.Models.Component>()
-            .ForMember(dest => dest.SpecificationValue, opt => opt.MapFrom(src => src.SpecificationValues));
-
-        CreateMap<SpecificationValue, Application.Model.Models.Specification>().ReverseMap();
-        CreateMap<SpecificationValue, Application.Model.Models.SpecificationValue>().ReverseMap();
-
-        CreateMap<Specification, Application.Model.Models.SpecificationValue>()
-            .ForMember(x=>x.SpecificationName, x=>x.MapFrom(x=>x.Name));
     }
 }

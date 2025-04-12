@@ -15,6 +15,7 @@ public static class ProblemDetailsFactoryExtensions
             domainException.DomainErrorCode switch
             {
                 DomainErrorCode.NotFound => StatusCodes.Status404NotFound,
+                DomainErrorCode.Conflict => StatusCodes.Status409Conflict,
                 _ => StatusCodes.Status500InternalServerError
             },
             domainException.Message);
