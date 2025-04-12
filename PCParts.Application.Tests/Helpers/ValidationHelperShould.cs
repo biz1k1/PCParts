@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using PCParts.Application.Helpers;
-using PCParts.Domain.Enum;
+using PCParts.Application.Model.Enum;
+
 
 namespace PCParts.Application.Tests.Helpers;
 

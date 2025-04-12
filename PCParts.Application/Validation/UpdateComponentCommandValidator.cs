@@ -12,10 +12,9 @@ public class UpdateComponentCommandValidator : AbstractValidator<UpdateComponent
             .Must(command => !string.IsNullOrEmpty(command.Name) || command.CategoryId != Guid.Empty)
             .When(command => command.Id != Guid.Empty)
             .WithErrorCode(ValidationErrorCode.Empty);
-
         RuleFor(x => x.Id)
             .NotEmpty().WithErrorCode(ValidationErrorCode.Empty);
         RuleFor(x => x.Name)
-            .MaximumLength(100).WithErrorCode(ValidationErrorCode.TooLong);
+            .MaximumLength(50).WithErrorCode(ValidationErrorCode.TooLong);
     }
 }

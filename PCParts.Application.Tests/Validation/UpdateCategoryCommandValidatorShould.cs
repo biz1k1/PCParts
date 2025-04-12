@@ -35,7 +35,7 @@ public class UpdateCategoryCommandValidatorShould
     public static IEnumerable<object[]> GetInvalidCommands()
     {
         var validCommand = new UpdateCategoryCommand(Guid.NewGuid(), "Name");
-        var outOfLength = "A".PadRight(101, 'A');
+        var outOfLength = "A".PadRight(51, 'A');
 
         yield return new object[] { validCommand with { Id = Guid.Empty } };
         yield return new object[] { validCommand with { Name = string.Empty } };

@@ -46,18 +46,19 @@ public class SpecificationValueService : ISpecificationValueService
     {
         await _validationService.Validate(command);
 
-        var specificationValue =
-            await _specificationValueStorage.GetSpecificationValue(command.Id, new[] { "Specification" },
-                cancellationToken);
+        var specificationValue = await _specificationValueStorage.GetSpecificationValue(command.Id, 
+            new[] { "Specification" }, cancellationToken);
         if (specificationValue is null) throw new SpecificationValueNotFoundException(specificationValue.Id);
 
         var specificationType = specificationValue.Specification.Type;
         var validType = ValidationHelper.IsValueValid(specificationType, specificationValue.Value.ToString());
-        if (!validType) throw new InvalidSpecificationTypeException(specificationValue.Value, specificationType);
+        if (!validType)
+        {
+            throw new InvalidSpecificationTypeException(specificationValue.Value, (Domain.Enum.SpecificationDataType?)specificationType);
+        }
 
         var query = _queryBuilderService.BuildSpecificationValueUpdateQuery(command);
-        var updatedSpecificationValue =
-            await _specificationValueStorage.UpdateSpecificationValue(query, cancellationToken);
+        var updatedSpecificationValue = await _specificationValueStorage.UpdateSpecificationValue(query, cancellationToken);
         return updatedSpecificationValue;
     }
 }

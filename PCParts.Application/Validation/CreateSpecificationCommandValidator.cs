@@ -8,19 +8,13 @@ public class CreateSpecificationCommandValidator : AbstractValidator<CreateSpeci
 {
     public CreateSpecificationCommandValidator()
     {
-        RuleFor(x => x.CategoryId).NotEmpty().WithErrorCode(ValidationErrorCode.Empty);
+        RuleFor(x => x.CategoryId)
+            .NotEmpty().WithErrorCode(ValidationErrorCode.Empty);
         RuleFor(x => x.Name)
-            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithErrorCode(ValidationErrorCode.Empty)
-            .MaximumLength(100).WithErrorCode(ValidationErrorCode.TooLong);
-        //RuleFor(x => x.Value)
-        //    .Cascade(CascadeMode.Stop)
-        //    .NotEmpty().WithErrorCode(ValidationErrorCode.Empty)
-        //    .MaximumLength(100).WithErrorCode(ValidationErrorCode.TooLong)
-        //    .Must((command, value) => ValidationHelper.IsValueValid(command.DataType, command.Value))
-        //    .WithErrorCode(ValidationErrorCode.InvalidSpecificationType);
-        RuleFor(x => x.DataType)
+            .MaximumLength(50).WithErrorCode(ValidationErrorCode.TooLong);
+        RuleFor(x => x.Type)
+            .NotEmpty().WithErrorCode(ValidationErrorCode.Empty)
             .IsInEnum().WithErrorCode(ValidationErrorCode.InvalidSpecificationType);
-        ;
     }
 }

@@ -13,6 +13,6 @@ public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCo
         RuleFor(x => x.Name)
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithErrorCode(ValidationErrorCode.Empty)
-            .MaximumLength(100).WithErrorCode(ValidationErrorCode.TooLong);
+            .MaximumLength(50).WithErrorCode(ValidationErrorCode.TooLong);
     }
 }

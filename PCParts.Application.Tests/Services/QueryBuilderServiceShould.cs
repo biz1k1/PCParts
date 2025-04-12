@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using Npgsql;
 using PCParts.Application.Model.Command;
+using PCParts.Application.Model.Enum;
 using PCParts.Application.Model.QueryModel;
 using PCParts.Application.Services.QueryBuilderService;
-using PCParts.Domain.Enum;
 
 namespace PCParts.Application.Tests.Services;
 
@@ -42,11 +42,10 @@ public class QueryBuilderServiceShould
     public async Task ReturnSpecificationUpdateQuery()
     {
         var specificationId = Guid.Parse("86bc4fa7-7c86-4685-9131-8436220a8dba");
-        var command = new UpdateSpecificationCommand(specificationId, "title", "string", SpecificationDataType.STRING);
+        var command = new UpdateSpecificationCommand(specificationId, "title", SpecificationDataType.STRING);
         var parameters = new List<object>();
         parameters.Add(new NpgsqlParameter("@Id", command.Id));
         parameters.Add(new NpgsqlParameter("@Name", command.Name ?? (object)DBNull.Value));
-        parameters.Add(new NpgsqlParameter("@Value", command.Value ?? (object)DBNull.Value));
         parameters.Add(new NpgsqlParameter("@Type", command.Type ?? (object)DBNull.Value));
 
         var sql =

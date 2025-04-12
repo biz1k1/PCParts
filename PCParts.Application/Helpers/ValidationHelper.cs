@@ -1,4 +1,4 @@
-﻿using PCParts.Domain.Enum;
+﻿using PCParts.Application.Model.Enum;
 
 namespace PCParts.Application.Helpers;
 

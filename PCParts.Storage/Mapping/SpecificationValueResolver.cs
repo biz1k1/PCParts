@@ -1,7 +1,7 @@
 ﻿//using System.Globalization;
 //using AutoMapper;
 //using PCParts.Application.Model.Models;
-//using PCParts.Domain.Enum;
+//using PCParts.Application.Model.Enum;
 
 //namespace PCParts.Storage.Mapping;
 

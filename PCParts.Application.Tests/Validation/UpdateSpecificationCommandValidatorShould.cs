@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using FluentValidation.TestHelper;
 using PCParts.Application.Model.Command;
+using PCParts.Application.Model.Enum;
 using PCParts.Application.Validation;
-using PCParts.Domain.Enum;
 
 namespace PCParts.Application.Tests.Validation;
 
@@ -35,23 +35,19 @@ public class UpdateSpecificationCommandValidatorShould
 
     public static IEnumerable<object[]> GetInvalidCommands()
     {
-        var validCommand =
-            new UpdateSpecificationCommand(Guid.NewGuid(), "Specification", "value", SpecificationDataType.STRING);
-        var outOfLength = "A".PadRight(101, 'A');
+        var validCommand = new UpdateSpecificationCommand(Guid.NewGuid(), "Specification", SpecificationDataType.STRING);
+        var outOfLength = "A".PadRight(51, 'A');
 
         yield return new object[] { validCommand with { Id = Guid.Empty } };
-        yield return new object[] { validCommand with { Name = string.Empty } };
+        yield return new object[] { validCommand with { Name = String.Empty, Type = 0} };
         yield return new object[] { validCommand with { Name = outOfLength } };
-        yield return new object[] { validCommand with { Value = string.Empty } };
-        yield return new object[] { validCommand with { Value = outOfLength } };
-        yield return new object[] { validCommand with { Value = string.Empty, Type = SpecificationDataType.INT } };
+        yield return new object[] { validCommand with { Type = 0 } };
     }
 
     public static IEnumerable<object[]> GetValidCommands()
     {
-        var validCommand =
-            new UpdateSpecificationCommand(Guid.NewGuid(), "Specification", "value", SpecificationDataType.STRING);
+        var validCommand = new UpdateSpecificationCommand(Guid.NewGuid(), "Specification", SpecificationDataType.STRING);
         yield return new object[] { validCommand };
-        yield return new object[] { validCommand with { Name = string.Empty, Value = string.Empty } };
+        yield return new object[] { validCommand with { Name = string.Empty} };
     }
 }

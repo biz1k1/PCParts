@@ -2,9 +2,9 @@
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using PCParts.Application.AbstractionStorage;
+using PCParts.Application.Model.Enum;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;
-using PCParts.Domain.Enum;
 using PCParts.Storage.Extensions;
 
 namespace PCParts.Storage.Storages;
@@ -41,7 +41,7 @@ public class SpecificationStorage : ISpecificationStorage
         {
             Id = specificationId,
             Name = name,
-            DataType = dataType,
+            DataType = (Domain.Enum.SpecificationDataType)dataType,
             CategoryId = categoryId
         };
 

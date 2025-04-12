@@ -49,7 +49,7 @@ public class SpecificationService : ISpecificationService
         if (category is null) throw new CategoryNotFoundException(command.CategoryId);
 
         var specification = await _specificationStorage.CreateSpecification(command.CategoryId,
-            command.Name, command.DataType, cancellationToken);
+            command.Name, command.Type, cancellationToken);
         return specification;
     }
 
@@ -80,7 +80,10 @@ public class SpecificationService : ISpecificationService
         if (command.Type is not null)
         {
             var validType = ValidationHelper.IsValueValid(command.Type, specificationValue.Value.ToString());
-            if (!validType) throw new InvalidSpecificationTypeException(specificationValue.Value, command.Type);
+            if (!validType)
+            {
+                throw new InvalidSpecificationTypeException(specificationValue.Value, (Domain.Enum.SpecificationDataType?)command.Type);
+            }
         }
 
         var query = _queryBuilderService.BuildSpecificationUpdateQuery(command);

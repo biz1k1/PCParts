@@ -35,7 +35,7 @@ public class CreateComponentCommandValidatorShould
     public static IEnumerable<object[]> GetInvalidCommands()
     {
         var validCommand = new CreateComponentCommand("Name", Guid.NewGuid());
-        var outOfLength = "A".PadRight(101, 'A');
+        var outOfLength = "A".PadRight(51, 'A');
 
         yield return new object[] { validCommand with { CategoryId = Guid.Empty } };
         yield return new object[] { validCommand with { Name = string.Empty } };

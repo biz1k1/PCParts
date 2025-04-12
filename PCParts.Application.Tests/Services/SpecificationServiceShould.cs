@@ -2,12 +2,12 @@
 using Moq;
 using PCParts.Application.AbstractionStorage;
 using PCParts.Application.Model.Command;
+using PCParts.Application.Model.Enum;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;
 using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Application.Services.SpecificationService;
 using PCParts.Application.Services.ValidationService;
-using PCParts.Domain.Enum;
 using PCParts.Domain.Exceptions;
 
 namespace PCParts.Application.Tests.Services;
@@ -18,6 +18,7 @@ public class SpecificationServiceShould
     private readonly Mock<IComponentStorage> _componentStorage;
     private readonly Mock<IQueryBuilderService> _queryBuilder;
     private readonly Mock<ISpecificationStorage> _storageSpecification;
+    private readonly Mock<ISpecificationValueStorage> _specificationValueStorage;
     private readonly ISpecificationService _sut;
     private readonly Mock<IValidationService> _validator;
 
@@ -28,10 +29,12 @@ public class SpecificationServiceShould
         _storageSpecification = new Mock<ISpecificationStorage>();
         _queryBuilder = new Mock<IQueryBuilderService>();
         _validator = new Mock<IValidationService>();
+        _specificationValueStorage = new Mock<ISpecificationValueStorage>();
 
         _sut = new SpecificationService(
             _storageSpecification.Object,
             _categoryStorage.Object,
+            _specificationValueStorage.Object,
             _validator.Object,
             _queryBuilder.Object);
     }
@@ -76,7 +79,7 @@ public class SpecificationServiceShould
     public async Task ReturnUpdatedSpecification()
     {
         var specificationId = Guid.Parse("333357ef-a6ed-40ec-ae5f-44383f00ca17");
-        var command = new UpdateSpecificationCommand(specificationId, null, "text", SpecificationDataType.STRING);
+        var command = new UpdateSpecificationCommand(specificationId, "text", SpecificationDataType.STRING);
         var query = new UpdateQuery { Id = specificationId };
         var specification = new Specification
         {
@@ -94,7 +97,7 @@ public class SpecificationServiceShould
             x.BuildSpecificationUpdateQuery(It.IsAny<UpdateSpecificationCommand>()));
         buildQuerySetup.Returns(query);
         var getSpecificationSetup = _storageSpecification.Setup(x =>
-            x.GetSpecification(It.IsAny<Guid>(), CancellationToken.None));
+            x.GetSpecification(It.IsAny<Guid>(),null, CancellationToken.None));
         getSpecificationSetup.ReturnsAsync(specification);
         var updateSpecificationSetup = _storageSpecification.Setup(x =>
             x.UpdateSpecification(It.IsAny<UpdateQuery>(), CancellationToken.None));
@@ -102,7 +105,7 @@ public class SpecificationServiceShould
 
         var actual = await _sut.UpdateSpecification(command, CancellationToken.None);
         actual.Should().Be(updatedSpecification);
-        _storageSpecification.Verify(x => x.GetSpecification(specificationId, CancellationToken.None));
+        _storageSpecification.Verify(x => x.GetSpecification(specificationId, null, CancellationToken.None));
         _storageSpecification.Verify(x => x.UpdateSpecification(query, CancellationToken.None), Times.Once);
     }
     //[Fact]
@@ -122,7 +125,7 @@ public class SpecificationServiceShould
 
         await _sut.Invoking(x =>
                 x.UpdateSpecification(
-                    new UpdateSpecificationCommand(specificationId, null, null, SpecificationDataType.STRING),
+                    new UpdateSpecificationCommand(specificationId, null, SpecificationDataType.STRING),
                     CancellationToken.None))
             .Should().ThrowAsync<SpecificationNotFoundException>();
     }

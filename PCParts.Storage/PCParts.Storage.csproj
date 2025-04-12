@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PCParts.Application\PCParts.Application.csproj" />
+    <ProjectReference Include="..\PCParts.Domain\PCParts.Domain.csproj" />
   </ItemGroup>
 
 </Project>

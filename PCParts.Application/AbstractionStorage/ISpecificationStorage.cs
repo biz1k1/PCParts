@@ -1,6 +1,6 @@
 ﻿using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;
-using PCParts.Domain.Enum;
+using PCParts.Application.Model.Enum;
 
 namespace PCParts.Application.AbstractionStorage;
 

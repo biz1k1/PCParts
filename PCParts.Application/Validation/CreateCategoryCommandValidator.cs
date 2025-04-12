@@ -8,6 +8,8 @@ public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCo
 {
     public CreateCategoryCommandValidator()
     {
-        RuleFor(x => x.Name).NotEmpty().WithErrorCode(ValidationErrorCode.Empty);
+        RuleFor(x => x.Name)
+            .NotEmpty().WithErrorCode(ValidationErrorCode.Empty)
+            .MaximumLength(50).WithErrorCode(ValidationErrorCode.TooLong);
     }
 }
