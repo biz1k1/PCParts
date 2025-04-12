@@ -34,7 +34,10 @@ public class SpecificationService : ISpecificationService
         CancellationToken cancellationToken)
     {
         var category = await _categoryStorage.GetCategory(categoryId, cancellationToken);
-        if (category is null) throw new CategoryNotFoundException(categoryId);
+        if (category is null)
+        {
+            throw new CategoryNotFoundException(categoryId);
+        }
 
         var specifications = await _specificationStorage.GetSpecificationsByCategory(categoryId, cancellationToken);
         return specifications;
@@ -46,7 +49,10 @@ public class SpecificationService : ISpecificationService
         await _validationService.Validate(command);
 
         var category = await _categoryStorage.GetCategory(command.CategoryId, cancellationToken);
-        if (category is null) throw new CategoryNotFoundException(command.CategoryId);
+        if (category is null)
+        {
+            throw new CategoryNotFoundException(command.CategoryId);
+        }
 
         var specification = await _specificationStorage.CreateSpecification(command.CategoryId,
             command.Name, command.Type, cancellationToken);
@@ -55,12 +61,15 @@ public class SpecificationService : ISpecificationService
 
     public async Task RemoveSpecification(Guid id, CancellationToken cancellationToken)
     {
-        var specification =
-            await _specificationStorage.GetSpecification(id, new[] { "SpecificationValues" }, cancellationToken);
-        if (specification is null) throw new SpecificationNotFoundException(id);
+        var specification = await _specificationStorage.GetSpecification(id, new[] { "SpecificationValues" }, cancellationToken);
+        if (specification is null)
+        {
+            throw new SpecificationNotFoundException(id);
+        }
         if (specification.SpecificationValues is not null)
-            throw new RemoveEntityWithChildrenException(nameof(specification),
-                nameof(specification.SpecificationValues));
+        {
+            throw new RemoveEntityWithChildrenException(nameof(specification), nameof(specification.SpecificationValues));
+        }
 
         await _specificationStorage.RemoveSpecification(specification, cancellationToken);
     }
@@ -71,11 +80,16 @@ public class SpecificationService : ISpecificationService
         await _validationService.Validate(command);
 
         var specification = await _specificationStorage.GetSpecification(command.Id, null, cancellationToken);
-        if (specification is null) throw new SpecificationNotFoundException(command.Id);
+        if (specification is null)
+        {
+            throw new SpecificationNotFoundException(command.Id);
+        }
 
-        var specificationValue =
-            await _specificationValueStorage.GetSpecificationValue(specification.Id, null, cancellationToken);
-        if (specificationValue is null) throw new SpecificationValueNotFoundException(specification.Id);
+        var specificationValue = await _specificationValueStorage.GetSpecificationValue(specification.Id, null, cancellationToken);
+        if (specificationValue is null)
+        {
+            throw new SpecificationValueNotFoundException(specification.Id);
+        }
 
         if (command.Type is not null)
         {

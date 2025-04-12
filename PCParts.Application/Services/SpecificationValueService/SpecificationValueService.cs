@@ -34,7 +34,10 @@ public class SpecificationValueService : ISpecificationValueService
 
         string[] includes = [];
         var component = await _componentStorage.GetComponent(command.componentId, cancellationToken);
-        if (component is null) throw new ComponentNotFoundException(command.componentId);
+        if (component is null)
+        {
+            throw new ComponentNotFoundException(command.componentId);
+        }
 
         var specification = await _specificationValueStorage.CreateSpecificationValue(command.componentId,
             command.specificationId, command.value, cancellationToken);
@@ -48,7 +51,10 @@ public class SpecificationValueService : ISpecificationValueService
 
         var specificationValue = await _specificationValueStorage.GetSpecificationValue(command.Id, 
             new[] { "Specification" }, cancellationToken);
-        if (specificationValue is null) throw new SpecificationValueNotFoundException(specificationValue.Id);
+        if (specificationValue is null)
+        {
+            throw new SpecificationValueNotFoundException(specificationValue.Id);
+        }
 
         var specificationType = specificationValue.Specification.Type;
         var validType = ValidationHelper.IsValueValid(specificationType, specificationValue.Value.ToString());

@@ -43,7 +43,10 @@ public class ComponentService : IComponentService
         await _validationService.Validate(command);
 
         var category = await _categoryStorage.GetCategory(command.CategoryId, cancellationToken);
-        if (category is null) throw new CategoryNotFoundException(command.CategoryId);
+        if (category is null)
+        {
+            throw new CategoryNotFoundException(command.CategoryId);
+        }
 
         var component = await _componentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
         return component;
@@ -61,7 +64,10 @@ public class ComponentService : IComponentService
         {
             category = await _categoryStorage.GetCategory((Guid)command.CategoryId, cancellationToken);
             component.Category = category;
-            if (category is null) throw new CategoryNotFoundException((Guid)command.CategoryId);
+            if (category is null)
+            {
+                throw new CategoryNotFoundException((Guid)command.CategoryId);
+            }
         }
 
         var query = _queryBuilderService.BuildComponentUpdateQuery(command);
@@ -74,7 +80,9 @@ public class ComponentService : IComponentService
         var component = await _componentStorage.GetComponent(id, cancellationToken);
         if (component is null) throw new ComponentNotFoundException(id);
         if (component.SpecificationValues.Any())
+        {
             throw new RemoveEntityWithChildrenException(nameof(component), nameof(component.SpecificationValues));
+        }
 
         await _componentStorage.RemoveComponent(component, cancellationToken);
     }

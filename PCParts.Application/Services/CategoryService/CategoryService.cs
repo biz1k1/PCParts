@@ -43,7 +43,10 @@ public class CategoryService : ICategoryService
         await _validationService.Validate(command);
 
         var category = await _categoryStorage.GetCategory(command.Id, cancellationToken);
-        if (category is null) throw new CategoryNotFoundException(command.Id);
+        if (category is null)
+        {
+            throw new CategoryNotFoundException(command.Id);
+        }
 
         return await _categoryStorage.UpdateCategory(command, cancellationToken);
     }
@@ -57,7 +60,9 @@ public class CategoryService : ICategoryService
         }
 
         if (category.Components.Any())
+        {
             throw new RemoveEntityWithChildrenException(nameof(category), nameof(category.Components));
+        }
 
         await _categoryStorage.RemoveCategory(category, cancellationToken);
     }

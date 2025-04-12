@@ -17,7 +17,7 @@ public class SpecificationServiceShould
     private readonly Mock<ICategoryStorage> _categoryStorage;
     private readonly Mock<IComponentStorage> _componentStorage;
     private readonly Mock<IQueryBuilderService> _queryBuilder;
-    private readonly Mock<ISpecificationStorage> _storageSpecification;
+    private readonly Mock<ISpecificationStorage> _specificationStorage;
     private readonly Mock<ISpecificationValueStorage> _specificationValueStorage;
     private readonly ISpecificationService _sut;
     private readonly Mock<IValidationService> _validator;
@@ -26,59 +26,58 @@ public class SpecificationServiceShould
     {
         _categoryStorage = new Mock<ICategoryStorage>();
         _componentStorage = new Mock<IComponentStorage>();
-        _storageSpecification = new Mock<ISpecificationStorage>();
+        _specificationStorage = new Mock<ISpecificationStorage>();
         _queryBuilder = new Mock<IQueryBuilderService>();
         _validator = new Mock<IValidationService>();
         _specificationValueStorage = new Mock<ISpecificationValueStorage>();
 
         _sut = new SpecificationService(
-            _storageSpecification.Object,
+            _specificationStorage.Object,
             _categoryStorage.Object,
             _specificationValueStorage.Object,
             _validator.Object,
             _queryBuilder.Object);
     }
 
-    //[Fact]
-    //public async Task ReturnCreatedSpecification()
-    //{
-    //    var componentId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
-    //    var specificationId = Guid.Parse("333357ef-a6ed-40ec-ae5f-44383f00ca17");
-    //    var component = new Component
-    //    {
-    //        Id = componentId
-    //    };
-    //    var specification = new Specification
-    //    {
-    //        Name = "spec",
-    //        Type = SpecificationDataType.STRING,
-    //        Value = "text"
-    //    };
-    //    var specificationCommand = new CreateSpecificationCommand(
-    //        componentId,
-    //        "spec",
-    //        "text",
-    //        SpecificationDataType.STRING);
+    [Fact]
+    public async Task ReturnCreatedSpecification()
+    {
+        var categoryId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
+        var specificationId = Guid.Parse("333357ef-a6ed-40ec-ae5f-44383f00ca17");
+        var component = new Category()
+        {
+            Id = categoryId
+        };
+        var specification = new Specification
+        {
+            Name = "spec",
+            Type = SpecificationDataType.STRING,
+        };
+        var specificationCommand = new CreateSpecificationCommand(
+            categoryId,
+            "spec",
+            SpecificationDataType.STRING);
 
-    //    var returnComponentSetup = _storageComponent.Setup(x =>
-    //            x.GetComponent(componentId, It.IsAny<string[]>(), It.IsAny<CancellationToken>()));
-    //    returnComponentSetup.ReturnsAsync(component);
-    //    var returnSpecification = _storageSpecification.Setup(x =>
-    //        x.CreateSpecification(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<SpecificationDataType>(), It.IsAny<CancellationToken>()));
-    //    returnSpecification.ReturnsAsync(specification);
+        var returnComponentSetup = _categoryStorage.Setup(x =>
+                x.GetCategory(categoryId, It.IsAny<CancellationToken>()));
+        returnComponentSetup.ReturnsAsync(component);
+        var returnSpecification = _specificationStorage.Setup(x =>
+            x.CreateSpecification(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<SpecificationDataType>(), It.IsAny<CancellationToken>()));
+        returnSpecification.ReturnsAsync(specification);
 
-    //    var actual = await _sut.CreateSpecification(specificationCommand, It.IsAny<CancellationToken>());
-    //    actual.Should().BeSameAs(specification);
-    //    _storageSpecification.Verify(x =>
-    //        x.CreateSpecification(componentId, "spec", SpecificationDataType.STRING, CancellationToken.None), Times.Once);
-    //    _storageComponent.Verify(x =>
-    //        x.GetComponent(componentId, null, It.IsAny<CancellationToken>()), Times.Once);
-    //}
+        var actual = await _sut.CreateSpecification(specificationCommand, It.IsAny<CancellationToken>());
+        actual.Should().BeSameAs(specification);
+        _specificationStorage.Verify(x =>
+            x.CreateSpecification(categoryId, "spec", SpecificationDataType.STRING, CancellationToken.None), Times.Once);
+        _categoryStorage.Verify(x =>
+            x.GetCategory(categoryId, It.IsAny<CancellationToken>()), Times.Once);
+    }
 
     [Fact]
     public async Task ReturnUpdatedSpecification()
     {
         var specificationId = Guid.Parse("333357ef-a6ed-40ec-ae5f-44383f00ca17");
+        var specificationValueId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
         var command = new UpdateSpecificationCommand(specificationId, "text", SpecificationDataType.STRING);
         var query = new UpdateQuery { Id = specificationId };
         var specification = new Specification
@@ -86,6 +85,11 @@ public class SpecificationServiceShould
             Id = specificationId,
             Name = "spec",
             Type = SpecificationDataType.STRING
+        };
+        var specificationValue = new SpecificationValue()
+        {
+            Id = specificationValueId,
+            Value = "string"
         };
         var updatedSpecification = new Specification
         {
@@ -96,27 +100,32 @@ public class SpecificationServiceShould
         var buildQuerySetup = _queryBuilder.Setup(x =>
             x.BuildSpecificationUpdateQuery(It.IsAny<UpdateSpecificationCommand>()));
         buildQuerySetup.Returns(query);
-        var getSpecificationSetup = _storageSpecification.Setup(x =>
+        var getSpecificationSetup = _specificationStorage.Setup(x =>
             x.GetSpecification(It.IsAny<Guid>(),null, CancellationToken.None));
         getSpecificationSetup.ReturnsAsync(specification);
-        var updateSpecificationSetup = _storageSpecification.Setup(x =>
+        var updateSpecificationSetup = _specificationStorage.Setup(x =>
             x.UpdateSpecification(It.IsAny<UpdateQuery>(), CancellationToken.None));
         updateSpecificationSetup.ReturnsAsync(updatedSpecification);
+        var getSpecificationValueSetup = _specificationValueStorage.Setup(x =>
+            x.GetSpecificationValue(It.IsAny<Guid>(), null, CancellationToken.None));
+        getSpecificationValueSetup.ReturnsAsync(specificationValue);
 
         var actual = await _sut.UpdateSpecification(command, CancellationToken.None);
         actual.Should().Be(updatedSpecification);
-        _storageSpecification.Verify(x => x.GetSpecification(specificationId, null, CancellationToken.None));
-        _storageSpecification.Verify(x => x.UpdateSpecification(query, CancellationToken.None), Times.Once);
+        _specificationStorage.Verify(x => x.GetSpecification(specificationId, null, CancellationToken.None));
+        _specificationStorage.Verify(x => x.UpdateSpecification(query, CancellationToken.None), Times.Once);
+        _specificationValueStorage.Verify(x => x.GetSpecificationValue(specificationId, null, CancellationToken.None), Times.Once);
     }
-    //[Fact]
-    //public async Task ThrowComponentNotFoundException_WhenCreateSpecification_IfComponentIsNull()
-    //{
-    //    var componentId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
 
-    //    await _sut.Invoking(x =>
-    //            x.CreateSpecification(new CreateSpecificationCommand(componentId, null, null, SpecificationDataType.STRING),CancellationToken.None))
-    //        .Should().ThrowAsync<ComponentNotFoundException>();
-    //}
+    [Fact]
+    public async Task ThrowCategoryNotFoundException_WhenCreateSpecification_IfCategoryIsNull()
+    {
+        var categoryId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
+
+        await _sut.Invoking(x =>
+                x.CreateSpecification(new CreateSpecificationCommand(categoryId, null, SpecificationDataType.STRING), CancellationToken.None))
+            .Should().ThrowAsync<CategoryNotFoundException>();
+    }
 
     [Fact]
     public async Task ThrowComponentNotFoundException_WhenUpdateSpecification_IfSpecificationIsNull()
