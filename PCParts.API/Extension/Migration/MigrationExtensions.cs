@@ -12,6 +12,6 @@ public static class MigrationExtensions
         using var dbContext =
             scope.ServiceProvider.GetRequiredService<PgContext>();
 
-        dbContext.Database.Migrate();
+        dbContext.Database.MigrateAsync();
     }
 }
