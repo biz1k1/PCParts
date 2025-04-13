@@ -22,10 +22,9 @@ COPY . .
 WORKDIR "/src/PCParts.API"
 RUN dotnet build "./PCParts.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-## HTTPS-сертификат разработчика
+#  Директория и генерацция для сертификата
 RUN mkdir -p /https
 RUN dotnet dev-certs https -ep /https/aspnetapp.pfx -p password123
-RUN dotnet dev-certs https --trust
 
 
 # This stage is used to publish the service project to be copied to the final stage
@@ -37,5 +36,10 @@ RUN dotnet publish "./PCParts.API.csproj" -c $BUILD_CONFIGURATION -o /app/publis
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Настройка сертификата
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password=password123
+
 ENTRYPOINT ["dotnet", "PCParts.API.dll"]
 

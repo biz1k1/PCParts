@@ -34,7 +34,7 @@ if (app.Environment.IsDevelopment())
     if (!app.Environment.IsEnvironment("Testing")) app.ApplyMigration();
 }
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.UseMiddleware<ErrorHandlingMiddleware>();
