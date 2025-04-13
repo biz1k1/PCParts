@@ -26,7 +26,6 @@ builder.Services.AddAutoMapper(config => config.AddMaps(Assembly.GetExecutingAss
 //builder.Services.AddApiMetrics();
 builder.Logging.AddConsole();
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

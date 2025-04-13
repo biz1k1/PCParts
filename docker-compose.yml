@@ -3,6 +3,21 @@ networks:
     driver: bridge
 
 services:
+  pcparts.migrator:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    container_name: pcparts.migrator
+    depends_on:
+      pcparts.database:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: >
+      bash -c "dotnet tool install --global dotnet-ef &&
+               export PATH=\"$PATH:/root/.dotnet/tools\" &&
+               dotnet restore &&
+               dotnet ef database update --project PCParts.Storage/PCParts.Storage.csproj --startup-project PCParts.API/PCParts.API.csproj"
+
   pcparts.api:
     container_name: pcparts.api
     image: ${DOCKER_REGISTRY-}pcpartsapi
@@ -10,7 +25,8 @@ services:
       context: .
       dockerfile: PCParts.API/Dockerfile
     depends_on:
-      - pcparts.database
+       pcparts.database:
+        condition: service_healthy
     networks:
       - pcparts_network 
     ports:
@@ -33,3 +49,10 @@ services:
     - "5432:5432"
     networks:
       - pcparts_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+

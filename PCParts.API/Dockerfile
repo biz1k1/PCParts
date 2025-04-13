@@ -22,6 +22,12 @@ COPY . .
 WORKDIR "/src/PCParts.API"
 RUN dotnet build "./PCParts.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+## HTTPS-сертификат разработчика
+RUN mkdir -p /https
+RUN dotnet dev-certs https -ep /https/aspnetapp.pfx -p password123
+RUN dotnet dev-certs https --trust
+
+
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
@@ -32,3 +38,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "PCParts.API.dll"]
+
