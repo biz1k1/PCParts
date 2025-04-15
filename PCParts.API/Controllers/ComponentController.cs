@@ -49,7 +49,10 @@ public class ComponentController : ControllerBase
         [FromBody] CreateComponent request,
         CancellationToken cancellationToken)
     {
-        var command = new CreateComponentCommand(request.Name, request.CategoryId);
+        var valuesCommand = request.SpecificationValues
+            .Select(x => new CreateSpecificationValueCommand(x.SpecificationId, x.Value))
+            .ToList();
+        var command = new CreateComponentCommand(request.Name, request.CategoryId, valuesCommand);
         var component = await _componentService.CreateComponent(command, cancellationToken);
         return CreatedAtAction(nameof(GetComponent), new { componentId = component.Id },
             _mapper.Map<Component>(component));

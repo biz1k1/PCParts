@@ -39,19 +39,17 @@ namespace PCParts.Application.Tests.Validation
 
         public static IEnumerable<object[]> GetInvalidCommands()
         {
-            var validCommand = new CreateSpecificationValueCommand(Guid.NewGuid(), Guid.NewGuid(), "Value");
+            var validCommand = new CreateSpecificationValueCommand(Guid.NewGuid(), "Value");
             var outOfLength = "A".PadRight(51, 'A');
 
-            yield return new object[] { validCommand with { componentId = Guid.Empty } };
-            yield return new object[] { validCommand with { specificationId = Guid.Empty } };
-            yield return new object[] { validCommand with { componentId = Guid.Empty, specificationId = Guid.Empty } };
-            yield return new object[] { validCommand with { value = String.Empty} };
-            yield return new object[] { validCommand with { value = outOfLength } };
+            yield return new object[] { validCommand with { SpecificationId = Guid.Empty } };
+            yield return new object[] { validCommand with { Value = String.Empty} };
+            yield return new object[] { validCommand with { Value = outOfLength } };
         }
 
         public static IEnumerable<object[]> GetValidCommands()
         {
-            var validCommand = new CreateSpecificationValueCommand(Guid.NewGuid(), Guid.NewGuid(), "Value");
+            var validCommand = new CreateSpecificationValueCommand(Guid.NewGuid(), "Value");
             yield return new object[] { validCommand };
         }
     }

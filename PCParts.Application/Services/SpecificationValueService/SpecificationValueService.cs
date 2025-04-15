@@ -30,24 +30,23 @@ public class SpecificationValueService : ISpecificationValueService
         _specificationStorage = specificationStorage;
     }
 
-    public async Task<SpecificationValue> CreateSpecificationValue(CreateSpecificationValueCommand command,
-        CancellationToken cancellationToken)
+    public async Task<SpecificationValue> CreateSpecificationsValues(Guid componentId,
+        ICollection<CreateSpecificationValueCommand> commands, CancellationToken cancellationToken)
     {
-        await _validationService.Validate(command);
+        await _validationService.Validate(commands);
 
-        var component = await _componentStorage.GetComponent(command.componentId, cancellationToken);
+        var component = await _componentStorage.GetComponent(componentId, cancellationToken);
         if (component is null)
         {
-            throw new ComponentNotFoundException(command.componentId);
+            throw new ComponentNotFoundException(componentId);
         }
-        var specification = await _specificationStorage.GetSpecification(command.specificationId, null, cancellationToken);
-        if (specification is null)
-        {
-            throw new SpecificationNotFoundException(command.specificationId);
-        }
+        //var specification = await _specificationStorage.GetSpecification(commands.specificationId, null, cancellationToken);
+        //if (specification is null)
+        //{
+        //    throw new SpecificationNotFoundException(commands.specificationId);
+        //}
 
-        var specificationValue = await _specificationValueStorage.CreateSpecificationValue(command.componentId,
-            command.specificationId, command.value, cancellationToken);
+        var specificationValue = await _specificationValueStorage.CreateSpecificationValue(component.Id, commands, cancellationToken);
         return specificationValue;
     }
 
@@ -64,10 +63,10 @@ public class SpecificationValueService : ISpecificationValueService
         }
 
         var specificationType = specificationValue.Specification.Type;
-        var validType = ValidationHelper.IsValueValid(specificationType, specificationValue?.Value?.ToString() ?? string.Empty);
+        var validType = ValidationHelper.IsValueValid(specificationType, command?.Value?.ToString() ?? string.Empty);
         if (!validType)
         {
-            throw new InvalidSpecificationTypeException(specificationValue.Value,specificationType.ToString());
+            throw new InvalidSpecificationTypeException(command.Value,specificationType.ToString());
         }
 
         var query = _queryBuilderService.BuildSpecificationValueUpdateQuery(command);

@@ -1,3 +1,3 @@
 ﻿namespace PCParts.Application.Model.Command;
 
-public record CreateSpecificationValueCommand(Guid componentId, Guid specificationId, string value);
+public record CreateSpecificationValueCommand(Guid SpecificationId, string Value);

@@ -6,6 +6,8 @@ using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;
 using PCParts.Application.Services.ComponentService;
 using PCParts.Application.Services.QueryBuilderService;
+using PCParts.Application.Services.SpecificationService;
+using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
 using PCParts.Domain.Exceptions;
 
@@ -16,8 +18,11 @@ public class ComponentServiceShould
     private readonly Mock<IQueryBuilderService> _queryBuilder;
     private readonly Mock<ICategoryStorage> _storageCategory;
     private readonly Mock<IComponentStorage> _storageComponent;
+    private readonly Mock<ISpecificationValueService> _specificationValueService;
+    private readonly Mock<ISpecificationService> _specificationService;
     private readonly IComponentService _sut;
     private readonly Mock<IValidationService> _validator;
+    private readonly Mock<ISpecificationStorage> _specificationStorage;
 
     public ComponentServiceShould()
     {
@@ -25,12 +30,18 @@ public class ComponentServiceShould
         _storageCategory = new Mock<ICategoryStorage>();
         _validator = new Mock<IValidationService>();
         _queryBuilder = new Mock<IQueryBuilderService>();
+        _specificationService = new Mock<ISpecificationService>();
+        _specificationValueService = new Mock<ISpecificationValueService>();
+        _specificationStorage = new Mock<ISpecificationStorage>();
+
 
         _sut = new ComponentService(
             _storageComponent.Object,
             _storageCategory.Object,
             _validator.Object,
-            _queryBuilder.Object);
+            _queryBuilder.Object,
+            _specificationValueService.Object,
+            _specificationService.Object);
     }
 
     [Fact]
@@ -73,31 +84,42 @@ public class ComponentServiceShould
     [Fact]
     public async Task ReturnCreatedComponent()
     {
-        var categoryId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
+        var specificationId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
         var componentId = Guid.Parse("333357ef-a6ed-40ec-ae5f-44383f00ca17");
-        var category = new Category
+        var categoryId = Guid.Parse("d8c4180f-cccc-4c93-8352-448079b77cd0");
+        List<Specification> specifications = new List<Specification>()
         {
-            Id = categoryId
+            new Specification(){Id=specificationId,SpecificationValues = new List<SpecificationValue>()
+            {
+                new SpecificationValue(){Id=specificationId}
+            }}
         };
+        var command = new CreateComponentCommand("Component", categoryId, new List<CreateSpecificationValueCommand>()
+        {
+            new CreateSpecificationValueCommand(specificationId, null)
+        });
         var component = new Component
         {
             Id = componentId,
             Name = "Component",
-            Category = category
+            SpecificationValues= new List<SpecificationValue>()
+            {
+                new SpecificationValue{Id=specificationId, Value = null,SpecificationName = null, Specification = null}
+            }
         };
-        var componentCommand = new CreateComponentCommand("Component", categoryId);
 
-        var returnCategorySetup = _storageCategory.Setup(x =>
-            x.GetCategory(categoryId, It.IsAny<CancellationToken>()));
-        returnCategorySetup.ReturnsAsync(category);
+        var returnCategorySetup = _specificationService.Setup(x =>
+            x.GetSpecificationsByCategory(It.IsAny<Guid>(), It.IsAny<CancellationToken>()));
+        returnCategorySetup.ReturnsAsync(specifications);
         var returnComponentSetup = _storageComponent.Setup(x =>
             x.CreateComponent(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()));
         returnComponentSetup.ReturnsAsync(component);
 
-        var actual = await _sut.CreateComponent(componentCommand, CancellationToken.None);
+
+        var actual = await _sut.CreateComponent(command, CancellationToken.None);
         actual.Should().BeSameAs(component);
         _storageComponent.Verify(x => x.CreateComponent("Component", categoryId, CancellationToken.None), Times.Once);
-        _storageCategory.Verify(x => x.GetCategory(categoryId, It.IsAny<CancellationToken>()));
+        _specificationService.Verify(x=>x.GetSpecificationsByCategory(categoryId,CancellationToken.None));
     }
 
     [Fact]
@@ -133,13 +155,24 @@ public class ComponentServiceShould
     }
 
     [Fact]
-    public async Task ThrowCategoryNotFoundException_WhenCreateComponent_IfCategoryIsNull()
+    public async Task ThrowSpecificationsNotFoundException_WhenCreateComponent_IfMissingSpecification()
     {
-        var categoryId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
-        var componentCommand = new CreateComponentCommand("component", categoryId);
+        var categoryId = Guid.Parse("86bc4fa7-7c86-4685-9131-8436220a8dba");
+        var specificationId = Guid.Parse("a5186d90-49f9-4baf-928b-b2ad117df55a");
+        var specification = new List<Specification>()
+        {
+            new Specification(){Id=specificationId}
+        };
+        var command = new CreateComponentCommand(null, categoryId,  new List<CreateSpecificationValueCommand>()
+        {
+            new CreateSpecificationValueCommand(new Guid(), null)
+        });
+        var getSpecificationByCategory = _specificationService.Setup(x =>
+            x.GetSpecificationsByCategory(It.IsAny<Guid>(), CancellationToken.None));
+        getSpecificationByCategory.ReturnsAsync(specification);
 
-        await _sut.Invoking(x => x.CreateComponent(componentCommand, CancellationToken.None))
-            .Should().ThrowAsync<CategoryNotFoundException>();
+        await _sut.Invoking(x => x.CreateComponent(command, CancellationToken.None))
+            .Should().ThrowAsync<SpecificationsNotFoundException>();
     }
 
     [Fact]

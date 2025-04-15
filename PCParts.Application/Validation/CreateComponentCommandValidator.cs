@@ -13,5 +13,6 @@ public class CreateComponentCommandValidator : AbstractValidator<CreateComponent
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithErrorCode(ValidationErrorCode.Empty)
             .MaximumLength(50).WithErrorCode(ValidationErrorCode.TooLong);
+        RuleFor(x => x.SpecificationValues).NotEmpty().WithErrorCode(ValidationErrorCode.Empty);
     }
 }

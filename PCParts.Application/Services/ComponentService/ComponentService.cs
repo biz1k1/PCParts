@@ -2,6 +2,8 @@
 using PCParts.Application.Model.Command;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.QueryBuilderService;
+using PCParts.Application.Services.SpecificationService;
+using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
 using PCParts.Domain.Exceptions;
 
@@ -13,17 +15,23 @@ public class ComponentService : IComponentService
     private readonly IComponentStorage _componentStorage;
     private readonly IQueryBuilderService _queryBuilderService;
     private readonly IValidationService _validationService;
+    private readonly ISpecificationValueService _specificationValueService;
+    private readonly ISpecificationService _specificationService;
 
     public ComponentService(
         IComponentStorage componentStorage,
         ICategoryStorage categoryStorage,
         IValidationService validationService,
-        IQueryBuilderService queryBuilderService)
+        IQueryBuilderService queryBuilderService,
+        ISpecificationValueService specificationValueService,
+        ISpecificationService specificationService)
     {
         _componentStorage = componentStorage;
         _categoryStorage = categoryStorage;
         _validationService = validationService;
         _queryBuilderService = queryBuilderService;
+        _specificationValueService = specificationValueService;
+        _specificationService = specificationService;
     }
 
     public async Task<IEnumerable<Component>> GetComponents(CancellationToken cancellationToken)
@@ -42,13 +50,17 @@ public class ComponentService : IComponentService
     {
         await _validationService.Validate(command);
 
-        var category = await _categoryStorage.GetCategory(command.CategoryId, cancellationToken);
-        if (category is null)
+        var specifications = await _specificationService.GetSpecificationsByCategory(command.CategoryId,cancellationToken);
+        var missingSpecification = specifications.Select(x => x.Id)
+            .Except(command.SpecificationValues.Select(x => x.SpecificationId));
+        if (missingSpecification.Any())
         {
-            throw new CategoryNotFoundException(command.CategoryId);
+            throw new SpecificationsNotFoundException(missingSpecification);
         }
 
         var component = await _componentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
+        await _specificationValueService.CreateSpecificationsValues(component.Id, command.SpecificationValues,cancellationToken);
+
         return component;
     }
 

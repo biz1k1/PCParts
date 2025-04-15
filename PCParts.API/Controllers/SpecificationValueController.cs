@@ -21,20 +21,6 @@ public class SpecificationValueController : ControllerBase
         _specificationValueService = specificationValueService;
         _mapper = mapper;
     }
-
-    [HttpPost]
-    [ProducesResponseType(201, Type = typeof(SpecificationValue))]
-    [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]
-    [ProducesResponseType(404, Type = typeof(ErrorResponseBody))]
-    public async Task<IActionResult> CreateSpecificationValue(
-        [FromBody] CreateSpecificationValue request,
-        CancellationToken cancellationToken)
-    {
-        var command = new CreateSpecificationValueCommand(request.ComponentId, request.SpecificationId, request.Value);
-        var specification = await _specificationValueService.CreateSpecificationValue(command, cancellationToken);
-        return Created("Components/{componentId}", _mapper.Map<SpecificationValue>(specification));
-    }
-
     [HttpPatch]
     [ProducesResponseType(201, Type = typeof(SpecificationValue))]
     [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]

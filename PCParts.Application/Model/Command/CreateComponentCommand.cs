@@ -1,3 +1,5 @@
-﻿namespace PCParts.Application.Model.Command;
+﻿using PCParts.Application.Model.Models;
 
-public record CreateComponentCommand(string Name, Guid CategoryId);
+namespace PCParts.Application.Model.Command;
+
+public record CreateComponentCommand(string Name, Guid CategoryId, ICollection<CreateSpecificationValueCommand> SpecificationValues);

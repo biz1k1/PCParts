@@ -9,11 +9,9 @@ namespace PCParts.Application.Validation
     {
         public CreateSpecificationValueCommandValidator()
         {
-            RuleFor(x => x.componentId)
+            RuleFor(x => x.SpecificationId)
                 .NotEmpty().WithErrorCode(ValidationErrorCode.Empty);
-            RuleFor(x => x.specificationId)
-                .NotEmpty().WithErrorCode(ValidationErrorCode.Empty);
-            RuleFor(x => x.value)
+            RuleFor(x => x.Value)
                 .MaximumLength(50).WithErrorCode(ValidationErrorCode.TooLong)
                 .NotEmpty().WithErrorCode(ValidationErrorCode.Empty);
         }
