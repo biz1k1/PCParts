@@ -40,11 +40,6 @@ public class SpecificationValueService : ISpecificationValueService
         {
             throw new ComponentNotFoundException(componentId);
         }
-        //var specification = await _specificationStorage.GetSpecification(commands.specificationId, null, cancellationToken);
-        //if (specification is null)
-        //{
-        //    throw new SpecificationNotFoundException(commands.specificationId);
-        //}
 
         var specificationValue = await _specificationValueStorage.CreateSpecificationValue(component.Id, commands, cancellationToken);
         return specificationValue;
