@@ -6,7 +6,7 @@ USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
-
+EXPOSE 443
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -40,6 +40,7 @@ COPY --from=publish /app/publish .
 # Настройка сертификата
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password=password123
+ENV ASPNETCORE_URLS=https://+:443;http://+:8080
 
 ENTRYPOINT ["dotnet", "PCParts.API.dll"]
 

@@ -30,7 +30,7 @@ public class SpecificationValueController : ControllerBase
         [FromBody] CreateSpecificationValue request,
         CancellationToken cancellationToken)
     {
-        var command = new CreateSpecificationValueCommand(request.ComponentId, request.SpeicificationId, request.Value);
+        var command = new CreateSpecificationValueCommand(request.ComponentId, request.SpecificationId, request.Value);
         var specification = await _specificationValueService.CreateSpecificationValue(command, cancellationToken);
         return Created("Components/{componentId}", _mapper.Map<SpecificationValue>(specification));
     }
