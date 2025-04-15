@@ -64,7 +64,7 @@ public class SpecificationValueService : ISpecificationValueService
         }
 
         var specificationType = specificationValue.Specification.Type;
-        var validType = ValidationHelper.IsValueValid(specificationType, specificationValue.Value.ToString());
+        var validType = ValidationHelper.IsValueValid(specificationType, specificationValue?.Value?.ToString() ?? string.Empty);
         if (!validType)
         {
             throw new InvalidSpecificationTypeException(specificationValue.Value,specificationType.ToString());

@@ -93,7 +93,7 @@ public class SpecificationService : ISpecificationService
 
         if (command.Type is not null)
         {
-            var validType = ValidationHelper.IsValueValid(command.Type, specificationValue.Value.ToString());
+            var validType = ValidationHelper.IsValueValid(command.Type, specificationValue?.Value?.ToString() ?? string.Empty);
             if (!validType)
             {
                 throw new InvalidSpecificationTypeException(specificationValue.Value, command.Type.ToString());

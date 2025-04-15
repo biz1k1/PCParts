@@ -8,6 +8,10 @@ public static class QueryableExtensions
 {
     public static IQueryable<T> ApplyInclude<T>(this IQueryable<T> query, IEnumerable<string> includes)
     {
+        if (includes is null)
+        {
+            return query;
+        }
         foreach (var include in includes)
         {
             var properties = include.Split('.');
