@@ -1,7 +1,7 @@
-﻿using PCParts.Application.Model.Command;
+﻿using PCParts.Application.Command;
 using PCParts.Application.Model.Models;
 
-namespace PCParts.Application.AbstractionStorage;
+namespace PCParts.Application.Abstraction;
 
 public interface ICategoryStorage
 {

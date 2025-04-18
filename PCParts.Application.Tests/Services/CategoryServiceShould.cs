@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
-using PCParts.Application.AbstractionStorage;
-using PCParts.Application.Model.Command;
+using PCParts.Application.Abstraction;
+using PCParts.Application.Command;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.CategoryService;
 using PCParts.Application.Services.ValidationService;
@@ -100,7 +100,7 @@ public class CategoryServiceShould
         var categoryId = new UpdateCategoryCommand(Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae"), "title");
 
         await _sut.Invoking(x => x.UpdateCategory(categoryId, CancellationToken.None))
-            .Should().ThrowAsync<CategoryNotFoundException>();
+            .Should().ThrowAsync<EntityNotFoundException>();
     }
 
     [Fact]
@@ -109,6 +109,6 @@ public class CategoryServiceShould
         var categoryId = Guid.Parse("0bf6ed66-f924-4372-8d93-14acdb1c3fae");
 
         await _sut.Invoking(x => x.RemoveCategory(categoryId, CancellationToken.None))
-            .Should().ThrowAsync<CategoryNotFoundException>();
+            .Should().ThrowAsync<EntityNotFoundException>();
     }
 }

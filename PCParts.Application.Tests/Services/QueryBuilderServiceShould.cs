@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Npgsql;
-using PCParts.Application.Model.Command;
+using PCParts.Application.Command;
 using PCParts.Application.Model.Enum;
 using PCParts.Application.Model.QueryModel;
 using PCParts.Application.Services.QueryBuilderService;

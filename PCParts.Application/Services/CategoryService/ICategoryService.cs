@@ -1,4 +1,4 @@
-﻿using PCParts.Application.Model.Command;
+﻿using PCParts.Application.Command;
 using PCParts.Application.Model.Models;
 
 namespace PCParts.Application.Services.CategoryService;

@@ -1,19 +1,12 @@
-﻿using PCParts.Application.Services.SpecificationService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using PCParts.Application.Services.SpecificationValueService;
 using Moq;
-using PCParts.Application.AbstractionStorage;
-using PCParts.Application.Model.Command;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.ValidationService;
 using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Domain.Exceptions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using PCParts.Application.Abstraction;
+using PCParts.Application.Command;
 
 namespace PCParts.Application.Tests.Services
 {
@@ -82,7 +75,7 @@ namespace PCParts.Application.Tests.Services
         {
             await _sut.Invoking(x =>
                     x.CreateSpecificationsValues(Guid.Empty, new List<CreateSpecificationValueCommand>() { new CreateSpecificationValueCommand(Guid.Empty, null) }, CancellationToken.None))
-                .Should().ThrowAsync<ComponentNotFoundException>();
+                .Should().ThrowAsync<EntityNotFoundException>();
         }
 
         [Fact]
@@ -96,7 +89,7 @@ namespace PCParts.Application.Tests.Services
 
             await _sut.Invoking(x =>
                     x.UpdateSpecificationValue(new UpdateSpecificationValueCommand(Guid.Empty, null), CancellationToken.None))
-                .Should().ThrowAsync<SpecificationValueNotFoundException>();
+                .Should().ThrowAsync<EntityNotFoundException>();
         }
         [Fact]
         public async Task ThrowInvalidSpecificationTypeException_WhenUpdateSpecificationValue_IfCommandTypeInvalid()

@@ -1,5 +1,5 @@
-﻿using PCParts.Application.AbstractionStorage;
-using PCParts.Application.Model.Command;
+﻿using PCParts.Application.Abstraction;
+using PCParts.Application.Command;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.ValidationService;
 using PCParts.Domain.Exceptions;
@@ -45,7 +45,7 @@ public class CategoryService : ICategoryService
         var category = await _categoryStorage.GetCategory(command.Id, cancellationToken);
         if (category is null)
         {
-            throw new CategoryNotFoundException(command.Id);
+            throw new EntityNotFoundException(nameof(category),command.Id);
         }
 
         return await _categoryStorage.UpdateCategory(command, cancellationToken);
@@ -56,7 +56,7 @@ public class CategoryService : ICategoryService
         var category = await _categoryStorage.GetCategory(id, cancellationToken);
         if (category is null)
         {
-            throw new CategoryNotFoundException(id);
+            throw new EntityNotFoundException(nameof(category), id);
         }
 
         if (category.Components.Any())

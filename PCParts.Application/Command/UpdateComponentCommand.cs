@@ -1,3 +1,3 @@
-﻿namespace PCParts.Application.Model.Command;
+﻿namespace PCParts.Application.Command;
 
 public record UpdateComponentCommand(Guid Id, string? Name, Guid? CategoryId);

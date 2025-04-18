@@ -1,6 +1,6 @@
-﻿using PCParts.Application.AbstractionStorage;
+﻿using PCParts.Application.Abstraction;
+using PCParts.Application.Command;
 using PCParts.Application.Helpers;
-using PCParts.Application.Model.Command;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Application.Services.ValidationService;
@@ -36,7 +36,7 @@ public class SpecificationService : ISpecificationService
         var category = await _categoryStorage.GetCategory(categoryId, cancellationToken);
         if (category is null)
         {
-            throw new CategoryNotFoundException(categoryId);
+            throw new EntityNotFoundException(nameof(category), categoryId);
         }
 
         var specifications = await _specificationStorage.GetSpecificationsByCategory(categoryId, cancellationToken);
@@ -51,7 +51,7 @@ public class SpecificationService : ISpecificationService
         var category = await _categoryStorage.GetCategory(command.CategoryId, cancellationToken);
         if (category is null)
         {
-            throw new CategoryNotFoundException(command.CategoryId);
+            throw new EntityNotFoundException(nameof(category), command.CategoryId);
         }
 
         var specification = await _specificationStorage.CreateSpecification(command.CategoryId,
@@ -64,7 +64,7 @@ public class SpecificationService : ISpecificationService
         var specification = await _specificationStorage.GetSpecification(id, new[] { "SpecificationValues" }, cancellationToken);
         if (specification is null)
         {
-            throw new SpecificationNotFoundException(id);
+            throw new EntityNotFoundException(nameof(specification), id);
         }
         if (specification.SpecificationValues is not null)
         {
@@ -82,13 +82,13 @@ public class SpecificationService : ISpecificationService
         var specification = await _specificationStorage.GetSpecification(command.Id, null, cancellationToken);
         if (specification is null)
         {
-            throw new SpecificationNotFoundException(command.Id);
+            throw new EntityNotFoundException(nameof(specification), command.Id);
         }
 
         var specificationValue = await _specificationValueStorage.GetSpecificationValue(specification.Id, null, cancellationToken);
         if (specificationValue is null)
         {
-            throw new SpecificationValueNotFoundException(specification.Id);
+            throw new EntityNotFoundException(nameof(specificationValue), specification.Id);
         }
 
         if (command.Type is not null)

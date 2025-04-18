@@ -2,8 +2,8 @@
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using PCParts.Application.AbstractionStorage;
-using PCParts.Application.Model.Command;
+using PCParts.Application.Abstraction;
+using PCParts.Application.Command;
 using PCParts.Application.Model.Models;
 using PCParts.Storage.Extensions;
 

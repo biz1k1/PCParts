@@ -1,7 +1,7 @@
 ﻿using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;
 
-namespace PCParts.Application.AbstractionStorage;
+namespace PCParts.Application.Abstraction;
 
 public interface IComponentStorage
 {

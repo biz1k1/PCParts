@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
-using PCParts.Application.AbstractionStorage;
-using PCParts.Application.Model.Command;
+using PCParts.Application.Abstraction;
+using PCParts.Application.Command;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;
 using PCParts.Application.Services.ComponentService;
@@ -172,7 +172,7 @@ public class ComponentServiceShould
         getSpecificationByCategory.ReturnsAsync(specification);
 
         await _sut.Invoking(x => x.CreateComponent(command, CancellationToken.None))
-            .Should().ThrowAsync<SpecificationsNotFoundException>();
+            .Should().ThrowAsync<CollectionEntitiesNotFoundException>();
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class ComponentServiceShould
         getComponentSetup.ReturnsAsync(component);
 
         await _sut.Invoking(x => x.UpdateComponent(componentCommand, CancellationToken.None))
-            .Should().ThrowAsync<CategoryNotFoundException>();
+            .Should().ThrowAsync<EntityNotFoundException>();
     }
 
     [Fact]
@@ -197,6 +197,6 @@ public class ComponentServiceShould
         var componentCommand = new UpdateComponentCommand(Guid.Empty, "component", categoryId);
 
         await _sut.Invoking(x => x.UpdateComponent(componentCommand, CancellationToken.None))
-            .Should().ThrowAsync<ComponentNotFoundException>();
+            .Should().ThrowAsync<EntityNotFoundException>();
     }
 }

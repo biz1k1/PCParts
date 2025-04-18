@@ -1,5 +1,5 @@
-﻿using PCParts.Application.AbstractionStorage;
-using PCParts.Application.Model.Command;
+﻿using PCParts.Application.Abstraction;
+using PCParts.Application.Command;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Application.Services.SpecificationService;
@@ -55,7 +55,7 @@ public class ComponentService : IComponentService
             .Except(command.SpecificationValues.Select(x => x.SpecificationId));
         if (missingSpecification.Any())
         {
-            throw new SpecificationsNotFoundException(missingSpecification);
+            throw new CollectionEntitiesNotFoundException(nameof(missingSpecification),missingSpecification);
         }
 
         var component = await _componentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
@@ -69,7 +69,10 @@ public class ComponentService : IComponentService
         await _validationService.Validate(command);
 
         var component = await _componentStorage.GetComponent(command.Id, cancellationToken);
-        if (component is null) throw new ComponentNotFoundException(command.Id);
+        if (component is null)
+        {
+            throw new EntityNotFoundException(nameof(component),command.Id);
+        }
 
         Category? category = null;
         if (command.CategoryId is not null)
@@ -78,7 +81,7 @@ public class ComponentService : IComponentService
             component.Category = category;
             if (category is null)
             {
-                throw new CategoryNotFoundException((Guid)command.CategoryId);
+                throw new EntityNotFoundException(nameof(component), command.Id);
             }
         }
 
@@ -90,7 +93,10 @@ public class ComponentService : IComponentService
     public async Task RemoveComponent(Guid id, CancellationToken cancellationToken)
     {
         var component = await _componentStorage.GetComponent(id, cancellationToken);
-        if (component is null) throw new ComponentNotFoundException(id);
+        if (component is null)
+        {
+            throw new EntityNotFoundException(nameof(component), id);
+        }
         if (component.SpecificationValues.Any())
         {
             throw new RemoveEntityWithChildrenException(nameof(component), nameof(component.SpecificationValues));

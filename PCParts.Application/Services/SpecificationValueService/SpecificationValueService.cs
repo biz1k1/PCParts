@@ -1,6 +1,6 @@
-﻿using PCParts.Application.AbstractionStorage;
+﻿using PCParts.Application.Abstraction;
+using PCParts.Application.Command;
 using PCParts.Application.Helpers;
-using PCParts.Application.Model.Command;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Application.Services.ValidationService;
@@ -38,7 +38,7 @@ public class SpecificationValueService : ISpecificationValueService
         var component = await _componentStorage.GetComponent(componentId, cancellationToken);
         if (component is null)
         {
-            throw new ComponentNotFoundException(componentId);
+            throw new EntityNotFoundException(nameof(component), componentId);
         }
 
         var specificationValue = await _specificationValueStorage.CreateSpecificationValue(component.Id, commands, cancellationToken);
@@ -54,7 +54,7 @@ public class SpecificationValueService : ISpecificationValueService
             new[] { "Specification" }, cancellationToken);
         if (specificationValue is null)
         {
-            throw new SpecificationValueNotFoundException(command.Id);
+            throw new EntityNotFoundException(nameof(specificationValue), command.Id);
         }
 
         var specificationType = specificationValue.Specification.Type;

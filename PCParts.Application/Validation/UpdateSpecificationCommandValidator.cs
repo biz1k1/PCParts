@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
-using PCParts.Application.Model.Command;
 using PCParts.Domain.Exceptions;
 using System.ComponentModel.DataAnnotations;
 using PCParts.Application.Model.Enum;
+using PCParts.Application.Command;
 
 namespace PCParts.Application.Validation;
 

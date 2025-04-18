@@ -15,7 +15,8 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
             {
-                ["ConnectionStrings:pgsql"] = _dbContainer.GetConnectionString()
+                //["ConnectionStrings:pgsql"] = _dbContainer.GetConnectionString(),
+                ["ConnectionStrings:pgsql"] = "Host=localhost; Username=postgres; Password=postgres;Port=5431;Database=pcparts; Pooling=true;"
             }).Build();
         builder.UseConfiguration(configuration);
 

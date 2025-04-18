@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using PCParts.Application.Helpers;
-using PCParts.Application.Model.Command;
 using PCParts.Application.Model.Enum;
 
 

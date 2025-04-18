@@ -2,7 +2,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using PCParts.Application.AbstractionStorage;
+using PCParts.Application.Abstraction;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.CategoryService;
 using PCParts.Application.Services.ComponentService;

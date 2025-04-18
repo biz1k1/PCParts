@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
-using PCParts.Application.AbstractionStorage;
-using PCParts.Application.Model.Command;
+using PCParts.Application.Abstraction;
+using PCParts.Application.Command;
 using PCParts.Application.Model.Enum;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;
@@ -122,7 +122,7 @@ public class SpecificationServiceShould
 
         await _sut.Invoking(x =>
                 x.CreateSpecification(new CreateSpecificationCommand(categoryId, null, SpecificationDataType.STRING), CancellationToken.None))
-            .Should().ThrowAsync<CategoryNotFoundException>();
+            .Should().ThrowAsync<EntityNotFoundException>();
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class SpecificationServiceShould
                 x.UpdateSpecification(
                     new UpdateSpecificationCommand(specificationId, null, SpecificationDataType.STRING),
                     CancellationToken.None))
-            .Should().ThrowAsync<SpecificationNotFoundException>();
+            .Should().ThrowAsync<EntityNotFoundException>();
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class SpecificationServiceShould
 
         await _sut.Invoking(x =>
                 x.UpdateSpecification(new UpdateSpecificationCommand(specificationId, null, SpecificationDataType.STRING), CancellationToken.None))
-            .Should().ThrowAsync<SpecificationValueNotFoundException>();
+            .Should().ThrowAsync<EntityNotFoundException>();
     }
 
     [Fact]
@@ -172,7 +172,7 @@ public class SpecificationServiceShould
 
         await _sut.Invoking(x =>
                 x.UpdateSpecification(new UpdateSpecificationCommand(specificationId, null, null), CancellationToken.None))
-            .Should().ThrowAsync<SpecificationValueNotFoundException>();
+            .Should().ThrowAsync<EntityNotFoundException>();
     }
 
     [Fact]
@@ -180,7 +180,7 @@ public class SpecificationServiceShould
     {
         await _sut.Invoking(x =>
                 x.GetSpecificationsByCategory(Guid.Empty, CancellationToken.None))
-            .Should().ThrowAsync<CategoryNotFoundException>();
+            .Should().ThrowAsync<EntityNotFoundException>();
     }
 
     [Fact]
@@ -188,7 +188,7 @@ public class SpecificationServiceShould
     {
         await _sut.Invoking(x =>
                 x.RemoveSpecification(Guid.Empty, CancellationToken.None))
-            .Should().ThrowAsync<SpecificationNotFoundException>();
+            .Should().ThrowAsync<EntityNotFoundException>();
     }
 
     [Fact]

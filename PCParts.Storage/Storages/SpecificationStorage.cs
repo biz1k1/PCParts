@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using PCParts.Application.AbstractionStorage;
+using PCParts.Application.Abstraction;
 using PCParts.Application.Model.Enum;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;

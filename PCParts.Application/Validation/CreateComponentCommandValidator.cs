@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using PCParts.Application.Model.Command;
+using PCParts.Application.Command;
 using PCParts.Domain.Exceptions;
 
 namespace PCParts.Application.Validation;

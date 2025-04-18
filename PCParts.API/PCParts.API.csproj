@@ -35,8 +35,6 @@
   <ItemGroup>
     <ProjectReference Include="..\PCParts.Application\PCParts.Application.csproj" />
     <ProjectReference Include="..\PCParts.DependencyInjection\PCParts.DependencyInjection.csproj" />
-    <ProjectReference Include="..\PCParts.Domain\PCParts.Domain.csproj" />
-    <ProjectReference Include="..\PCParts.Storage\PCParts.Storage.csproj" />
   </ItemGroup>
 
 </Project>

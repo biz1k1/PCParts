@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PCParts.API.Model.Models;
 using PCParts.API.Model.ResponseType;
-using PCParts.Application.Model.Command;
+using PCParts.Application.Command;
 using PCParts.Application.Services.SpecificationValueService;
 
 namespace PCParts.API.Controllers;
