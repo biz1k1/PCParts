@@ -12,11 +12,11 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder().Build();
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("Testing");
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
             {
-                //["ConnectionStrings:pgsql"] = _dbContainer.GetConnectionString(),
-                ["ConnectionStrings:pgsql"] = "Host=localhost; Username=postgres; Password=postgres;Port=5431;Database=pcparts; Pooling=true;"
+                ["ConnectionStrings:pgsql"] = _dbContainer.GetConnectionString(),
             }).Build();
         builder.UseConfiguration(configuration);
 

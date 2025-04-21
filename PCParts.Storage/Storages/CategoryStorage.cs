@@ -39,8 +39,7 @@ public class CategoryStorage : ICategoryStorage
             .AsNoTracking()
             .Where(x => x.Id == categoryId)
             .FirstAsync(cancellationToken);
-        return _mapper.Map<Category>(category);
-        ;
+        return _mapper.Map<Category>(newCategory);
     }
 
     public async Task<IEnumerable<Category>> GetCategories(CancellationToken cancellationToken)
@@ -52,9 +51,8 @@ public class CategoryStorage : ICategoryStorage
         return _mapper.Map<IEnumerable<Category>>(categories);
     }
 
-    public async Task<Category> GetCategory(Guid id, CancellationToken cancellationToken)
+    public async Task<Category> GetCategory(Guid id, string[] includes, CancellationToken cancellationToken)
     {
-        string[] includes = { "Components" };
         var category = await _pgContext.Categories
             .AsNoTracking()
             .Where(x => x.Id == id)
@@ -81,7 +79,6 @@ public class CategoryStorage : ICategoryStorage
 
     public async Task RemoveCategory(Category category, CancellationToken cancellationToken)
     {
-        var d = _mapper.Map<Domain.Entities.Category>(category);
         _pgContext.Categories.Remove(_mapper.Map<Domain.Entities.Category>(category));
         await _pgContext.SaveChangesAsync(cancellationToken);
     }

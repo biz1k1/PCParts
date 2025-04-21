@@ -49,12 +49,12 @@ public class CategoryServiceShould
         var command = new UpdateCategoryCommand(Guid.Parse("a5186d90-49f9-4baf-928b-b2ad117df55a"), "name");
 
         var getCategorySetup = _storage.Setup(x =>
-            x.GetCategory(It.IsAny<Guid>(), CancellationToken.None));
+            x.GetCategory(It.IsAny<Guid>(), It.IsAny<string[]>(), CancellationToken.None));
         getCategorySetup.ReturnsAsync(category);
 
         var actual = await _sut.GetCategory(category.Id, CancellationToken.None);
         actual.Should().BeSameAs(category);
-        _storage.Verify(x => x.GetCategory(category.Id, CancellationToken.None), Times.Once);
+        _storage.Verify(x => x.GetCategory(category.Id, new string[]{"Components"}, CancellationToken.None), Times.Once);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class CategoryServiceShould
             x.UpdateCategory(It.IsAny<UpdateCategoryCommand>(), It.IsAny<CancellationToken>()));
         updateCategorySetup.ReturnsAsync(category);
         var getCategorySetup = _storage.Setup(x =>
-            x.GetCategory(It.IsAny<Guid>(), CancellationToken.None));
+            x.GetCategory(It.IsAny<Guid>(), null, CancellationToken.None));
         getCategorySetup.ReturnsAsync(category);
 
         var actual = await _sut.UpdateCategory(command, CancellationToken.None);

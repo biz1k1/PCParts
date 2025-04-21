@@ -47,7 +47,7 @@ public class SpecificationController : ControllerBase
         return Created("Components/{componentId}", _mapper.Map<Specification>(specification));
     }
 
-    [HttpPatch]
+    [HttpPut]
     [ProducesResponseType(200, Type = typeof(Specification))]
     [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]
     [ProducesResponseType(404, Type = typeof(ErrorResponseBody))]

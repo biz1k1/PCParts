@@ -34,7 +34,8 @@ public class CategoryService : ICategoryService
 
     public async Task<Category?> GetCategory(Guid id, CancellationToken cancellationToken)
     {
-        var category = await _categoryStorage.GetCategory(id, cancellationToken);
+        string[] includes = { "Components" };
+        var category = await _categoryStorage.GetCategory(id, includes, cancellationToken);
         return category;
     }
 
@@ -42,7 +43,7 @@ public class CategoryService : ICategoryService
     {
         await _validationService.Validate(command);
 
-        var category = await _categoryStorage.GetCategory(command.Id, cancellationToken);
+        var category = await _categoryStorage.GetCategory(command.Id, null, cancellationToken);
         if (category is null)
         {
             throw new EntityNotFoundException(nameof(category),command.Id);
@@ -53,7 +54,7 @@ public class CategoryService : ICategoryService
 
     public async Task RemoveCategory(Guid id, CancellationToken cancellationToken)
     {
-        var category = await _categoryStorage.GetCategory(id, cancellationToken);
+        var category = await _categoryStorage.GetCategory(id, null, cancellationToken);
         if (category is null)
         {
             throw new EntityNotFoundException(nameof(category), id);

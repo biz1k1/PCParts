@@ -136,7 +136,7 @@ public class ComponentServiceShould
         updateComponentSetup.ReturnsAsync(component);
 
         var getCategorySetup = _storageCategory.Setup(x =>
-            x.GetCategory(It.IsAny<Guid>(), CancellationToken.None));
+            x.GetCategory(It.IsAny<Guid>(), null, CancellationToken.None));
         getCategorySetup.ReturnsAsync(category);
 
         var getComponentSetup = _storageComponent.Setup(x =>
@@ -151,7 +151,7 @@ public class ComponentServiceShould
         actual.Should().BeSameAs(component);
         _storageComponent.Verify(x => x.UpdateComponent(query, CancellationToken.None), Times.Once);
         _storageComponent.Verify(x => x.GetComponent(component.Id, CancellationToken.None), Times.Once);
-        _storageCategory.Verify(x => x.GetCategory(category.Id, CancellationToken.None), Times.Once);
+        _storageCategory.Verify(x => x.GetCategory(category.Id, null, CancellationToken.None), Times.Once);
     }
 
     [Fact]

@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Application", "PCPa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Application.Tests", "PCParts.Application.Tests\PCParts.Application.Tests.csproj", "{850DE3DB-5853-C2AC-E5DB-48967A95F9E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Storage.Tests", "PCParts.Storage.Tests\PCParts.Storage.Tests.csproj", "{0D7B96E3-4666-C0DF-9A85-2D355F942509}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.API.Tests", "PCParts.Storage.Tests\PCParts.API.Tests.csproj", "{0D7B96E3-4666-C0DF-9A85-2D355F942509}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.DependencyInjection", "PCParts.DependencyInjection\PCParts.DependencyInjection.csproj", "{05E75F50-FFCA-1DA6-9CD9-719C06AFC96D}"
 EndProject

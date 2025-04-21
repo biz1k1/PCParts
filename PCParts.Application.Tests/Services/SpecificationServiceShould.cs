@@ -57,7 +57,7 @@ public class SpecificationServiceShould
             SpecificationDataType.STRING);
 
         var returnComponentSetup = _categoryStorage.Setup(x =>
-                x.GetCategory(categoryId, It.IsAny<CancellationToken>()));
+                x.GetCategory(categoryId, null, It.IsAny<CancellationToken>()));
         returnComponentSetup.ReturnsAsync(component);
         var returnSpecification = _specificationStorage.Setup(x =>
             x.CreateSpecification(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<SpecificationDataType>(), It.IsAny<CancellationToken>()));
@@ -68,7 +68,7 @@ public class SpecificationServiceShould
         _specificationStorage.Verify(x =>
             x.CreateSpecification(categoryId, "spec", SpecificationDataType.STRING, CancellationToken.None), Times.Once);
         _categoryStorage.Verify(x =>
-            x.GetCategory(categoryId, It.IsAny<CancellationToken>()), Times.Once);
+            x.GetCategory(categoryId, null, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

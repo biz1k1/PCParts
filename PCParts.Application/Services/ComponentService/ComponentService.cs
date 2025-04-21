@@ -77,7 +77,7 @@ public class ComponentService : IComponentService
         Category? category = null;
         if (command.CategoryId is not null)
         {
-            category = await _categoryStorage.GetCategory((Guid)command.CategoryId, cancellationToken);
+            category = await _categoryStorage.GetCategory((Guid)command.CategoryId, null, cancellationToken);
             component.Category = category;
             if (category is null)
             {

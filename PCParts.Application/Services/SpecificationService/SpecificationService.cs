@@ -33,7 +33,7 @@ public class SpecificationService : ISpecificationService
     public async Task<IEnumerable<Specification>> GetSpecificationsByCategory(Guid categoryId,
         CancellationToken cancellationToken)
     {
-        var category = await _categoryStorage.GetCategory(categoryId, cancellationToken);
+        var category = await _categoryStorage.GetCategory(categoryId, null, cancellationToken);
         if (category is null)
         {
             throw new EntityNotFoundException(nameof(category), categoryId);
@@ -48,7 +48,7 @@ public class SpecificationService : ISpecificationService
     {
         await _validationService.Validate(command);
 
-        var category = await _categoryStorage.GetCategory(command.CategoryId, cancellationToken);
+        var category = await _categoryStorage.GetCategory(command.CategoryId, null, cancellationToken);
         if (category is null)
         {
             throw new EntityNotFoundException(nameof(category), command.CategoryId);

@@ -26,7 +26,7 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(201, Type = typeof(Category))]
     [ProducesResponseType(404, Type = typeof(ErrorResponseBody))]
     public async Task<IActionResult> CreateCategory(
-        [FromQuery] CreateCategory request,
+        [FromBody] CreateCategory request,
         CancellationToken cancellationToken)
     {
         var command = new CreateCategoryCommand(request.Name);
@@ -53,7 +53,7 @@ public class CategoryController : ControllerBase
         return Ok(_mapper.Map<Category>(category));
     }
 
-    [HttpPatch]
+    [HttpPut]
     [ProducesResponseType(200, Type = typeof(UpdateCategory))]
     [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]
     [ProducesResponseType(404, Type = typeof(ErrorResponseBody))]
