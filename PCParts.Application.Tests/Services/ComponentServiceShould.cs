@@ -22,7 +22,7 @@ public class ComponentServiceShould
     private readonly Mock<ISpecificationService> _specificationService;
     private readonly IComponentService _sut;
     private readonly Mock<IValidationService> _validator;
-    private readonly Mock<ISpecificationStorage> _specificationStorage;
+    private readonly Mock<IUnitOfWork> _unitOfWork;
 
     public ComponentServiceShould()
     {
@@ -32,7 +32,7 @@ public class ComponentServiceShould
         _queryBuilder = new Mock<IQueryBuilderService>();
         _specificationService = new Mock<ISpecificationService>();
         _specificationValueService = new Mock<ISpecificationValueService>();
-        _specificationStorage = new Mock<ISpecificationStorage>();
+        _unitOfWork = new Mock<IUnitOfWork>();
 
 
         _sut = new ComponentService(
@@ -41,7 +41,8 @@ public class ComponentServiceShould
             _validator.Object,
             _queryBuilder.Object,
             _specificationValueService.Object,
-            _specificationService.Object);
+            _specificationService.Object,
+            _unitOfWork.Object);
     }
 
     [Fact]

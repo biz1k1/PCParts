@@ -60,7 +60,7 @@ public class SpecificationValueStorage : ISpecificationValueStorage
         return await _pgContext.Components
             .AsNoTracking()
             .Where(x => x.Id ==componentId)
-            .Select(x=>x.SpecificationValues)
+            .SelectMany(x=>x.SpecificationValues)
             .ProjectTo<SpecificationValue>(_mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
     }

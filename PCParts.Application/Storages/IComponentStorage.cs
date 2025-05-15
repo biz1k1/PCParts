@@ -3,7 +3,7 @@ using PCParts.Application.Model.QueryModel;
 
 namespace PCParts.Application.Abstraction;
 
-public interface IComponentStorage
+public interface IComponentStorage: IStorage
 {
     Task<IEnumerable<Component>> GetComponents(CancellationToken cancellationToken);
     Task<Component> GetComponent(Guid componentId, CancellationToken cancellationToken);

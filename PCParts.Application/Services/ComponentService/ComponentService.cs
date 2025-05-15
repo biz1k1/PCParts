@@ -1,5 +1,6 @@
 ﻿using PCParts.Application.Abstraction;
 using PCParts.Application.Command;
+using PCParts.Application.DomainEvents;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Application.Services.SpecificationService;
@@ -17,6 +18,7 @@ public class ComponentService : IComponentService
     private readonly IValidationService _validationService;
     private readonly ISpecificationValueService _specificationValueService;
     private readonly ISpecificationService _specificationService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public ComponentService(
         IComponentStorage componentStorage,
@@ -24,7 +26,8 @@ public class ComponentService : IComponentService
         IValidationService validationService,
         IQueryBuilderService queryBuilderService,
         ISpecificationValueService specificationValueService,
-        ISpecificationService specificationService)
+        ISpecificationService specificationService,
+        IUnitOfWork unitOfWork)
     {
         _componentStorage = componentStorage;
         _categoryStorage = categoryStorage;
@@ -32,6 +35,7 @@ public class ComponentService : IComponentService
         _queryBuilderService = queryBuilderService;
         _specificationValueService = specificationValueService;
         _specificationService = specificationService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IEnumerable<Component>> GetComponents(CancellationToken cancellationToken)
@@ -49,17 +53,28 @@ public class ComponentService : IComponentService
     public async Task<Component> CreateComponent(CreateComponentCommand command, CancellationToken cancellationToken)
     {
         await _validationService.Validate(command);
+        await using var scope = await _unitOfWork.StartScope(cancellationToken);
 
-        var specifications = await _specificationService.GetSpecificationsByCategory(command.CategoryId,cancellationToken);
+        var specifications = await _specificationService
+            .GetSpecificationsByCategory(command.CategoryId, cancellationToken);
         var missingSpecification = specifications.Select(x => x.Id)
             .Except(command.SpecificationValues.Select(x => x.SpecificationId));
         if (missingSpecification.Any())
         {
-            throw new CollectionEntitiesNotFoundException(nameof(missingSpecification),missingSpecification);
+            throw new CollectionEntitiesNotFoundException(nameof(missingSpecification), missingSpecification);
         }
 
-        var component = await _componentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
-        await _specificationValueService.CreateSpecificationsValues(component.Id, command.SpecificationValues,cancellationToken);
+
+        var createComponentStorage = scope.GetStorage<IComponentStorage>();
+        var createSpecificationsValues = scope.GetStorage<ISpecificationValueService>();
+        var domainEventsStorage = scope.GetStorage<IDomainEventsStorage>();
+
+        var component = await createComponentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
+        var specificationValue = await createSpecificationsValues
+            .CreateSpecificationsValues(component.Id, command.SpecificationValues,cancellationToken);
+        await domainEventsStorage.AddAsync(ComponentDomainEvent.ComponentCreated(component, specificationValue),cancellationToken);
+
+        await scope.Commit(cancellationToken);
 
         return component;
     }

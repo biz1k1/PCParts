@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PCParts.Application.Abstraction;
 using PCParts.Application.Model.Models;
+using PCParts.Application.Model.QueryModel;
 using PCParts.Application.Services.CategoryService;
 using PCParts.Application.Services.ComponentService;
 using PCParts.Application.Services.QueryBuilderService;
@@ -31,8 +32,11 @@ public static class ServiceCollectionExtension
             .AddScoped<ISpecificationValueService, SpecificationValueService>()
             .AddScoped<IValidationService, ValidationService>()
             .AddScoped<IQueryBuilderService, QueryBuilderService>()
+            .AddScoped<IDomainEventsStorage, DomainEventsStorage>()
             .AddDbContextPool<PgContext>(options => options
                 .UseNpgsql(connectionString));
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddAutoMapper(config => config
             .AddMaps(Assembly.GetAssembly(typeof(PgContext))));

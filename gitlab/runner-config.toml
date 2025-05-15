@@ -1,0 +1,32 @@
+concurrent = 1
+check_interval = 0
+connection_max_age = "15m0s"
+shutdown_timeout = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "runner-1"
+  url = "http://gitlab.example.com:8929"
+  id = 37
+  token = "glrt-dDoxCnU6MeZ-IXgbLrhVKz92GVJ1878Q.0w0x2wmhh"
+  token_obtained_at = 2025-04-23T10:29:46Z
+  token_expires_at = 0001-01-01T00:00:00Z
+  executor = "docker"
+  [runners.cache]
+    MaxUploadedArchiveSize = 0
+    [runners.cache.s3]
+    [runners.cache.gcs]
+    [runners.cache.azure]
+  [runners.docker]
+    tls_verify = false
+    image = "mcr.microsoft/dotnet/sdk:8.0"
+    privileged = true
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    volumes = ["/cache", "/var/run/docker.sock:/var/run/docker.sock"]
+    shm_size = 0
+    network_mtu = 0
+    network_mode= 'gitlab'

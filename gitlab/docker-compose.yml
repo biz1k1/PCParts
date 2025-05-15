@@ -1,0 +1,38 @@
+name: 'gitlab'
+
+networks:
+  default:
+    name: 'gitlab'
+
+services:
+  gitlab: 
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab
+    restart: always
+    hostname: 'gitlab.example.com'
+    ports:
+      - '8929:8929'
+      - '2224:22'
+      - '5050:5050'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab.example.com:8929'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+    volumes:
+      - 'gl-config:/etc/gitlab'
+      - 'gl-logs:/var/log/gitlab'
+      - 'gl-data:/var/opt/gitlab'
+    shm_size: '256m'
+  runner-1:
+    image: gitlab/gitlab-runner:latest
+    ports: 
+     - '8093:8093'
+    hostname: 'gitlab.runner-1.com'
+    volumes:
+        - './runner-config.toml:/etc/gitlab-runner/config.toml'
+        - '/var/run/docker.sock:/var/run/docker.sock'
+volumes:
+  gl-config:
+  gl-logs:
+  gl-data:
+    

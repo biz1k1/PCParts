@@ -17,7 +17,7 @@ namespace PCParts.API.Tests
         }
 
         [Fact]
-        public async Task GetComponent()
+        public async Task CreateComponent()
         {
             const string categoryName = "category";
             const string componentName = "component";
