@@ -1,6 +1,6 @@
 networks:
   pcparts_network:
-    driver: bridge
+    external: true
 
 services:
   pcparts.api:

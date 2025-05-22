@@ -29,7 +29,7 @@ namespace PCParts.Storage.Storages
                 CreatedAt = DateTimeOffset.UtcNow,
                 Content = JsonSerializer.Serialize(domainEvent),
                 Type = (Domain.Enum.DomainEventType)domainEvent.Type,
-                ActivityAt = default(DateTimeOffset),
+                ActivityAt = null,
             },cancellationToken);
 
             await _pgContext.SaveChangesAsync(cancellationToken);

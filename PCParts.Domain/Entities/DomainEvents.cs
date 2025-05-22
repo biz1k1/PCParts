@@ -15,7 +15,7 @@ namespace PCParts.Domain.Entities
         public Guid DomainEventId { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DomainEventType Type { get; set; }
-        public DateTimeOffset ActivityAt { get; set; }
+        public DateTimeOffset? ActivityAt { get; set; }
 
         [Required]
         [Column(TypeName = "jsonb")]

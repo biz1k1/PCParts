@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using PCParts.API.Extension.Middleweares;
 using PCParts.API.Extension.Migration;
 using PCParts.DependencyInjection;
-using PCParts.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 

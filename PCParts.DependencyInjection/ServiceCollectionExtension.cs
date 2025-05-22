@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using PCParts.Application.Abstraction;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Model.QueryModel;
@@ -12,8 +13,10 @@ using PCParts.Application.Services.SpecificationService;
 using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
 using PCParts.Storage;
+using PCParts.Storage.BackgroundServices;
 using PCParts.Storage.Mapping;
 using PCParts.Storage.Storages;
+using RabbitMQ.Client;
 
 namespace PCParts.DependencyInjection;
 
@@ -35,7 +38,14 @@ public static class ServiceCollectionExtension
             .AddScoped<IDomainEventsStorage, DomainEventsStorage>()
             .AddDbContextPool<PgContext>(options => options
                 .UseNpgsql(connectionString));
-
+        services.AddHostedService<RabbitMqQueue>();
+        services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory()
+        {
+            HostName = "rabbitmq",
+            Port = 5672,
+            UserName = "guest",
+            Password = "guest"
+        });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddAutoMapper(config => config
