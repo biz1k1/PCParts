@@ -1,13 +1,13 @@
-﻿using PCParts.Application.Command;
-using PCParts.Application.Model.Models;
+﻿using PCParts.Domain.Entities;
+using PCParts.Domain.Specification.Base;
 
-namespace PCParts.Application.Abstraction;
+namespace PCParts.Application.Storages;
 
 public interface ICategoryStorage
 {
-    Task<IEnumerable<Category>> GetCategories(CancellationToken cancellationToken);
-    Task<Category> GetCategory(Guid id,string[] includes, CancellationToken cancellationToken);
+    Task<IEnumerable<Category>> GetCategories(ISpecification<Category> specification, CancellationToken cancellationToken);
+    Task<Category> GetCategory(Guid id, ISpecification<Category> specification, CancellationToken cancellationToken);
     Task<Category> CreateCategory(string name, CancellationToken cancellationToken);
-    Task<Category> UpdateCategory(UpdateCategoryCommand command, CancellationToken cancellationToken);
+    Task<Category> UpdateCategory(Guid id, string name, CancellationToken cancellationToken);
     Task RemoveCategory(Category category, CancellationToken cancellationToken);
 }

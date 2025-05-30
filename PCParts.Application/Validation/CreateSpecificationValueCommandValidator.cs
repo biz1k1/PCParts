@@ -9,7 +9,7 @@ namespace PCParts.Application.Validation
     {
         public CreateSpecificationValueCommandValidator()
         {
-            RuleFor(x => x.SpecificationId)
+            RuleFor(x => x.Id)
                 .NotEmpty().WithErrorCode(ValidationErrorCode.Empty);
             RuleFor(x => x.Value)
                 .Cascade(CascadeMode.Stop)

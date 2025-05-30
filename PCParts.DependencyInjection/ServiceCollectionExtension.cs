@@ -5,13 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PCParts.Application.Abstraction;
 using PCParts.Application.Model.Models;
-using PCParts.Application.Model.QueryModel;
 using PCParts.Application.Services.CategoryService;
 using PCParts.Application.Services.ComponentService;
-using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Application.Services.SpecificationService;
 using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
+using PCParts.Application.Storages;
 using PCParts.Storage;
 using PCParts.Storage.BackgroundServices;
 using PCParts.Storage.Mapping;
@@ -34,7 +33,6 @@ public static class ServiceCollectionExtension
             .AddScoped<ISpecificationValueStorage, SpecificationValueStorage>()
             .AddScoped<ISpecificationValueService, SpecificationValueService>()
             .AddScoped<IValidationService, ValidationService>()
-            .AddScoped<IQueryBuilderService, QueryBuilderService>()
             .AddScoped<IDomainEventsStorage, DomainEventsStorage>()
             .AddDbContextPool<PgContext>(options => options
                 .UseNpgsql(connectionString));

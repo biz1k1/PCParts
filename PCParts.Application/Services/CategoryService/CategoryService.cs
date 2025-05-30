@@ -1,8 +1,10 @@
-﻿using PCParts.Application.Abstraction;
+﻿using AutoMapper;
 using PCParts.Application.Command;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.ValidationService;
+using PCParts.Application.Storages;
 using PCParts.Domain.Exceptions;
+using PCParts.Domain.Specification.Category;
 
 namespace PCParts.Application.Services.CategoryService;
 
@@ -10,33 +12,36 @@ public class CategoryService : ICategoryService
 {
     private readonly ICategoryStorage _categoryStorage;
     private readonly IValidationService _validationService;
+    private readonly IMapper _mapper;
 
     public CategoryService(
         ICategoryStorage categoryStorage,
-        IValidationService validationService)
+        IValidationService validationService,
+        IMapper mapper)
     {
         _categoryStorage = categoryStorage;
         _validationService = validationService;
+        _mapper = mapper;
     }
 
     public async Task<Category> CreateCategory(CreateCategoryCommand command, CancellationToken cancellationToken)
     {
         await _validationService.Validate(command);
         var category = await _categoryStorage.CreateCategory(command.Name, cancellationToken);
-        return category;
+        return _mapper.Map<Category>(category);
     }
 
     public async Task<IEnumerable<Category>> GetCategories(CancellationToken cancellationToken)
     {
-        var categories = await _categoryStorage.GetCategories(cancellationToken);
-        return categories;
+        var categories = await _categoryStorage.GetCategories(null, cancellationToken);
+        return _mapper.Map<IEnumerable<Category>>(categories);
     }
 
     public async Task<Category?> GetCategory(Guid id, CancellationToken cancellationToken)
     {
-        string[] includes = { "Components" };
-        var category = await _categoryStorage.GetCategory(id, includes, cancellationToken);
-        return category;
+        var spec = new CategoryWithComponentSpec();
+        var category = await _categoryStorage.GetCategory(id, spec, cancellationToken);
+        return _mapper.Map<Category>(category);
     }
 
     public async Task<Category> UpdateCategory(UpdateCategoryCommand command, CancellationToken cancellationToken)
@@ -49,7 +54,8 @@ public class CategoryService : ICategoryService
             throw new EntityNotFoundException(nameof(category),command.Id);
         }
 
-        return await _categoryStorage.UpdateCategory(command, cancellationToken);
+        var updatedCategory = await _categoryStorage.UpdateCategory(command.Id, command.Name, cancellationToken);
+        return _mapper.Map<Category>(updatedCategory);
     }
 
     public async Task RemoveCategory(Guid id, CancellationToken cancellationToken)

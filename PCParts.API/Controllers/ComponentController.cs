@@ -66,7 +66,7 @@ public class ComponentController : ControllerBase
         [FromBody] UpdateComponent request,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateComponentCommand(request.Id, request.Name, request.CategoryId);
+        var command = new UpdateComponentCommand(request.Id, request.Name);
         var component = await _componentService.UpdateComponent(command, cancellationToken);
         return Ok(_mapper.Map<Component>(component));
     }

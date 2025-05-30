@@ -1,33 +1,35 @@
-﻿using PCParts.Application.Abstraction;
+﻿using AutoMapper;
 using PCParts.Application.Command;
 using PCParts.Application.Helpers;
 using PCParts.Application.Model.Models;
-using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Application.Services.ValidationService;
+using PCParts.Application.Storages;
 using PCParts.Domain.Exceptions;
+using PCParts.Domain.Specification.Component;
+using PCParts.Domain.Specification.Specification;
 
 namespace PCParts.Application.Services.SpecificationService;
 
 public class SpecificationService : ISpecificationService
 {
     private readonly ICategoryStorage _categoryStorage;
-    private readonly IQueryBuilderService _queryBuilderService;
     private readonly ISpecificationStorage _specificationStorage;
     private readonly ISpecificationValueStorage _specificationValueStorage;
     private readonly IValidationService _validationService;
+    private readonly IMapper _mapper;
 
     public SpecificationService(
         ISpecificationStorage specificationStorage,
         ICategoryStorage categoryStorage,
         ISpecificationValueStorage specificationValueStorage,
         IValidationService validationService,
-        IQueryBuilderService queryBuilderService)
+        IMapper mapper)
     {
         _specificationStorage = specificationStorage;
         _categoryStorage = categoryStorage;
         _specificationValueStorage = specificationValueStorage;
         _validationService = validationService;
-        _queryBuilderService = queryBuilderService;
+        _mapper = mapper;
     }
 
     public async Task<IEnumerable<Specification>> GetSpecificationsByCategory(Guid categoryId,
@@ -40,7 +42,7 @@ public class SpecificationService : ISpecificationService
         }
 
         var specifications = await _specificationStorage.GetSpecificationsByCategory(categoryId, cancellationToken);
-        return specifications;
+        return _mapper.Map<IEnumerable<Specification>>(specifications);
     }
 
     public async Task<Specification> CreateSpecification(CreateSpecificationCommand command,
@@ -55,13 +57,14 @@ public class SpecificationService : ISpecificationService
         }
 
         var specification = await _specificationStorage.CreateSpecification(command.CategoryId,
-            command.Name, command.Type, cancellationToken);
-        return specification;
+            command.Name, (Domain.Enum.SpecificationDataType)command.Type, cancellationToken);
+        return _mapper.Map<Specification>(specification);
     }
 
     public async Task RemoveSpecification(Guid id, CancellationToken cancellationToken)
     {
-        var specification = await _specificationStorage.GetSpecification(id, new[] { "SpecificationValues" }, cancellationToken);
+        var spec = new SpecificationWithSpecificationValueSpec();
+        var specification = await _specificationStorage.GetSpecification(id, spec, cancellationToken);
         if (specification is null)
         {
             throw new EntityNotFoundException(nameof(specification), id);
@@ -100,7 +103,13 @@ public class SpecificationService : ISpecificationService
             }
         }
 
-        var query = _queryBuilderService.BuildSpecificationUpdateQuery(command);
-        return await _specificationStorage.UpdateSpecification(query, cancellationToken);
+        var changes = command.GetType()
+            .GetProperties()
+            .Where(p => p.Name != nameof(UpdateSpecificationCommand.Id)) // исключаем Id
+            .Where(p => p.GetValue(command) != null)
+            .ToDictionary(p => p.Name, p => p.GetValue(command));
+
+        var updatedSpecification = await _specificationStorage.UpdateSpecification(specification, changes, cancellationToken);
+        return _mapper.Map<Specification>(updatedSpecification);
     }
 }

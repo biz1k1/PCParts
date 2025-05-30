@@ -1,53 +1,51 @@
-﻿using PCParts.Application.Abstraction;
+﻿using AutoMapper;
+using PCParts.Application.Abstraction;
 using PCParts.Application.Command;
 using PCParts.Application.DomainEvents;
 using PCParts.Application.Model.Models;
-using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Application.Services.SpecificationService;
 using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
+using PCParts.Application.Storages;
 using PCParts.Domain.Exceptions;
+using PCParts.Domain.Specification.Component;
 
 namespace PCParts.Application.Services.ComponentService;
 
 public class ComponentService : IComponentService
 {
-    private readonly ICategoryStorage _categoryStorage;
     private readonly IComponentStorage _componentStorage;
-    private readonly IQueryBuilderService _queryBuilderService;
     private readonly IValidationService _validationService;
-    private readonly ISpecificationValueService _specificationValueService;
     private readonly ISpecificationService _specificationService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
     public ComponentService(
         IComponentStorage componentStorage,
-        ICategoryStorage categoryStorage,
         IValidationService validationService,
-        IQueryBuilderService queryBuilderService,
-        ISpecificationValueService specificationValueService,
         ISpecificationService specificationService,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IMapper mapper)
     {
         _componentStorage = componentStorage;
-        _categoryStorage = categoryStorage;
         _validationService = validationService;
-        _queryBuilderService = queryBuilderService;
-        _specificationValueService = specificationValueService;
         _specificationService = specificationService;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<IEnumerable<Component>> GetComponents(CancellationToken cancellationToken)
     {
-        var components = await _componentStorage.GetComponents(cancellationToken);
-        return components;
+        var spec = new ComponentWithSpecificationValueWithSpecificationSpec();
+        var components = await _componentStorage.GetComponents(spec, cancellationToken);
+        return _mapper.Map<IEnumerable<Component>>(components);
     }
 
     public async Task<Component> GetComponent(Guid componentId, CancellationToken cancellationToken)
     {
-        var component = await _componentStorage.GetComponent(componentId, cancellationToken);
-        return component;
+        var spec = new ComponentWithSpecificationValueWithSpecificationSpec();
+        var component = await _componentStorage.GetComponent(componentId, spec, cancellationToken);
+        return _mapper.Map<Component>(component);
     }
 
     public async Task<Component> CreateComponent(CreateComponentCommand command, CancellationToken cancellationToken)
@@ -58,56 +56,46 @@ public class ComponentService : IComponentService
         var specifications = await _specificationService
             .GetSpecificationsByCategory(command.CategoryId, cancellationToken);
         var missingSpecification = specifications.Select(x => x.Id)
-            .Except(command.SpecificationValues.Select(x => x.SpecificationId));
+            .Except(command.SpecificationValues.Select(x => x.Id));
+
         if (missingSpecification.Any())
         {
             throw new CollectionEntitiesNotFoundException(nameof(missingSpecification), missingSpecification);
         }
-
 
         var createComponentStorage = scope.GetStorage<IComponentStorage>();
         var createSpecificationsValues = scope.GetStorage<ISpecificationValueService>();
         var domainEventsStorage = scope.GetStorage<IDomainEventsStorage>();
 
         var component = await createComponentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
+        var componentDTO = _mapper.Map<Component>(component);
+
         var specificationValue = await createSpecificationsValues
             .CreateSpecificationsValues(component.Id, command.SpecificationValues,cancellationToken);
-        await domainEventsStorage.AddAsync(ComponentDomainEvent.ComponentCreated(component, specificationValue),cancellationToken);
+        await domainEventsStorage.AddAsync(ComponentDomainEvent.ComponentCreated(componentDTO, specificationValue),cancellationToken);
 
         await scope.Commit(cancellationToken);
 
-        return component;
+        return componentDTO;
     }
 
     public async Task<Component> UpdateComponent(UpdateComponentCommand command, CancellationToken cancellationToken)
     {
         await _validationService.Validate(command);
 
-        var component = await _componentStorage.GetComponent(command.Id, cancellationToken);
+        var component = await _componentStorage.GetComponent(command.Id,null, cancellationToken);
         if (component is null)
         {
             throw new EntityNotFoundException(nameof(component),command.Id);
         }
 
-        Category? category = null;
-        if (command.CategoryId is not null)
-        {
-            category = await _categoryStorage.GetCategory((Guid)command.CategoryId, null, cancellationToken);
-            component.Category = category;
-            if (category is null)
-            {
-                throw new EntityNotFoundException(nameof(component), command.Id);
-            }
-        }
-
-        var query = _queryBuilderService.BuildComponentUpdateQuery(command);
-        var updatedComponent = await _componentStorage.UpdateComponent(query, cancellationToken);
-        return updatedComponent;
+        var updatedComponent = await _componentStorage.UpdateComponent(command.Id, command.Name, cancellationToken);
+        return _mapper.Map<Component>(updatedComponent); 
     }
 
     public async Task RemoveComponent(Guid id, CancellationToken cancellationToken)
     {
-        var component = await _componentStorage.GetComponent(id, cancellationToken);
+        var component = await _componentStorage.GetComponent(id, null, cancellationToken);
         if (component is null)
         {
             throw new EntityNotFoundException(nameof(component), id);

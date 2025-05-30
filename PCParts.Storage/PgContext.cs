@@ -14,4 +14,5 @@ public class PgContext : DbContext
     public DbSet<Specification> Specifications { get; set; }
     public DbSet<SpecificationValue> SpecificationsValue { get; set; }
     public DbSet<DomainEvents> DomainEvents { get; set; }
+    public DbSet<User> Users { get; set; }
 }

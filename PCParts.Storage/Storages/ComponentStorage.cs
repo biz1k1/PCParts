@@ -1,30 +1,26 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Microsoft.EntityFrameworkCore;
-using PCParts.Application.Abstraction;
-using PCParts.Application.Model.Models;
-using PCParts.Application.Model.QueryModel;
+﻿using Microsoft.EntityFrameworkCore;
+using PCParts.Application.Storages;
+using PCParts.Domain.Entities;
+using PCParts.Domain.Specification.Base;
+using PCParts.Storage.Extensions;
 
 namespace PCParts.Storage.Storages;
 
 public class ComponentStorage : IComponentStorage
 {
-    private readonly IMapper _mapper;
     private readonly PgContext _pgContext;
 
     public ComponentStorage(
-        PgContext pgContext,
-        IMapper mapper)
+        PgContext pgContext)
     {
         _pgContext = pgContext;
-        _mapper = mapper;
     }
 
     public async Task<Component> CreateComponent(string name, Guid categoryId, CancellationToken cancellationToken)
     {
         var componentId = Guid.NewGuid();
 
-        var component = new Domain.Entities.Component
+        var component = new Component
         {
             Id = componentId,
             Name = name,
@@ -35,46 +31,49 @@ public class ComponentStorage : IComponentStorage
         await _pgContext.SaveChangesAsync(cancellationToken);
 
         return await _pgContext.Components
-            .AsNoTracking()
             .Where(x => x.Id == componentId)
-            .ProjectTo<Component>(_mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
     }
 
-    public async Task<Component> GetComponent(Guid componentId, CancellationToken cancellationToken)
+    public async Task<Component?> GetComponent(
+        Guid componentId, ISpecification<Component> specification, CancellationToken cancellationToken)
     {
-        var component = await _pgContext.Components
-            .AsNoTracking()
+        return await _pgContext.Components
             .Where(x => x.Id == componentId)
-            .Include(x => x.SpecificationValues)
-            .ThenInclude(x => x.Specification)
+            .ApplySpecification(specification)
             .FirstOrDefaultAsync(x => x.Id == componentId, cancellationToken);
-        return _mapper.Map<Component>(component);
     }
 
-    public async Task<IEnumerable<Component>> GetComponents(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Component>> GetComponents(
+        ISpecification<Component> specification, CancellationToken cancellationToken)
     {
-        var components = await _pgContext.Components
+        var e = await _pgContext.Components
             .AsNoTracking()
-            .Include(x => x.SpecificationValues)
-            .ThenInclude(x => x.Specification)
+            .ApplySpecification(specification)
             .ToArrayAsync(cancellationToken);
-        return _mapper.Map<Component[]>(components);
+        return e;
     }
 
-    public async Task<Component> UpdateComponent(UpdateQuery query, CancellationToken cancellationToken)
+    public async Task<Component> UpdateComponent(Guid id, string name, CancellationToken cancellationToken)
     {
-        await _pgContext.Database.ExecuteSqlRawAsync(query.Query, query.Parameters);
+        var component = new Component()
+        {
+            Id = id,
+            Name = name
+        };
+
+        _pgContext.Components.Attach(component);
+        _pgContext.Entry(component).Property(c => c.Name).IsModified = true;
+
         return await _pgContext.Components
             .AsNoTracking()
-            .Where(x => x.Id == query.Id)
-            .ProjectTo<Component>(_mapper.ConfigurationProvider)
+            .Where(x => x.Id == id)
             .FirstAsync(cancellationToken);
     }
 
     public async Task RemoveComponent(Component component, CancellationToken cancellationToken)
     {
-        _pgContext.Components.Remove(_mapper.Map<Domain.Entities.Component>(component));
+        _pgContext.Components.Remove(component);
         await _pgContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -42,7 +42,7 @@ namespace PCParts.Application.Tests.Validation
             var validCommand = new CreateSpecificationValueCommand(Guid.NewGuid(), "Value");
             var outOfLength = "A".PadRight(51, 'A');
 
-            yield return new object[] { validCommand with { SpecificationId = Guid.Empty } };
+            yield return new object[] { validCommand with { Id = Guid.Empty } };
             yield return new object[] { validCommand with { Value = String.Empty} };
             yield return new object[] { validCommand with { Value = outOfLength } };
         }

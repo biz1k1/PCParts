@@ -1,33 +1,31 @@
-﻿using PCParts.Application.Abstraction;
+﻿using AutoMapper;
 using PCParts.Application.Command;
 using PCParts.Application.Helpers;
 using PCParts.Application.Model.Models;
-using PCParts.Application.Services.QueryBuilderService;
 using PCParts.Application.Services.ValidationService;
+using PCParts.Application.Storages;
 using PCParts.Domain.Exceptions;
+using PCParts.Domain.Specification.SpecificationValue;
 
 namespace PCParts.Application.Services.SpecificationValueService;
 
 public class SpecificationValueService : ISpecificationValueService
 {
     private readonly IComponentStorage _componentStorage;
-    private readonly IQueryBuilderService _queryBuilderService;
     private readonly ISpecificationValueStorage _specificationValueStorage;
     private readonly IValidationService _validationService;
-    private readonly ISpecificationStorage _specificationStorage;
+    private readonly IMapper _mapper;
 
     public SpecificationValueService(
         IComponentStorage componentStorage,
         ISpecificationValueStorage specificationValueStorage,
         IValidationService validationService,
-        IQueryBuilderService queryBuilderService,
-        ISpecificationStorage specificationStorage)
+        IMapper mapper)
     {
         _specificationValueStorage = specificationValueStorage;
         _componentStorage = componentStorage;
         _validationService = validationService;
-        _queryBuilderService = queryBuilderService;
-        _specificationStorage = specificationStorage;
+        _mapper = mapper;
     }
 
     public async Task<SpecificationValue> CreateSpecificationsValues(Guid componentId,
@@ -35,14 +33,18 @@ public class SpecificationValueService : ISpecificationValueService
     {
         await _validationService.Validate(commands);
 
-        var component = await _componentStorage.GetComponent(componentId, cancellationToken);
+        var component = await _componentStorage.GetComponent(componentId, null, cancellationToken);
         if (component is null)
         {
             throw new EntityNotFoundException(nameof(component), componentId);
         }
 
-        var specificationValue = await _specificationValueStorage.CreateSpecificationValue(component.Id, commands, cancellationToken);
-        return specificationValue;
+        var values = commands.Select(
+            dto => _mapper.Map<Domain.Entities.SpecificationValue>(commands));
+        var specificationValue = await _specificationValueStorage.
+            CreateSpecificationValue(component.Id, values, cancellationToken);
+
+        return _mapper.Map<SpecificationValue>(specificationValue);
     }
 
     public async Task<SpecificationValue> UpdateSpecificationValue(UpdateSpecificationValueCommand command,
@@ -50,22 +52,31 @@ public class SpecificationValueService : ISpecificationValueService
     {
         await _validationService.Validate(command);
 
+        var spec = new SpecificationValueWithSpecificationSpec();
         var specificationValue = await _specificationValueStorage.GetSpecificationValue(command.Id, 
-            new[] { "Specification" }, cancellationToken);
+            spec, cancellationToken);
+
         if (specificationValue is null)
         {
             throw new EntityNotFoundException(nameof(specificationValue), command.Id);
         }
 
-        var specificationType = specificationValue.Specification.Type;
-        var validType = ValidationHelper.IsValueValid(specificationType, command?.Value?.ToString() ?? string.Empty);
+        var dto = _mapper.Map<SpecificationValue>(specificationValue);
+        var validType = ValidationHelper.IsValueValid(dto.Specification.Type, command?.Value?.ToString() ?? string.Empty);
         if (!validType)
         {
-            throw new InvalidSpecificationTypeException(command.Value,specificationType.ToString());
+            throw new InvalidSpecificationTypeException(command.Value, dto.ToString());
         }
 
-        var query = _queryBuilderService.BuildSpecificationValueUpdateQuery(command);
-        var updatedSpecificationValue = await _specificationValueStorage.UpdateSpecificationValue(query, cancellationToken);
-        return updatedSpecificationValue;
+        var changes = new Dictionary<string, object>()
+        {
+            [nameof(command.Value)] = command.Value,
+
+        };
+
+        var updatedSpecificationValue = await _specificationValueStorage
+            .UpdateSpecificationValue(specificationValue, changes, cancellationToken);
+
+        return _mapper.Map<SpecificationValue>(updatedSpecificationValue);
     }
 }
