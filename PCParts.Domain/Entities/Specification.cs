@@ -7,11 +7,10 @@ namespace PCParts.Domain.Entities;
 [Table("Specification")]
 public class Specification
 {
-    [Key] 
-    public Guid Id { get; set; }
+    [Key] public Guid Id { get; set; }
 
-    [MaxLength(50)]
-    public string Name { get; set; }
+    [MaxLength(50)] public string Name { get; set; }
+
     public SpecificationDataType DataType { get; set; }
     public Guid CategoryId { get; set; }
 

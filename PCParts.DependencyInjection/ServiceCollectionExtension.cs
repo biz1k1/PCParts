@@ -2,7 +2,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using PCParts.Application.Abstraction;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.CategoryService;
@@ -37,7 +36,7 @@ public static class ServiceCollectionExtension
             .AddDbContextPool<PgContext>(options => options
                 .UseNpgsql(connectionString));
         services.AddHostedService<RabbitMqQueue>();
-        services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory()
+        services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory
         {
             HostName = "rabbitmq",
             Port = 5672,

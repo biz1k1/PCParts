@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PCParts.Application.Storages;
 using PCParts.Domain.Entities;
 using PCParts.Domain.Enum;
@@ -33,7 +31,7 @@ public class SpecificationStorage : ISpecificationStorage
     {
         var specificationId = Guid.NewGuid();
 
-        var specification = new Domain.Entities.Specification
+        var specification = new Specification
         {
             Id = specificationId,
             Name = name,
@@ -49,7 +47,8 @@ public class SpecificationStorage : ISpecificationStorage
             .FirstAsync(cancellationToken);
     }
 
-    public async Task<Specification?> GetSpecification(Guid id, ISpecification<Specification> spec, CancellationToken cancellationToken)
+    public async Task<Specification?> GetSpecification(Guid id, ISpecification<Specification> spec,
+        CancellationToken cancellationToken)
     {
         return await _pgContext.Specifications
             .Where(x => x.Id == id)

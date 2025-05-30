@@ -1,18 +1,20 @@
 ﻿using System.Globalization;
 using AutoMapper;
-using PCParts.Application.Model.Models;
+using PCParts.Domain.Entities;
 using PCParts.Domain.Enum;
 
-
 namespace PCParts.Storage.Mapping;
-public class Resolver : IValueResolver<PCParts.Domain.Entities.SpecificationValue, SpecificationValue, object>
+
+public class Resolver : IValueResolver<SpecificationValue, Application.Model.Models.SpecificationValue, object>
 {
-    public object Resolve(PCParts.Domain.Entities.SpecificationValue source, SpecificationValue destination, object destMember, ResolutionContext context)
+    public object Resolve(SpecificationValue source, Application.Model.Models.SpecificationValue destination,
+        object destMember, ResolutionContext context)
     {
         if (source.Specification is null)
         {
             return null;
         }
+
         if (source.Specification.DataType is 0)
         {
             return source.Value;
@@ -22,10 +24,12 @@ public class Resolver : IValueResolver<PCParts.Domain.Entities.SpecificationValu
         {
             SpecificationDataType.INT => int.TryParse(source.Value, out var intValue) ? intValue : "Invalid INT",
             SpecificationDataType.STRING => source.Value,
-            SpecificationDataType.DOUBLE => double.TryParse(source.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var doubleValue) ? doubleValue : "Invalid DOUBLE",
+            SpecificationDataType.DOUBLE => double.TryParse(source.Value, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out var doubleValue)
+                ? doubleValue
+                : "Invalid DOUBLE",
             SpecificationDataType.BOOL => bool.TryParse(source.Value, out var boolValue) ? boolValue : "Invalid BOOL",
             _ => source.Value
         };
     }
 }
-

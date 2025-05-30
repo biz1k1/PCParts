@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
 
 namespace PCParts.Storage.Tests;
@@ -10,18 +9,6 @@ namespace PCParts.Storage.Tests;
 public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder().Build();
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.UseEnvironment("Testing");
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                ["ConnectionStrings:pgsql"] = _dbContainer.GetConnectionString(),
-            }).Build();
-        builder.UseConfiguration(configuration);
-
-        base.ConfigureWebHost(builder);
-    }
 
     public async Task InitializeAsync()
     {
@@ -32,5 +19,17 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
     }
 
     public new async Task DisposeAsync() => await _dbContainer.DisposeAsync();
-}
 
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.UseEnvironment("Testing");
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["ConnectionStrings:pgsql"] = _dbContainer.GetConnectionString()
+            }).Build();
+        builder.UseConfiguration(configuration);
+
+        base.ConfigureWebHost(builder);
+    }
+}

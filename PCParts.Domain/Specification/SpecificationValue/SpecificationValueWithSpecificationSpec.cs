@@ -1,23 +1,17 @@
-﻿using PCParts.Domain.Specification.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
+using PCParts.Domain.Specification.Base;
 
-namespace PCParts.Domain.Specification.SpecificationValue
+namespace PCParts.Domain.Specification.SpecificationValue;
+
+public class SpecificationValueWithSpecificationSpec : Specification<Entities.SpecificationValue>
 {
-    public class SpecificationValueWithSpecificationSpec: Specification<Entities.SpecificationValue>
+    public SpecificationValueWithSpecificationSpec()
     {
-        public SpecificationValueWithSpecificationSpec()
-        {
-            AddInclude(c => c.Specification);
-        }
+        AddInclude(c => c.Specification);
+    }
 
-        public override Expression<Func<Entities.SpecificationValue, bool>> ToExpression()
-        {
-            return c => true;
-        }
+    public override Expression<Func<Entities.SpecificationValue, bool>> ToExpression()
+    {
+        return c => true;
     }
 }

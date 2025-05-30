@@ -56,7 +56,7 @@ public class ComponentStorage : IComponentStorage
 
     public async Task<Component> UpdateComponent(Guid id, string name, CancellationToken cancellationToken)
     {
-        var component = new Component()
+        var component = new Component
         {
             Id = id,
             Name = name

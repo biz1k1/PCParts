@@ -1,43 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using PCParts.Application.Storages;
 using PCParts.Domain.Entities;
 
-namespace PCParts.Storage.Storages
+namespace PCParts.Storage.Storages;
+
+public class UserStorage : IUserStorage
 {
-    public class UserStorage:IUserStorage
+    private readonly IMapper _mapper;
+    private readonly PgContext _pgContext;
+
+    public UserStorage(
+        PgContext pgContext,
+        IMapper mapper)
     {
-        private readonly PgContext _pgContext;
-        private readonly IMapper _mapper;
+        _pgContext = pgContext;
+        _mapper = mapper;
+    }
 
-        public UserStorage(
-            PgContext pgContext,
-            IMapper mapper)
+    public async Task<User?> CreateUser(Guid id, string phone, string phoneConfirmed,
+        string passwordHash, DateTimeOffset createdAt, CancellationToken cancellationToken)
+    {
+        var user = new User
         {
-            _pgContext = pgContext;
-            _mapper = mapper;
-        }
+            Id = id,
+            Phone = phone,
+            PhoneConfirmed = false,
+            PasswordHash = passwordHash,
+            CreatedAt = createdAt
+        };
 
-        public async Task<User?> CreateUser(Guid id, string phone, string phoneConfirmed,
-            string passwordHash, DateTimeOffset createdAt, CancellationToken cancellationToken)
-        {
-            var user = new User()
-            {
-                Id = id,
-                Phone = phone,
-                PhoneConfirmed = false,
-                PasswordHash = passwordHash,
-                CreatedAt = createdAt
-            };
-
-            _pgContext.Users.Add(user);
-            await _pgContext.SaveChangesAsync(cancellationToken);
-            return await _pgContext.Users.FindAsync(user.Id);
-        }
+        _pgContext.Users.Add(user);
+        await _pgContext.SaveChangesAsync(cancellationToken);
+        return await _pgContext.Users.FindAsync(user.Id);
     }
 }

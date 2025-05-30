@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
-using PCParts.Domain.Exceptions;
-using System.ComponentModel.DataAnnotations;
-using PCParts.Application.Model.Enum;
 using PCParts.Application.Command;
+using PCParts.Application.Model.Enum;
+using PCParts.Domain.Exceptions;
 
 namespace PCParts.Application.Validation;
 
@@ -11,7 +10,7 @@ public class UpdateSpecificationCommandValidator : AbstractValidator<UpdateSpeci
     public UpdateSpecificationCommandValidator()
     {
         RuleFor(x => x)
-            .Must(x => !string.IsNullOrWhiteSpace(x.Name) || 
+            .Must(x => !string.IsNullOrWhiteSpace(x.Name) ||
                        (x.Type.HasValue && Enum.IsDefined(typeof(SpecificationDataType), x.Type)))
             .WithErrorCode(ValidationErrorCode.Empty);
         RuleFor(x => x.Id).NotEmpty().WithErrorCode(ValidationErrorCode.Empty);

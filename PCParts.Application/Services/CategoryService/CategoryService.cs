@@ -11,8 +11,8 @@ namespace PCParts.Application.Services.CategoryService;
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryStorage _categoryStorage;
-    private readonly IValidationService _validationService;
     private readonly IMapper _mapper;
+    private readonly IValidationService _validationService;
 
     public CategoryService(
         ICategoryStorage categoryStorage,
@@ -51,7 +51,7 @@ public class CategoryService : ICategoryService
         var category = await _categoryStorage.GetCategory(command.Id, null, cancellationToken);
         if (category is null)
         {
-            throw new EntityNotFoundException(nameof(category),command.Id);
+            throw new EntityNotFoundException(nameof(category), command.Id);
         }
 
         var updatedCategory = await _categoryStorage.UpdateCategory(command.Id, command.Name, cancellationToken);

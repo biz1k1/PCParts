@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace PCParts.Domain.Enum;
 
-namespace PCParts.Domain.Enum
+public enum DomainEventType
 {
-    public enum DomainEventType
-    {
-        ComponentCreated=100,
-        ComponentUpdated=101,
-        ComponentDeleted=102,
+    ComponentCreated = 100,
+    ComponentUpdated = 101,
+    ComponentDeleted = 102,
 
-        SpecificationValueCreated=200,
-        SpecificationValueUpdated=201,
-        SpecificationValueDeleted=202,
-    }
+    SpecificationValueCreated = 200,
+    SpecificationValueUpdated = 201,
+    SpecificationValueDeleted = 202
 }

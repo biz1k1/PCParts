@@ -35,19 +35,21 @@ public class UpdateSpecificationCommandValidatorShould
 
     public static IEnumerable<object[]> GetInvalidCommands()
     {
-        var validCommand = new UpdateSpecificationCommand(Guid.NewGuid(), "Specification", SpecificationDataType.STRING);
+        var validCommand =
+            new UpdateSpecificationCommand(Guid.NewGuid(), "Specification", SpecificationDataType.STRING);
         var outOfLength = "A".PadRight(51, 'A');
 
         yield return new object[] { validCommand with { Id = Guid.Empty } };
-        yield return new object[] { validCommand with { Name = String.Empty, Type = 0} };
+        yield return new object[] { validCommand with { Name = string.Empty, Type = 0 } };
         yield return new object[] { validCommand with { Name = outOfLength } };
         yield return new object[] { validCommand with { Type = 0 } };
     }
 
     public static IEnumerable<object[]> GetValidCommands()
     {
-        var validCommand = new UpdateSpecificationCommand(Guid.NewGuid(), "Specification", SpecificationDataType.STRING);
+        var validCommand =
+            new UpdateSpecificationCommand(Guid.NewGuid(), "Specification", SpecificationDataType.STRING);
         yield return new object[] { validCommand };
-        yield return new object[] { validCommand with { Name = string.Empty} };
+        yield return new object[] { validCommand with { Name = string.Empty } };
     }
 }

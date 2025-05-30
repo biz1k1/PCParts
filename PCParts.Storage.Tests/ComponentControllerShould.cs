@@ -1,15 +1,15 @@
-﻿using PCParts.Storage.Tests;
-using FluentAssertions;
+﻿using System.Net;
 using System.Net.Http.Json;
-using System.Net;
-using Newtonsoft.Json.Linq;
-using PCParts.Application.Model.Enum;
+using FluentAssertions;
+using PCParts.API.Model.Models;
+using PCParts.Storage.Tests;
 
 namespace PCParts.API.Tests
 {
-    public class ComponentControllerShould: IClassFixture<ApiWebApplicationFactory>
+    public class ComponentControllerShould : IClassFixture<ApiWebApplicationFactory>
     {
         private readonly ApiWebApplicationFactory _factory;
+
         public ComponentControllerShould(
             ApiWebApplicationFactory factory)
         {
@@ -29,15 +29,15 @@ namespace PCParts.API.Tests
                 JsonContent.Create(new { Name = categoryName }));
             responseCategory.StatusCode.Should().Be(HttpStatusCode.Created);
 
-            var category = await responseCategory.Content.ReadFromJsonAsync<API.Model.Models.Category>();
-            
+            var category = await responseCategory.Content.ReadFromJsonAsync<Category>();
+
             category
                 .Should().NotBeNull().And
-                .Subject.As<API.Model.Models.Category>().Name.Should().Be(categoryName);
+                .Subject.As<Category>().Name.Should().Be(categoryName);
 
 
             using var responseSpecification = await httpClient.PostAsync("/Specifications",
-                JsonContent.Create(new { Name = specificationName, Type="STRING", CategoryId=category.Id }));
+                JsonContent.Create(new { Name = specificationName, Type = "STRING", CategoryId = category.Id }));
             responseSpecification.StatusCode.Should().Be(HttpStatusCode.Created);
 
             var specification = await responseSpecification.Content.ReadFromJsonAsync<SpecificationResponse>();
@@ -48,29 +48,26 @@ namespace PCParts.API.Tests
 
             using var responseComponent = await httpClient.PostAsync("/Components",
                 JsonContent.Create(new
+                {
+                    name = componentName,
+                    categoryId = category.Id,
+                    specificationValues = new object[]
                     {
-                        name=componentName,
-                        categoryId=category.Id,
-                        specificationValues= new object[]
+                        new
                         {
-                            new
-                            {
-                                specificationId = specification.Id,  
-                                value = "valueString"                
-                            }
+                            specificationId = specification.Id,
+                            value = "valueString"
                         }
+                    }
                 }));
 
             responseComponent.StatusCode.Should().Be(HttpStatusCode.Created);
 
-            var component = await responseComponent.Content.ReadFromJsonAsync<API.Model.Models.Component>();
+            var component = await responseComponent.Content.ReadFromJsonAsync<Component>();
             component
                 .Should().NotBeNull().And
-                .Subject.As<API.Model.Models.Component>().Name.Should().Be(componentName);
-
-
+                .Subject.As<Component>().Name.Should().Be(componentName);
         }
-
     }
 }
 

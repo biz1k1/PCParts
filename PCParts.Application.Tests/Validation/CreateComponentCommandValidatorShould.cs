@@ -35,19 +35,20 @@ public class CreateComponentCommandValidatorShould
     public static IEnumerable<object[]> GetInvalidCommands()
     {
         var validCommand = new CreateComponentCommand("Name", Guid.NewGuid(),
-            new List<CreateSpecificationValueCommand>(){ new CreateSpecificationValueCommand(Guid.Empty, string.Empty) });
+            new List<CreateSpecificationValueCommand> { new(Guid.Empty, string.Empty) });
         var outOfLength = "A".PadRight(51, 'A');
 
         yield return new object[] { validCommand with { CategoryId = Guid.Empty } };
         yield return new object[] { validCommand with { Name = string.Empty } };
         yield return new object[] { validCommand with { Name = outOfLength } };
-        yield return new object[] { validCommand with { SpecificationValues =new List<CreateSpecificationValueCommand>() } };
+        yield return new object[]
+            { validCommand with { SpecificationValues = new List<CreateSpecificationValueCommand>() } };
     }
 
     public static IEnumerable<object[]> GetValidCommands()
     {
         var validCommand = new CreateComponentCommand("Name", Guid.NewGuid(),
-            new List<CreateSpecificationValueCommand>(){ new CreateSpecificationValueCommand(Guid.Empty, string.Empty) });
+            new List<CreateSpecificationValueCommand> { new(Guid.Empty, string.Empty) });
         yield return new object[] { validCommand };
     }
 }

@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PCParts.Application.Storages;
 using PCParts.Domain.Entities;
 using PCParts.Domain.Specification.Base;
@@ -47,7 +45,8 @@ public class CategoryStorage : ICategoryStorage
         return categories;
     }
 
-    public async Task<Category?> GetCategory(Guid id, ISpecification<Category> specification, CancellationToken cancellationToken)
+    public async Task<Category?> GetCategory(Guid id, ISpecification<Category> specification,
+        CancellationToken cancellationToken)
     {
         var category = await _pgContext.Categories
             .Where(x => x.Id == id)
@@ -58,10 +57,10 @@ public class CategoryStorage : ICategoryStorage
 
     public async Task<Category> UpdateCategory(Guid id, string name, CancellationToken cancellationToken)
     {
-        var category = new Category()
+        var category = new Category
         {
             Id = id,
-            Name = name,
+            Name = name
         };
 
         _pgContext.Categories.Attach(category);

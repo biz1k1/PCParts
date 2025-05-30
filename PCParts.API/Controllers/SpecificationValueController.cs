@@ -21,6 +21,7 @@ public class SpecificationValueController : ControllerBase
         _specificationValueService = specificationValueService;
         _mapper = mapper;
     }
+
     [HttpPatch]
     [ProducesResponseType(201, Type = typeof(SpecificationValue))]
     [ProducesResponseType(400, Type = typeof(ValidationResponseBody))]

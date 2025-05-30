@@ -15,10 +15,10 @@ namespace PCParts.Application.Services.ComponentService;
 public class ComponentService : IComponentService
 {
     private readonly IComponentStorage _componentStorage;
-    private readonly IValidationService _validationService;
+    private readonly IMapper _mapper;
     private readonly ISpecificationService _specificationService;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
+    private readonly IValidationService _validationService;
 
     public ComponentService(
         IComponentStorage componentStorage,
@@ -67,12 +67,14 @@ public class ComponentService : IComponentService
         var createSpecificationsValues = scope.GetStorage<ISpecificationValueService>();
         var domainEventsStorage = scope.GetStorage<IDomainEventsStorage>();
 
-        var component = await createComponentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
+        var component =
+            await createComponentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
         var componentDTO = _mapper.Map<Component>(component);
 
         var specificationValue = await createSpecificationsValues
-            .CreateSpecificationsValues(component.Id, command.SpecificationValues,cancellationToken);
-        await domainEventsStorage.AddAsync(ComponentDomainEvent.ComponentCreated(componentDTO, specificationValue),cancellationToken);
+            .CreateSpecificationsValues(component.Id, command.SpecificationValues, cancellationToken);
+        await domainEventsStorage.AddAsync(ComponentDomainEvent.ComponentCreated(componentDTO, specificationValue),
+            cancellationToken);
 
         await scope.Commit(cancellationToken);
 
@@ -83,14 +85,14 @@ public class ComponentService : IComponentService
     {
         await _validationService.Validate(command);
 
-        var component = await _componentStorage.GetComponent(command.Id,null, cancellationToken);
+        var component = await _componentStorage.GetComponent(command.Id, null, cancellationToken);
         if (component is null)
         {
-            throw new EntityNotFoundException(nameof(component),command.Id);
+            throw new EntityNotFoundException(nameof(component), command.Id);
         }
 
         var updatedComponent = await _componentStorage.UpdateComponent(command.Id, command.Name, cancellationToken);
-        return _mapper.Map<Component>(updatedComponent); 
+        return _mapper.Map<Component>(updatedComponent);
     }
 
     public async Task RemoveComponent(Guid id, CancellationToken cancellationToken)
@@ -100,6 +102,7 @@ public class ComponentService : IComponentService
         {
             throw new EntityNotFoundException(nameof(component), id);
         }
+
         if (component.SpecificationValues.Any())
         {
             throw new RemoveEntityWithChildrenException(nameof(component), nameof(component.SpecificationValues));

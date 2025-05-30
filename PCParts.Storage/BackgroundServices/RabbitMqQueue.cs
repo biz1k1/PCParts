@@ -23,7 +23,7 @@ public class RabbitMqQueue : BackgroundService
         await Task.Yield();
 
         await using var connection = await _connectionFactory.CreateConnectionAsync(stoppingToken);
-        await using var channel = await connection.CreateChannelAsync(cancellationToken:stoppingToken);
+        await using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
         await channel.ExchangeDeclareAsync(
             exchange: "pcparts.events",

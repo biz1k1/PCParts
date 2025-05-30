@@ -12,9 +12,9 @@ namespace PCParts.Application.Services.SpecificationValueService;
 public class SpecificationValueService : ISpecificationValueService
 {
     private readonly IComponentStorage _componentStorage;
+    private readonly IMapper _mapper;
     private readonly ISpecificationValueStorage _specificationValueStorage;
     private readonly IValidationService _validationService;
-    private readonly IMapper _mapper;
 
     public SpecificationValueService(
         IComponentStorage componentStorage,
@@ -41,8 +41,8 @@ public class SpecificationValueService : ISpecificationValueService
 
         var values = commands.Select(
             dto => _mapper.Map<Domain.Entities.SpecificationValue>(commands));
-        var specificationValue = await _specificationValueStorage.
-            CreateSpecificationValue(component.Id, values, cancellationToken);
+        var specificationValue =
+            await _specificationValueStorage.CreateSpecificationValue(component.Id, values, cancellationToken);
 
         return _mapper.Map<SpecificationValue>(specificationValue);
     }
@@ -53,7 +53,7 @@ public class SpecificationValueService : ISpecificationValueService
         await _validationService.Validate(command);
 
         var spec = new SpecificationValueWithSpecificationSpec();
-        var specificationValue = await _specificationValueStorage.GetSpecificationValue(command.Id, 
+        var specificationValue = await _specificationValueStorage.GetSpecificationValue(command.Id,
             spec, cancellationToken);
 
         if (specificationValue is null)
@@ -62,16 +62,15 @@ public class SpecificationValueService : ISpecificationValueService
         }
 
         var dto = _mapper.Map<SpecificationValue>(specificationValue);
-        var validType = ValidationHelper.IsValueValid(dto.Specification.Type, command?.Value?.ToString() ?? string.Empty);
+        var validType = ValidationHelper.IsValueValid(dto.Specification.Type, command?.Value ?? string.Empty);
         if (!validType)
         {
             throw new InvalidSpecificationTypeException(command.Value, dto.ToString());
         }
 
-        var changes = new Dictionary<string, object>()
+        var changes = new Dictionary<string, object>
         {
-            [nameof(command.Value)] = command.Value,
-
+            [nameof(command.Value)] = command.Value
         };
 
         var updatedSpecificationValue = await _specificationValueStorage

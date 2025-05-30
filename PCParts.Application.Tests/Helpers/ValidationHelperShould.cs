@@ -2,7 +2,6 @@
 using PCParts.Application.Helpers;
 using PCParts.Application.Model.Enum;
 
-
 namespace PCParts.Application.Tests.Helpers;
 
 public class ValidationHelperShould
@@ -26,7 +25,7 @@ public class ValidationHelperShould
     public static IEnumerable<object[]> GetInvalidCommands()
     {
         var validCommand = new CommandForTestValidationHelper(SpecificationDataType.INT, "text");
-        yield return new object[] { validCommand};
+        yield return new object[] { validCommand };
         yield return new object[] { validCommand with { Type = SpecificationDataType.INT, Value = "10,5" } };
         yield return new object[] { validCommand with { Type = SpecificationDataType.INT, Value = "true" } };
         yield return new object[] { validCommand with { Type = SpecificationDataType.STRING, Value = "10" } };
@@ -44,7 +43,7 @@ public class ValidationHelperShould
     {
         var validCommand = new CommandForTestValidationHelper(SpecificationDataType.STRING, "text");
 
-        yield return new object[] { validCommand};
+        yield return new object[] { validCommand };
         yield return new object[] { validCommand with { Type = SpecificationDataType.INT, Value = "10" } };
         yield return new object[] { validCommand with { Type = SpecificationDataType.BOOL, Value = "true" } };
         yield return new object[] { validCommand with { Type = SpecificationDataType.BOOL, Value = "false" } };

@@ -41,8 +41,8 @@ public class CreateSpecificationCommandValidatorShould
 
         yield return new object[] { validCommand with { Name = string.Empty } };
         yield return new object[] { validCommand with { Name = outOfLength } };
-        yield return new object[] { validCommand with { CategoryId = Guid.Empty }};
-        yield return new object[] { validCommand with { Type = 0}};
+        yield return new object[] { validCommand with { CategoryId = Guid.Empty } };
+        yield return new object[] { validCommand with { Type = 0 } };
     }
 
     public static IEnumerable<object[]> GetValidCommands()
