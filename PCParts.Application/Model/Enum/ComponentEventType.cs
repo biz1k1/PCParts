@@ -1,6 +1,6 @@
 ﻿namespace PCParts.Application.Model.Enum;
 
-public enum ComponentEventType
+public enum DomainEventType
 {
     ComponentCreated = 100,
     ComponentUpdated = 101,
@@ -8,5 +8,9 @@ public enum ComponentEventType
 
     SpecificationValueCreated = 200,
     SpecificationValueUpdated = 201,
-    SpecificationValueDeleted = 202
+    SpecificationValueDeleted = 202,
+
+    PendingUserCreated = 300,
+    PendingUserUpdated = 301,
+    PendingUserDeleted = 302
 }

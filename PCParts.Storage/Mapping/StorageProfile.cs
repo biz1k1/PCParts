@@ -18,5 +18,8 @@ public class StorageProfile : Profile
 
         CreateMap<SpecificationValue, Application.Model.Models.SpecificationValue>()
             .ForMember(dest => dest.Value, opt => opt.MapFrom<Resolver>()).ReverseMap();
+
+        CreateMap<PendingUser, Application.Model.Models.PendingUser>().ReverseMap();
+        CreateMap<Application.Model.Models.PendingUser, PendingUser>();
     }
 }

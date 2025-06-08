@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using PCParts.Application.Abstraction;
+using PCParts.Application.Abstraction.Storage;
 
 namespace PCParts.Storage.Storages;
 

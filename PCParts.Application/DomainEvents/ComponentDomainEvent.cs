@@ -1,29 +1,36 @@
-﻿using PCParts.Application.Model.Enum;
-using PCParts.Application.Model.Models;
+﻿using PCParts.Application.Model.Models;
+using PCParts.Domain.Enum;
 
 namespace PCParts.Application.DomainEvents;
 
-public class ComponentDomainEvent
+public class ComponentDomainEvent:DomainEventBase<ComponentDomainEvent.ComponentPayload>
 {
-    private ComponentDomainEvent()
+    public override DomainEventType EventType => DomainEventType.ComponentCreated;
+    public ComponentDomainEvent(ComponentPayload payload) : base(payload)
     {
     }
 
-    public ComponentEventType Type { get; set; }
-    public Guid ComponentId { get; set; }
-    public ComponentSpecificationValue SpecificationValue { get; set; }
-
-    public static ComponentDomainEvent ComponentCreated(Component component,
-        SpecificationValue specificationValue) => new()
+    public static ComponentDomainEvent EventCreated(Component component,
+        SpecificationValue specificationValue)
     {
-        Type = ComponentEventType.ComponentCreated,
-        ComponentId = component.Id,
-        SpecificationValue = new ComponentSpecificationValue
+        var payload = new ComponentPayload()
         {
-            SpecificationValueId = specificationValue.Id,
-            Value = specificationValue.Value
-        }
-    };
+            ComponentId = component.Id,
+            SpecificationValue = new ComponentSpecificationValue
+            {
+                SpecificationValueId = specificationValue.Id,
+                Value = specificationValue.Value
+            }
+        };
+
+        return new ComponentDomainEvent(payload);
+    }
+
+    public class ComponentPayload
+    {
+        public Guid ComponentId { get; set; }
+        public ComponentSpecificationValue SpecificationValue { get; set; }
+    }
 
     public class ComponentSpecificationValue
     {

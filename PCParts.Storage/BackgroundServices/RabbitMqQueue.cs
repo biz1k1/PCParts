@@ -56,7 +56,7 @@ public class RabbitMqQueue : BackgroundService
 
             foreach (var msg in eventsComponents)
             {
-                var payload = JsonSerializer.Serialize(msg);
+                var payload = msg.Content;
                 var body = Encoding.UTF8.GetBytes(payload);
                 await channel.BasicPublishAsync(
                     exchange: "pcparts.events",

@@ -1,8 +1,7 @@
 ﻿using System.Text.Json;
-using PCParts.Application.Abstraction;
-using PCParts.Application.DomainEvents;
+using PCParts.Application.Abstraction.DomainEvent;
+using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
-using PCParts.Domain.Enum;
 
 namespace PCParts.Storage.Storages;
 
@@ -16,14 +15,14 @@ public class DomainEventsStorage : IDomainEventsStorage
         _pgContext = pgContext;
     }
 
-    public async Task AddAsync(ComponentDomainEvent domainEvent, CancellationToken cancellationToken)
+    public async Task AddAsync(IDomainEvent domainEvent, CancellationToken cancellationToken)
     {
         await _pgContext.AddAsync(new DomainEvents
         {
             DomainEventId = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
-            Content = JsonSerializer.Serialize(domainEvent),
-            Type = (DomainEventType)domainEvent.Type,
+            Content = domainEvent.Content,
+            Type = domainEvent.EventType.ToString(),
             ActivityAt = null
         }, cancellationToken);
 

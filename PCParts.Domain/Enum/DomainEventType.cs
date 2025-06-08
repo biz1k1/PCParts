@@ -2,11 +2,11 @@
 
 public enum DomainEventType
 {
-    ComponentCreated = 100,
-    ComponentUpdated = 101,
-    ComponentDeleted = 102,
+    ComponentCreated = 101,
+    ComponentUpdated = 102,
+    ComponentDeleted = 103,
 
-    SpecificationValueCreated = 200,
-    SpecificationValueUpdated = 201,
-    SpecificationValueDeleted = 202
+    PendingUserCreated = 201,
+    PendingUserUpdated = 202,
+    PendingUserDeleted = 203
 }

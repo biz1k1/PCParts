@@ -1,8 +1,7 @@
-﻿using PCParts.Application.Abstraction;
-using PCParts.Domain.Entities;
+﻿using PCParts.Domain.Entities;
 using PCParts.Domain.Specification.Base;
 
-namespace PCParts.Application.Storages;
+namespace PCParts.Application.Abstraction.Storage;
 
 public interface IComponentStorage : IStorage
 {

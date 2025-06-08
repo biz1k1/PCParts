@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using PCParts.API.Model.Models;
+using PCParts.Domain.Entities;
 
 namespace PCParts.API.Mapping;
 
@@ -17,5 +17,7 @@ public class ApiProfile : Profile
 
         CreateMap<Application.Model.Models.SpecificationValue, SpecificationValue>();
         CreateMap<Application.Model.Models.Component, Component>();
+
+        CreateMap<Application.Model.Models.PendingUser, PendingUser>().ReverseMap();
     }
 }

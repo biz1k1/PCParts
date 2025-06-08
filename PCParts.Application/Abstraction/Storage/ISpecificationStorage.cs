@@ -2,7 +2,7 @@
 using PCParts.Domain.Enum;
 using PCParts.Domain.Specification.Base;
 
-namespace PCParts.Application.Storages;
+namespace PCParts.Application.Abstraction.Storage;
 
 public interface ISpecificationStorage
 {

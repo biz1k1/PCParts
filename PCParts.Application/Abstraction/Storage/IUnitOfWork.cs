@@ -1,4 +1,4 @@
-﻿namespace PCParts.Application.Abstraction;
+﻿namespace PCParts.Application.Abstraction.Storage;
 
 public interface IUnitOfWork
 {

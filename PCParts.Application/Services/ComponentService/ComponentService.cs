@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
-using PCParts.Application.Abstraction;
+using PCParts.Application.Abstraction.Storage;
 using PCParts.Application.Command;
 using PCParts.Application.DomainEvents;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.SpecificationService;
 using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
-using PCParts.Application.Storages;
 using PCParts.Domain.Exceptions;
 using PCParts.Domain.Specification.Component;
 
@@ -67,13 +66,13 @@ public class ComponentService : IComponentService
         var createSpecificationsValues = scope.GetStorage<ISpecificationValueService>();
         var domainEventsStorage = scope.GetStorage<IDomainEventsStorage>();
 
-        var component =
-            await createComponentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
+        var component = await createComponentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
         var componentDTO = _mapper.Map<Component>(component);
 
         var specificationValue = await createSpecificationsValues
             .CreateSpecificationsValues(component.Id, command.SpecificationValues, cancellationToken);
-        await domainEventsStorage.AddAsync(ComponentDomainEvent.ComponentCreated(componentDTO, specificationValue),
+
+        await domainEventsStorage.AddAsync(ComponentDomainEvent.EventCreated(componentDTO, specificationValue),
             cancellationToken);
 
         await scope.Commit(cancellationToken);

@@ -2,15 +2,17 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using PCParts.Application.Abstraction;
+using PCParts.Application.Abstraction.Authentication;
+using PCParts.Application.Abstraction.Storage;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.CategoryService;
 using PCParts.Application.Services.ComponentService;
+using PCParts.Application.Services.PendingUserService;
 using PCParts.Application.Services.SpecificationService;
 using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
-using PCParts.Application.Storages;
 using PCParts.Storage;
+using PCParts.Storage.Authentication;
 using PCParts.Storage.BackgroundServices;
 using PCParts.Storage.Mapping;
 using PCParts.Storage.Storages;
@@ -33,6 +35,10 @@ public static class ServiceCollectionExtension
             .AddScoped<ISpecificationValueService, SpecificationValueService>()
             .AddScoped<IValidationService, ValidationService>()
             .AddScoped<IDomainEventsStorage, DomainEventsStorage>()
+            .AddScoped<IPendingUserService, PendingUserService>()
+            .AddScoped<IPendingUserStorage, PendingUserStorage>()
+            .AddScoped<IUserStorage, UserStorage>()
+            .AddScoped<IPasswordHasher, PasswordHasher>()
             .AddDbContextPool<PgContext>(options => options
                 .UseNpgsql(connectionString));
         services.AddHostedService<RabbitMqQueue>();

@@ -1,36 +1,36 @@
-﻿using AutoMapper;
-using PCParts.Application.Storages;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
 
-namespace PCParts.Storage.Storages;
-
-public class UserStorage : IUserStorage
+namespace PCParts.Storage.Storages
 {
-    private readonly IMapper _mapper;
-    private readonly PgContext _pgContext;
-
-    public UserStorage(
-        PgContext pgContext,
-        IMapper mapper)
+    public class UserStorage : IUserStorage
     {
-        _pgContext = pgContext;
-        _mapper = mapper;
-    }
-
-    public async Task<User?> CreateUser(Guid id, string phone, string phoneConfirmed,
-        string passwordHash, DateTimeOffset createdAt, CancellationToken cancellationToken)
-    {
-        var user = new User
+        private readonly PgContext _pgContext;
+        public UserStorage(
+            PgContext pgContext)
         {
-            Id = id,
-            Phone = phone,
-            PhoneConfirmed = false,
-            PasswordHash = passwordHash,
-            CreatedAt = createdAt
-        };
+            _pgContext = pgContext;
+        }
 
-        _pgContext.Users.Add(user);
-        await _pgContext.SaveChangesAsync(cancellationToken);
-        return await _pgContext.Users.FindAsync(user.Id);
+        public async Task<User?> GetUser(Expression<Func<User, bool>> predicate,
+            CancellationToken cancellationToken)
+        {
+            return await _pgContext.Users
+                .Where(predicate)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<User?> CreateUser(User user, CancellationToken cancellationToken)
+        {
+            user.Id = new Guid();
+
+            await _pgContext.AddAsync(user, cancellationToken);
+            return await _pgContext.Users.FindAsync(user.Id);
+        }
     }
 }
