@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PCParts.Domain.Specification.Base;
 
-namespace PCParts.Storage.Extensions;
+namespace PCParts.Storage.Common.Extensions;
 
 public static class SpecificationEvaluator
 {
@@ -23,7 +23,7 @@ public static class SpecificationEvaluator
         foreach (var (includeExpr, thenIncludeExpr) in spec.ThenIncludes)
         {
             var includable = EntityFrameworkQueryableExtensions.Include(query, (dynamic)includeExpr);
-            query = EntityFrameworkQueryableExtensions.ThenInclude((dynamic)includable, (dynamic)thenIncludeExpr);
+            query = EntityFrameworkQueryableExtensions.ThenInclude(includable, (dynamic)thenIncludeExpr);
         }
 
         return query;

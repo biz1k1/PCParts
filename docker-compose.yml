@@ -39,5 +39,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
+  
+  pcparts.notifications:
+    container_name: pcparts.notification
+    image: pcparts-consumer
+    build:
+      context: .
+      dockerfile: PCParts.Notifications/Dockerfile
+    networks:
+      - pcparts_network 
 

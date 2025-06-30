@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using PCParts.Application.Abstraction.Authentication;
 using PCParts.Application.Abstraction.Storage;
@@ -12,8 +13,9 @@ using PCParts.Application.Services.SpecificationService;
 using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
 using PCParts.Storage;
-using PCParts.Storage.Authentication;
 using PCParts.Storage.BackgroundServices;
+using PCParts.Storage.Common.Authentication;
+using PCParts.Storage.Common.Services.Deduplication;
 using PCParts.Storage.Mapping;
 using PCParts.Storage.Storages;
 using RabbitMQ.Client;
@@ -39,9 +41,11 @@ public static class ServiceCollectionExtension
             .AddScoped<IPendingUserStorage, PendingUserStorage>()
             .AddScoped<IUserStorage, UserStorage>()
             .AddScoped<IPasswordHasher, PasswordHasher>()
+            .AddSingleton<IDeduplicationService,DeduplicationService>()
+            .AddSingleton<IMemoryCache,MemoryCache>()
             .AddDbContextPool<PgContext>(options => options
                 .UseNpgsql(connectionString));
-        services.AddHostedService<RabbitMqQueue>();
+        services.AddHostedService<NotificationPublisher>();
         services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory
         {
             HostName = "rabbitmq",

@@ -3,7 +3,7 @@ using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
 using PCParts.Domain.Enum;
 using PCParts.Domain.Specification.Base;
-using PCParts.Storage.Extensions;
+using PCParts.Storage.Common.Extensions;
 
 namespace PCParts.Storage.Storages;
 

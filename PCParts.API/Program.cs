@@ -20,7 +20,6 @@ builder.Services.AddSwaggerGen(x =>
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     x.IncludeXmlComments(xmlPath);
 });
-
 builder.Services.AddServiceExtensions(builder.Configuration.GetConnectionString("pgsql")!);
 builder.Services.AddAutoMapper(config => config.AddMaps(Assembly.GetExecutingAssembly()));
 //builder.Services.AddApiMetrics();

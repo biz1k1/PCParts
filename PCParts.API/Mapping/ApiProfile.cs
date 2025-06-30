@@ -15,9 +15,10 @@ public class ApiProfile : Profile
             .ForMember(x => x.Id, x => x.MapFrom(x => x.Id))
             .ForMember(x => x.Value, x => x.MapFrom(x => x.Value));
 
-        CreateMap<Application.Model.Models.SpecificationValue, SpecificationValue>();
-        CreateMap<Application.Model.Models.Component, Component>();
+        CreateMap<Application.Model.Models.PendingUser, Model.Models.PendingUser>().ReverseMap();
 
-        CreateMap<Application.Model.Models.PendingUser, PendingUser>().ReverseMap();
+        CreateMap<Application.Model.Models.Category, Model.Models.Category>();
+        CreateMap<Application.Model.Models.Component, Model.Models.Component>();
+        CreateMap<Application.Model.Models.SpecificationValue, Model.Models.SpecificationValue>();
     }
 }

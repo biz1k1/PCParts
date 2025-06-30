@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PCParts.Application.Abstraction.Authentication;
 
-namespace PCParts.Storage.Authentication
+namespace PCParts.Storage.Common.Authentication
 {
     public class PasswordHasher : IPasswordHasher
     {
