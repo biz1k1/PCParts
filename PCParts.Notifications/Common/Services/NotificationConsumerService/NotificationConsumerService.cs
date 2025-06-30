@@ -12,10 +12,10 @@ namespace PCParts.Notifications.Common.Services.NotificationConsumerService;
 
 public class NotificationConsumerService : INotificationConsumerService
 {
-    private IChannel _channel;
+    private const int RETRY_COUNT = 5;
     private readonly Channel<Message> _messageChannel;
     private readonly IRabbitMqInitializer _rabbitMqInitializer;
-    private const int RETRY_COUNT = 5;
+    private IChannel _channel;
 
     public NotificationConsumerService(
         IRabbitMqInitializer rabbitMqInitializer)
@@ -23,8 +23,8 @@ public class NotificationConsumerService : INotificationConsumerService
         _rabbitMqInitializer = rabbitMqInitializer;
         _messageChannel = Channel.CreateBounded<Message>(new BoundedChannelOptions(capacity: 1000)
         {
-            FullMode = BoundedChannelFullMode.Wait,
-        }); 
+            FullMode = BoundedChannelFullMode.Wait
+        });
     }
 
     public async Task StartConsuming(CancellationToken stoppingToken)
@@ -103,7 +103,6 @@ public class NotificationConsumerService : INotificationConsumerService
             case ProcessingResult.PermanentFailure:
                 await _channel.BasicNackAsync(deliveryTag, false, false, stoppingToken);
                 break;
-
         }
     }
 }

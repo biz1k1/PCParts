@@ -1,9 +1,8 @@
 ﻿using RabbitMQ.Client;
 
-namespace PCParts.Notifications.Common.Initializer.Connection
+namespace PCParts.Notifications.Common.Initializer.Connection;
+
+public interface IRabbitMqConnection
 {
-    public interface IRabbitMqConnection
-    {
-        Task<IConnection> GetConnectionAsync(CancellationToken cancellationToken);
-    }
+    Task<IConnection> GetConnectionAsync(CancellationToken cancellationToken);
 }

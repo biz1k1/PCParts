@@ -2,54 +2,56 @@
 using PCParts.Notifications.Common.Services.EmailService;
 using PCParts.Notifications.Common.Services.NotificationConsumerService;
 
-namespace PCParts.Notifications
+namespace PCParts.Notifications;
+
+public class NotificationBackground : BackgroundService
 {
-    public class NotificationBackground:BackgroundService
+    private readonly INotificationConsumerService _notificationConsumerService;
+    private readonly INotificationSenderService _notificationSenderervice;
+
+    public NotificationBackground(
+        INotificationConsumerService notificationConsumerService,
+        INotificationSenderService notificationSenderervice)
     {
-        private readonly INotificationConsumerService _notificationConsumerService;
-        private readonly INotificationSenderService _notificationSenderervice;
-        public NotificationBackground(
-            INotificationConsumerService notificationConsumerService,
-            INotificationSenderService notificationSenderervice)
-        {
-            _notificationConsumerService = notificationConsumerService;
-            _notificationSenderervice = notificationSenderervice;
-        }
-        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            await Task.Yield();
+        _notificationConsumerService = notificationConsumerService;
+        _notificationSenderervice = notificationSenderervice;
+    }
 
-            await _notificationConsumerService.StartConsuming(stoppingToken);
+    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await Task.Yield();
 
-            while (!stoppingToken.IsCancellationRequested)
+        await _notificationConsumerService.StartConsuming(stoppingToken);
+
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
             {
-                try
+                var message = await _notificationConsumerService.GetNotification(stoppingToken);
+                if (!message.Result.ShouldSuccess)
                 {
-                    var message = await _notificationConsumerService.GetNotification(stoppingToken);
-                    if (!message.Result.ShouldSuccess)
-                    {
-                        await _notificationConsumerService.ConfirmMessageProcessingAsync(message.Result, message.DeliveryTag,
-                            stoppingToken);
-                        continue;
-                    }
-
-                    var emailResult = await _notificationSenderervice.Send(message);
-                    if (!emailResult.ShouldSuccess)
-                    {
-                        await _notificationConsumerService.ConfirmMessageProcessingAsync(emailResult, message.DeliveryTag,
-                            stoppingToken);
-                        continue;
-                    }
-
-                    await _notificationConsumerService.ConfirmMessageProcessingAsync(MessageResult.Success(), message.DeliveryTag,
+                    await _notificationConsumerService.ConfirmMessageProcessingAsync(message.Result,
+                        message.DeliveryTag,
                         stoppingToken);
-
-                    await Task.Delay(10, stoppingToken);
+                    continue;
                 }
-                catch (Exception)
+
+                var emailResult = await _notificationSenderervice.Send(message);
+                if (!emailResult.ShouldSuccess)
                 {
-
+                    await _notificationConsumerService.ConfirmMessageProcessingAsync(emailResult, message.DeliveryTag,
+                        stoppingToken);
+                    continue;
                 }
+
+                await _notificationConsumerService.ConfirmMessageProcessingAsync(MessageResult.Success(),
+                    message.DeliveryTag,
+                    stoppingToken);
+
+                await Task.Delay(10, stoppingToken);
+            }
+            catch (Exception)
+            {
             }
         }
     }

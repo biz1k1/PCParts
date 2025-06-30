@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,14 +10,14 @@ namespace PCParts.Storage.BackgroundServices;
 
 public class NotificationPublisher : BackgroundService
 {
-    private IConnection _connection;
-    private IChannel _channel;
     private readonly IConnectionFactory _connectionFactory;
-    private readonly IServiceScopeFactory _scopeFactory;
     private readonly IDeduplicationService _deduplicationService;
+    private readonly IServiceScopeFactory _scopeFactory;
+    private IChannel _channel;
+    private IConnection _connection;
 
     public NotificationPublisher(
-        IServiceScopeFactory scopeFactory, 
+        IServiceScopeFactory scopeFactory,
         IConnectionFactory connectionFactory,
         IDeduplicationService deduplicationService)
     {
@@ -33,13 +31,13 @@ public class NotificationPublisher : BackgroundService
         await Task.Yield();
 
         _connection = await _connectionFactory.CreateConnectionAsync(stoppingToken);
-        _channel= await _connection.CreateChannelAsync(cancellationToken: stoppingToken);
+        _channel = await _connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
         await using var scope = _scopeFactory.CreateAsyncScope();
         var pgContext = scope.ServiceProvider.GetService<PgContext>();
 
         await _channel.ExchangeDeclareAsync(exchange: "pcparts.events", type: ExchangeType.Topic,
-            durable: true, cancellationToken:stoppingToken);
+            durable: true, cancellationToken: stoppingToken);
 
         await _channel.QueueDeclareAsync(queue: "Notification.sms.events", durable: true,
             exclusive: false, autoDelete: false,
@@ -51,27 +49,27 @@ public class NotificationPublisher : BackgroundService
 
         await _channel.QueueBindAsync(queue: "Notification.sms.events", exchange: "pcparts.events",
             routingKey: "pcparts.component.created", cancellationToken: stoppingToken);
-        
+
         while (!stoppingToken.IsCancellationRequested)
         {
             var eventsComponents = await pgContext.DomainEvents
                 .Where(x => x.ActivityAt == null)
                 .ToListAsync(stoppingToken);
-            
+
             foreach (var msg in eventsComponents)
             {
                 var payload = msg.Content;
                 var body = Encoding.UTF8.GetBytes(payload);
-                string messageId= HashHelper.ComputeSha256(payload);
+                var messageId = HashHelper.ComputeSha256(payload);
 
                 var props = new BasicProperties();
                 props.MessageId = $"{messageId}";
 
                 props.Persistent = true;
-                props.Headers = new Dictionary<string, object?>()
+                props.Headers = new Dictionary<string, object?>
                 {
-                    ["From"]="NotificationPublisher-1",
-                    ["x-retry-count"] = "0",
+                    ["From"] = "NotificationPublisher-1",
+                    ["x-retry-count"] = "0"
                 };
 
                 var duplicate = _deduplicationService.IsDuplicate(messageId);
@@ -90,6 +88,7 @@ public class NotificationPublisher : BackgroundService
             await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
     }
+
     public async override void Dispose()
     {
         await _channel.CloseAsync();

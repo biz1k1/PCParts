@@ -4,14 +4,23 @@ namespace PCParts.Notifications.Common.Initializer.Connection;
 
 public class RabbitMqConnection : IRabbitMqConnection, IAsyncDisposable
 {
-    private Task? _initializationTask;
-    private IConnection? Connection { get; set; }
     private readonly IConnectionFactory _connectionFactory;
+    private Task? _initializationTask;
 
     public RabbitMqConnection(
         IConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
+    }
+
+    private IConnection? Connection { get; set; }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Connection != null)
+        {
+            await Connection.DisposeAsync();
+        }
     }
 
     public async Task<IConnection> GetConnectionAsync(CancellationToken cancellationToken)
@@ -40,14 +49,6 @@ public class RabbitMqConnection : IRabbitMqConnection, IAsyncDisposable
         catch (Exception ex)
         {
             throw new InvalidOperationException("Failed to initialize RabbitMQ connection.", ex);
-        }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (Connection != null)
-        {
-            await Connection.DisposeAsync();
         }
     }
 }

@@ -1,21 +1,18 @@
-﻿using PCParts.Application.Abstraction.DomainEvent;
+﻿using System.Text.Json;
+using PCParts.Application.Abstraction.DomainEvent;
 using PCParts.Domain.Enum;
-using System.Text.Json;
 
+namespace PCParts.Application.DomainEvents;
 
-namespace PCParts.Application.DomainEvents
+public abstract class DomainEventBase<TPayload> : IDomainEvent
 {
-    public abstract class DomainEventBase<TPayload>:IDomainEvent
+    protected DomainEventBase(TPayload payload)
     {
-        public string Content { get; }
-        public abstract DomainEventType EventType { get;}
-        public TPayload Payload { get; }
-
-        protected DomainEventBase(TPayload payload)
-        {
-            Payload = payload;
-            Content = JsonSerializer.Serialize(payload);
-        }
-
+        Payload = payload;
+        Content = JsonSerializer.Serialize(payload);
     }
+
+    public TPayload Payload { get; }
+    public string Content { get; }
+    public abstract DomainEventType EventType { get; }
 }

@@ -1,8 +1,7 @@
-﻿namespace PCParts.API.Model.Models
+﻿namespace PCParts.API.Model.Models;
+
+public record CreatePendingUser
 {
-    public record CreatePendingUser
-    {
-        public string Phone { get; init; }
-        public string Password { get; init; }
-    }
+    public string Phone { get; init; }
+    public string Password { get; init; }
 }

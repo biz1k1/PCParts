@@ -1,9 +1,8 @@
-﻿namespace PCParts.Notifications.Common.MessagesResult
+﻿namespace PCParts.Notifications.Common.MessagesResult;
+
+public enum ProcessingResult
 {
-    public enum ProcessingResult
-    {
-        Success,
-        TransientFailure,   
-        PermanentFailure  
-    }
+    Success,
+    TransientFailure,
+    PermanentFailure
 }

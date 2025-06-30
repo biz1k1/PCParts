@@ -1,8 +1,7 @@
-﻿namespace PCParts.API.Model.Models
+﻿namespace PCParts.API.Model.Models;
+
+public record PendingUser
 {
-    public record PendingUser
-    {
-        public Guid Id { get; init; }
-        public string Phone { get; init; }
-    }
+    public Guid Id { get; init; }
+    public string Phone { get; init; }
 }

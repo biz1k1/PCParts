@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using PCParts.Application.Abstraction.DomainEvent;
+﻿using PCParts.Application.Abstraction.DomainEvent;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
 

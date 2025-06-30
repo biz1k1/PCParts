@@ -12,6 +12,7 @@ public class Specification
     public SpecificationDataType DataType { get; set; }
     public Guid CategoryId { get; set; }
     [ForeignKey(nameof(CategoryId))] public Category Category { get; set; }
+
     [InverseProperty(nameof(SpecificationValue.Specification))]
     public ICollection<SpecificationValue> SpecificationValues { get; set; } = [];
 }

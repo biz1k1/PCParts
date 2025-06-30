@@ -1,9 +1,8 @@
 ﻿using RabbitMQ.Client;
 
-namespace PCParts.Notifications.Common.Initializer
+namespace PCParts.Notifications.Common.Initializer;
+
+public interface IRabbitMqInitializer
 {
-    public interface IRabbitMqInitializer
-    {
-        Task<IChannel> GetNotificationChannel(CancellationToken stoppingToken);
-    }
+    Task<IChannel> GetNotificationChannel(CancellationToken stoppingToken);
 }

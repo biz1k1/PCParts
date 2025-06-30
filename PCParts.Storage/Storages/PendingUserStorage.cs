@@ -1,8 +1,7 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
-using System.Linq.Expressions;
 
 namespace PCParts.Storage.Storages;
 
@@ -25,14 +24,14 @@ public class PendingUserStorage : IPendingUserStorage
     public async Task<PendingUser?> CreatePendingUser(string phone,
         string passwordHash, CancellationToken cancellationToken)
     {
-        var user = new PendingUser()
+        var user = new PendingUser
         {
             Id = Guid.NewGuid(),
             Phone = phone,
             PasswordHash = passwordHash,
-            CreatedAt=DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow
         };
-          
+
         _pgContext.PendingUsers.Add(user);
         await _pgContext.SaveChangesAsync(cancellationToken);
 

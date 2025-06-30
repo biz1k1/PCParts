@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using PCParts.Notifications;
 using PCParts.Notifications.Common.Initializer;
 using PCParts.Notifications.Common.Initializer.Connection;
@@ -21,16 +20,14 @@ builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory
     UserName = "guest",
     Password = "guest"
 });
-builder.Services.AddHttpClient("ElasticEmail.client", client =>
-{
-    client.BaseAddress = new Uri("https://api.elasticemail.com/v2/email/send");
-})
-.UseSocketsHttpHandler((handler, _) =>
-{
-    handler.PooledConnectionLifetime = TimeSpan.FromMinutes(15);
-    handler.PooledConnectionIdleTimeout = TimeSpan.FromMinutes(2);
-})
-.SetHandlerLifetime(Timeout.InfiniteTimeSpan);
+builder.Services.AddHttpClient("ElasticEmail.client",
+        client => { client.BaseAddress = new Uri("https://api.elasticemail.com/v2/email/send"); })
+    .UseSocketsHttpHandler((handler, _) =>
+    {
+        handler.PooledConnectionLifetime = TimeSpan.FromMinutes(15);
+        handler.PooledConnectionIdleTimeout = TimeSpan.FromMinutes(2);
+    })
+    .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
 
 var app = builder.Build();

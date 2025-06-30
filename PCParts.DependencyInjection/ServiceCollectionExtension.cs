@@ -41,8 +41,8 @@ public static class ServiceCollectionExtension
             .AddScoped<IPendingUserStorage, PendingUserStorage>()
             .AddScoped<IUserStorage, UserStorage>()
             .AddScoped<IPasswordHasher, PasswordHasher>()
-            .AddSingleton<IDeduplicationService,DeduplicationService>()
-            .AddSingleton<IMemoryCache,MemoryCache>()
+            .AddSingleton<IDeduplicationService, DeduplicationService>()
+            .AddSingleton<IMemoryCache, MemoryCache>()
             .AddDbContextPool<PgContext>(options => options
                 .UseNpgsql(connectionString));
         services.AddHostedService<NotificationPublisher>();

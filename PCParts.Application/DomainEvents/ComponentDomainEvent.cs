@@ -3,17 +3,18 @@ using PCParts.Domain.Enum;
 
 namespace PCParts.Application.DomainEvents;
 
-public class ComponentDomainEvent:DomainEventBase<ComponentDomainEvent.ComponentPayload>
+public class ComponentDomainEvent : DomainEventBase<ComponentDomainEvent.ComponentPayload>
 {
-    public override DomainEventType EventType => DomainEventType.ComponentCreated;
     public ComponentDomainEvent(ComponentPayload payload) : base(payload)
     {
     }
 
+    public override DomainEventType EventType => DomainEventType.ComponentCreated;
+
     public static ComponentDomainEvent EventCreated(Component component,
         SpecificationValue specificationValue)
     {
-        var payload = new ComponentPayload()
+        var payload = new ComponentPayload
         {
             ComponentId = component.Id,
             SpecificationValue = new ComponentSpecificationValue

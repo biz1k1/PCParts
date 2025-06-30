@@ -1,12 +1,12 @@
-﻿using PCParts.Domain.Entities;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
+using PCParts.Domain.Entities;
 
-namespace PCParts.Application.Abstraction.Storage
+namespace PCParts.Application.Abstraction.Storage;
+
+public interface IUserStorage
 {
-    public interface IUserStorage
-    {
-        Task<User> GetUser(Expression<Func<User, bool>> predicate,
-            CancellationToken cancellationToken);
-        Task<User> CreateUser(User user, CancellationToken cancellationToken);
-    }
+    Task<User> GetUser(Expression<Func<User, bool>> predicate,
+        CancellationToken cancellationToken);
+
+    Task<User> CreateUser(User user, CancellationToken cancellationToken);
 }

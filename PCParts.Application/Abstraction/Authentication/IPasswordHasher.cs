@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace PCParts.Application.Abstraction.Authentication;
 
-namespace PCParts.Application.Abstraction.Authentication
+public interface IPasswordHasher
 {
-    public interface IPasswordHasher
-    {
-        string Hash(string password);
-        bool Verify(string passwordHash, string inputPassword);
-    }
+    string Hash(string password);
+    bool Verify(string passwordHash, string inputPassword);
 }

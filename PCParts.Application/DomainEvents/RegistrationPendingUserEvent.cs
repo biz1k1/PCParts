@@ -5,18 +5,18 @@ namespace PCParts.Application.DomainEvents;
 
 class RegistrationPendingUserEvent : DomainEventBase<RegistrationPendingUserEvent.PendingUserPayload>
 {
-    public override DomainEventType EventType => DomainEventType.PendingUserCreated;
-
     public RegistrationPendingUserEvent(PendingUserPayload payload) : base(payload)
     {
     }
 
+    public override DomainEventType EventType => DomainEventType.PendingUserCreated;
+
     public static RegistrationPendingUserEvent EventCreated(PendingUser user)
     {
-        var payload = new PendingUserPayload()
+        var payload = new PendingUserPayload
         {
             UserId = user.Id,
-            Phone = user.Phone,
+            Phone = user.Phone
         };
 
         return new RegistrationPendingUserEvent(payload);
