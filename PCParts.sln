@@ -3,23 +3,42 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.API", "PCParts.API\PCParts.API.csproj", "{3E8DC16D-6188-40E8-9E70-F47E93341B95}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.API", "src\PCParts.API\PCParts.API.csproj", "{3E8DC16D-6188-40E8-9E70-F47E93341B95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Storage", "PCParts.Storage\PCParts.Storage.csproj", "{B66A1129-4E6B-4053-89DE-FED4B960C88F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Storage", "src\PCParts.Storage\PCParts.Storage.csproj", "{B66A1129-4E6B-4053-89DE-FED4B960C88F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Application", "PCParts.Application\PCParts.Application.csproj", "{7E695ABD-24C0-4158-B22E-97A4184A215A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Application", "src\PCParts.Application\PCParts.Application.csproj", "{7E695ABD-24C0-4158-B22E-97A4184A215A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Application.Tests", "PCParts.Application.Tests\PCParts.Application.Tests.csproj", "{850DE3DB-5853-C2AC-E5DB-48967A95F9E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Application.Tests", "tests\PCParts.Application.Tests\PCParts.Application.Tests.csproj", "{850DE3DB-5853-C2AC-E5DB-48967A95F9E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.API.Tests", "PCParts.Storage.Tests\PCParts.API.Tests.csproj", "{0D7B96E3-4666-C0DF-9A85-2D355F942509}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.API.Tests", "tests\PCParts.Storage.Tests\PCParts.API.Tests.csproj", "{0D7B96E3-4666-C0DF-9A85-2D355F942509}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.DependencyInjection", "PCParts.DependencyInjection\PCParts.DependencyInjection.csproj", "{05E75F50-FFCA-1DA6-9CD9-719C06AFC96D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.DependencyInjection", "src\PCParts.DependencyInjection\PCParts.DependencyInjection.csproj", "{05E75F50-FFCA-1DA6-9CD9-719C06AFC96D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Domain", "PCParts.Domain\PCParts.Domain.csproj", "{CF1DD50C-E83C-6093-F66C-080527D4C5B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Domain", "src\PCParts.Domain\PCParts.Domain.csproj", "{CF1DD50C-E83C-6093-F66C-080527D4C5B1}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Notifications", "PCParts.Notifications\PCParts.Notifications.csproj", "{19A04996-24F9-4A04-89BE-8E7D214FD28A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Notifications", "src\PCParts.Notifications\PCParts.Notifications.csproj", "{19A04996-24F9-4A04-89BE-8E7D214FD28A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-item", "solution-item", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1DEBCAB9-5C5F-4185-9ABB-876091B5CB1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3587E4AB-6431-43B5-80EF-38E465F863AF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gitlab", "gitlab", "{964E64E3-EF7D-4C12-9A66-5435E77CCCAB}"
+	ProjectSection(SolutionItems) = preProject
+		solution-item\gitlab\runner-config.toml = solution-item\gitlab\runner-config.toml
+		solution-item\gitlab\docker-compose.yml = solution-item\gitlab\docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rabbitmq", "rabbitmq", "{A61D603F-627C-4149-9A1A-5B9D09DBFA49}"
+	ProjectSection(SolutionItems) = preProject
+		solution-item\rabbitmq\docker-compose.yml = solution-item\rabbitmq\docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "env", "env", "{810E5D7A-9A26-42F0-9F18-512DAF0C20A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +85,20 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3E8DC16D-6188-40E8-9E70-F47E93341B95} = {1DEBCAB9-5C5F-4185-9ABB-876091B5CB1D}
+		{B66A1129-4E6B-4053-89DE-FED4B960C88F} = {1DEBCAB9-5C5F-4185-9ABB-876091B5CB1D}
+		{7E695ABD-24C0-4158-B22E-97A4184A215A} = {1DEBCAB9-5C5F-4185-9ABB-876091B5CB1D}
+		{850DE3DB-5853-C2AC-E5DB-48967A95F9E0} = {3587E4AB-6431-43B5-80EF-38E465F863AF}
+		{0D7B96E3-4666-C0DF-9A85-2D355F942509} = {3587E4AB-6431-43B5-80EF-38E465F863AF}
+		{05E75F50-FFCA-1DA6-9CD9-719C06AFC96D} = {1DEBCAB9-5C5F-4185-9ABB-876091B5CB1D}
+		{CF1DD50C-E83C-6093-F66C-080527D4C5B1} = {1DEBCAB9-5C5F-4185-9ABB-876091B5CB1D}
+		{81DDED9D-158B-E303-5F62-77A2896D2A5A} = {1DEBCAB9-5C5F-4185-9ABB-876091B5CB1D}
+		{19A04996-24F9-4A04-89BE-8E7D214FD28A} = {1DEBCAB9-5C5F-4185-9ABB-876091B5CB1D}
+		{964E64E3-EF7D-4C12-9A66-5435E77CCCAB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{A61D603F-627C-4149-9A1A-5B9D09DBFA49} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{810E5D7A-9A26-42F0-9F18-512DAF0C20A6} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4AD82AB7-213E-4321-8C84-4A4DBEDADD03}

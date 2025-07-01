@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PCParts.Application\PCParts.Application.csproj" />
+    <ProjectReference Include="..\..\src\PCParts.Application\PCParts.Application.csproj" />
     <ProjectReference Include="..\PCParts.DependencyInjection\PCParts.DependencyInjection.csproj" />
   </ItemGroup>
 

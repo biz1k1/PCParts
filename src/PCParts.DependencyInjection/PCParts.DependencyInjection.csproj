@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PCParts.Application\PCParts.Application.csproj" />
-    <ProjectReference Include="..\PCParts.Storage\PCParts.Storage.csproj" />
+    <ProjectReference Include="..\..\src\PCParts.Application\PCParts.Application.csproj" />
+    <ProjectReference Include="..\..\src\PCParts.Storage\PCParts.Storage.csproj" />
   </ItemGroup>
 
 </Project>

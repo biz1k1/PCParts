@@ -18,7 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PCParts.Domain\PCParts.Domain.csproj" />
+    <ProjectReference Include="..\..\src\PCParts.Domain\PCParts.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\JwtBearerService\" />
   </ItemGroup>
 
 </Project>

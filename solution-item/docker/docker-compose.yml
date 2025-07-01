@@ -8,7 +8,7 @@ services:
     image: ${DOCKER_REGISTRY-}pcpartsapi
     build:
       context: .
-      dockerfile: src/PCParts.API/Dockerfile
+      dockerfile: PCParts.API/Dockerfile
     depends_on:
        pcparts.database:
         condition: service_healthy
@@ -20,10 +20,10 @@ services:
     expose:
        - "8080:8080"
        - "8081:8081"
-    # environment:
-    #   - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-    #   - FRONTEND_URL=${FRONTEND_URL}
-    #   - API_SECRET=${API_SECRET}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - API_SECRET=${API_SECRET}
 
   pcparts.database:
     image: postgres:latest
@@ -49,7 +49,7 @@ services:
     image: pcparts-consumer
     build:
       context: .
-      dockerfile: src/PCParts.Notifications/Dockerfile
+      dockerfile: PCParts.Notifications/Dockerfile
     networks:
       - pcparts_network 
 
