@@ -1,13 +1,13 @@
 networks:
   pcparts_network:
-    external: true
+      driver: bridge
 
 services:
   pcparts.api:
     container_name: pcparts.api
     image: ${DOCKER_REGISTRY-}pcpartsapi
     build:
-      context: .
+      context: ../../src
       dockerfile: PCParts.API/Dockerfile
     depends_on:
        pcparts.database:
@@ -33,7 +33,7 @@ services:
       - POSTGRES_DB=pcparts
       - POSTGRES_USER=postgres
     volumes:
-    - ./.containers/api-db:/var/lib/postgresql/data 
+    -  ../../.containers/api-db:/var/lib/postgresql/data 
     ports:
     - "5431:5432"
     networks:
@@ -48,7 +48,7 @@ services:
     container_name: pcparts.notification
     image: pcparts-consumer
     build:
-      context: .
+      context: ../../src
       dockerfile: PCParts.Notifications/Dockerfile
     networks:
       - pcparts_network 
