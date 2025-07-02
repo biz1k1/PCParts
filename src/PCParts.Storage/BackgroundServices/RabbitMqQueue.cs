@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using PCParts.Storage.Common.Helpers;
 using PCParts.Storage.Common.Services.Deduplication;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
 
 namespace PCParts.Storage.BackgroundServices;
 
@@ -49,45 +50,60 @@ public class NotificationPublisher : BackgroundService
 
         await _channel.QueueBindAsync(queue: "Notification.sms.events", exchange: "pcparts.events",
             routingKey: "pcparts.component.created", cancellationToken: stoppingToken);
-
-        while (!stoppingToken.IsCancellationRequested)
+        try
         {
-            var eventsComponents = await pgContext.DomainEvents
-                .Where(x => x.ActivityAt == null)
-                .ToListAsync(stoppingToken);
 
-            foreach (var msg in eventsComponents)
+
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var payload = msg.Content;
-                var body = Encoding.UTF8.GetBytes(payload);
-                var messageId = HashHelper.ComputeSha256(payload);
+                var eventsComponents = await pgContext.DomainEvents
+                    .Where(x => x.ActivityAt == null)
+                    .ToListAsync(stoppingToken);
 
-                var props = new BasicProperties();
-                props.MessageId = $"{messageId}";
-
-                props.Persistent = true;
-                props.Headers = new Dictionary<string, object?>
+                foreach (var msg in eventsComponents)
                 {
-                    ["From"] = "NotificationPublisher-1",
-                    ["x-retry-count"] = "0"
-                };
+                    var payload = msg.Content;
+                    var body = Encoding.UTF8.GetBytes(payload);
+                    var messageId = HashHelper.ComputeSha256(payload);
 
-                var duplicate = _deduplicationService.IsDuplicate(messageId);
-                if (duplicate is true)
-                {
-                    continue;
+                    var props = new BasicProperties();
+                    props.MessageId = $"{messageId}";
+
+                    props.Persistent = true;
+                    props.Headers = new Dictionary<string, object?>
+                    {
+                        ["From"] = "NotificationPublisher-1",
+                        ["x-retry-count"] = "0"
+                    };
+
+                    var duplicate = _deduplicationService.IsDuplicate(messageId);
+                    if (duplicate is true)
+                    {
+                        continue;
+                    }
+
+                    await _channel.BasicPublishAsync(exchange: "pcparts.events",
+                        routingKey: "pcparts.component.created",
+                        body: body, basicProperties: props, mandatory: true, cancellationToken: stoppingToken);
+
+                    msg.ActivityAt = DateTimeOffset.UtcNow;
                 }
 
-                await _channel.BasicPublishAsync(exchange: "pcparts.events", routingKey: "pcparts.component.created",
-                    body: body, basicProperties: props, mandatory: true, cancellationToken: stoppingToken);
+                await pgContext.SaveChangesAsync(stoppingToken);
 
-                msg.ActivityAt = DateTimeOffset.UtcNow;
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             }
+        }
+        catch (BrokerUnreachableException ex)
+        {
 
-            await pgContext.SaveChangesAsync(stoppingToken);
-            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+        }
+        catch (Exception ex)
+        {
+
         }
     }
+    
 
     public async override void Dispose()
     {
