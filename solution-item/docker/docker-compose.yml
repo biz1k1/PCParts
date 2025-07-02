@@ -1,6 +1,6 @@
 networks:
   pcparts_network:
-      driver: bridge
+    driver: bridge
 
 services:
   pcparts.api:

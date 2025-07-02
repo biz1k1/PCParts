@@ -2,7 +2,7 @@ name: 'RabbitMq'
 
 networks:
   pcparts_network:
-    external: true
+    driver: bridge
 
 services:
   RabbitMq: 
