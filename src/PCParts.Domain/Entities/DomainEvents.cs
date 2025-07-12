@@ -5,7 +5,7 @@ namespace PCParts.Domain.Entities;
 
 public class DomainEvents
 {
-    [Key] public Guid DomainEventId { get; set; }
+    [Key] public Guid Id { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }
     public string Type { get; set; }

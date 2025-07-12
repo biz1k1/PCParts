@@ -28,7 +28,7 @@ public class NotificationBackground : BackgroundService
             try
             {
                 var message = await _notificationConsumerService.GetNotification(stoppingToken);
-                if (!message.Result.ShouldSuccess)
+                if (!message.Result.IsSuccess)
                 {
                     await _notificationConsumerService.ConfirmMessageProcessingAsync(message.Result,
                         message.DeliveryTag,
@@ -37,7 +37,7 @@ public class NotificationBackground : BackgroundService
                 }
 
                 var emailResult = await _notificationSenderervice.Send(message);
-                if (!emailResult.ShouldSuccess)
+                if (!emailResult.IsSuccess)
                 {
                     await _notificationConsumerService.ConfirmMessageProcessingAsync(emailResult, message.DeliveryTag,
                         stoppingToken);

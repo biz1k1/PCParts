@@ -59,22 +59,23 @@ public class NotificationConsumerService : INotificationConsumerService
                     }
                 }
 
-                await _messageChannel.Writer.WriteAsync(message);
+                message.Result = MessageResult.Success();
+                await _messageChannel.Writer.WriteAsync(message, stoppingToken);
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is SocketException)
             {
                 message.Result = MessageResult.TransientFailure(ex.ToString());
-                await _messageChannel.Writer.WriteAsync(message);
+                await _messageChannel.Writer.WriteAsync(message, stoppingToken);
             }
             catch (Exception ex) when (ex is AlreadyClosedException || ex is OperationInterruptedException)
             {
                 message.Result = MessageResult.TransientFailure(ex.ToString());
-                await _messageChannel.Writer.WriteAsync(message);
+                await _messageChannel.Writer.WriteAsync(message, stoppingToken);
             }
             catch (Exception ex)
             {
                 message.Result = MessageResult.PermanentFailure(ex.ToString());
-                await _messageChannel.Writer.WriteAsync(message);
+                await _messageChannel.Writer.WriteAsync(message, stoppingToken);
             }
         };
         await _channel.BasicConsumeAsync(queue: "Notification.sms.events", autoAck: false,
@@ -92,15 +93,15 @@ public class NotificationConsumerService : INotificationConsumerService
     {
         switch (result.Status)
         {
-            case ProcessingResult.Success:
+            case Result.Success:
                 await _channel.BasicAckAsync(deliveryTag, false, stoppingToken);
                 break;
 
-            case ProcessingResult.TransientFailure:
+            case Result.TransientFailure:
                 await _channel.BasicNackAsync(deliveryTag, false, true, stoppingToken);
                 break;
 
-            case ProcessingResult.PermanentFailure:
+            case Result.PermanentFailure:
                 await _channel.BasicNackAsync(deliveryTag, false, false, stoppingToken);
                 break;
         }

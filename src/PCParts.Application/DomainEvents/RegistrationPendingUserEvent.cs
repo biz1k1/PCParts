@@ -15,8 +15,9 @@ class RegistrationPendingUserEvent : DomainEventBase<RegistrationPendingUserEven
     {
         var payload = new PendingUserPayload
         {
-            UserId = user.Id,
-            Phone = user.Phone
+            PendingUserId = user.Id,
+            Phone = user.Phone,
+            EmailConfirmationToken = user.EmailConfirmationToken
         };
 
         return new RegistrationPendingUserEvent(payload);
@@ -24,7 +25,8 @@ class RegistrationPendingUserEvent : DomainEventBase<RegistrationPendingUserEven
 
     public class PendingUserPayload
     {
-        public Guid UserId { get; set; }
+        public Guid PendingUserId { get; set; }
         public string Phone { get; set; }
+        public string EmailConfirmationToken { get; set; }
     }
 }

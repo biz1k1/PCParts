@@ -12,8 +12,8 @@ using PCParts.Storage;
 namespace PCParts.Storage.Migrations
 {
     [DbContext(typeof(PgContext))]
-    [Migration("20250608080715_update7")]
-    partial class update7
+    [Migration("20250708124018_InitialRecreateAllMigrations")]
+    partial class InitialRecreateAllMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,7 +64,7 @@ namespace PCParts.Storage.Migrations
 
             modelBuilder.Entity("PCParts.Domain.Entities.DomainEvents", b =>
                 {
-                    b.Property<Guid>("DomainEventId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -78,10 +78,11 @@ namespace PCParts.Storage.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.HasKey("DomainEventId");
+                    b.HasKey("Id");
 
                     b.ToTable("DomainEvents");
                 });
@@ -95,16 +96,17 @@ namespace PCParts.Storage.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("EmailConfirmationToken")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("SmsCode")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");

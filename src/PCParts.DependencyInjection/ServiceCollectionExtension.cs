@@ -2,7 +2,9 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using PCParts.Application.Abstraction.Authentication;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Application.Model.Models;
@@ -15,7 +17,9 @@ using PCParts.Application.Services.ValidationService;
 using PCParts.Storage;
 using PCParts.Storage.BackgroundServices;
 using PCParts.Storage.Common.Authentication;
+using PCParts.Storage.Common.Services.DbConnectionProvider;
 using PCParts.Storage.Common.Services.Deduplication;
+using PCParts.Storage.Common.Services.DomainEventReaderNotify;
 using PCParts.Storage.Mapping;
 using PCParts.Storage.Storages;
 using RabbitMQ.Client;
@@ -24,7 +28,7 @@ namespace PCParts.DependencyInjection;
 
 public static class ServiceCollectionExtension
 {
-    public static IServiceCollection AddServiceExtensions(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddServiceExtensions(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddScoped<ICategoryStorage, CategoryStorage>()
@@ -42,19 +46,25 @@ public static class ServiceCollectionExtension
             .AddScoped<IUserStorage, UserStorage>()
             .AddScoped<IPasswordHasher, PasswordHasher>()
             .AddSingleton<IDeduplicationService, DeduplicationService>()
+            .AddSingleton<IDomainEventReaderNotify,DomainEventReaderNotify>()
             .AddSingleton<IMemoryCache, MemoryCache>()
             .AddDbContextPool<PgContext>(options => options
-                .UseNpgsql(connectionString));
+                .UseNpgsql(configuration["Database:default_connection_string"]));
         services.AddHostedService<NotificationPublisher>();
         services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory
         {
-            HostName = "rabbitmq",
-            Port = 5672,
-            UserName = "guest",
-            Password = "guest"
+            HostName = configuration["RabbitMQ:HostName"]!,
+            Port = configuration.GetValue<int>("RabbitMQ:Port"),
+            UserName = configuration["RabbitMQ:UserName"]!,
+            Password = configuration["RabbitMQ:Password"]!
+        });
+        services.AddSingleton<IDbConnectionProvider<NpgsqlConnection>>(sp =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            var connStr = configuration["Database:default_connection_string"];
+            return new NpgsqlConnectionProvider(connStr);
         });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
         services.AddAutoMapper(config => config
             .AddMaps(Assembly.GetAssembly(typeof(PgContext))));
         services.AddAutoMapper(typeof(StorageProfile));

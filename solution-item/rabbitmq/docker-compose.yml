@@ -1,8 +1,9 @@
-name: 'RabbitMq'
+name: 'RabbitMq.container'
 
 networks:
   pcparts_network:
-    driver: bridge
+    external: true
+  
 
 services:
   RabbitMq: 

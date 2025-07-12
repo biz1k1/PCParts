@@ -5,4 +5,5 @@ public class PendingUser
     public Guid Id { get; set; }
     public string Phone { get; set; }
     public string PasswordHash { get; set; }
+    public string EmailConfirmationToken { get; set; }
 }

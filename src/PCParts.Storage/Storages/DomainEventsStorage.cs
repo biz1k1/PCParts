@@ -18,7 +18,7 @@ public class DomainEventsStorage : IDomainEventsStorage
     {
         await _pgContext.AddAsync(new DomainEvents
         {
-            DomainEventId = Guid.NewGuid(),
+            Id = Guid.NewGuid(),
             CreatedAt = DateTimeOffset.UtcNow,
             Content = domainEvent.Content,
             Type = domainEvent.EventType.ToString(),

@@ -61,7 +61,7 @@ namespace PCParts.Storage.Migrations
 
             modelBuilder.Entity("PCParts.Domain.Entities.DomainEvents", b =>
                 {
-                    b.Property<Guid>("DomainEventId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -79,7 +79,7 @@ namespace PCParts.Storage.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("DomainEventId");
+                    b.HasKey("Id");
 
                     b.ToTable("DomainEvents");
                 });
@@ -94,12 +94,10 @@ namespace PCParts.Storage.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("EmailConfirmationToken")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("EmailConfirmed")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()

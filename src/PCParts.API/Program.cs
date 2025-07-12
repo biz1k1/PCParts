@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen(x =>
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     x.IncludeXmlComments(xmlPath);
 });
-builder.Services.AddServiceExtensions(builder.Configuration.GetConnectionString("pgsql")!);
+builder.Services.AddServiceExtensions(builder.Configuration);
 builder.Services.AddAutoMapper(config => config.AddMaps(Assembly.GetExecutingAssembly()));
 //builder.Services.AddApiMetrics();
 builder.Logging.AddConsole();
@@ -30,7 +30,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    if (!app.Environment.IsEnvironment("Testing")) app.ApplyMigration();
+    if (!app.Environment.IsEnvironment("Testing")) await app.ApplyMigrationAsync();
 }
 
 app.UseHttpsRedirection();

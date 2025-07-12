@@ -29,7 +29,9 @@ public class PendingUserStorage : IPendingUserStorage
             Id = Guid.NewGuid(),
             Phone = phone,
             PasswordHash = passwordHash,
-            CreatedAt = DateTimeOffset.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow,
+            EmailConfirmed = false,
+            EmailConfirmationToken = String.Empty
         };
 
         _pgContext.PendingUsers.Add(user);

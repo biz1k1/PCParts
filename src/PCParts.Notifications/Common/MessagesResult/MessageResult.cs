@@ -2,19 +2,27 @@
 
 public class MessageResult
 {
-    public ProcessingResult Status { get; init; }
+    public Result Status { get; init; }
     public string? ErrorMessage { get; init; }
 
-    public bool ShouldRetry => Status == ProcessingResult.TransientFailure;
-    public bool ShouldSuccess => Status == ProcessingResult.Success;
-    public bool ShouldDeadLetter => Status == ProcessingResult.PermanentFailure;
+    public bool IsRetry => Status == Result.TransientFailure;
+    public bool IsSuccess => Status == Result.Success;
+    public bool IsDeadLetter => Status == Result.PermanentFailure;
 
     public static MessageResult Success() =>
-        new() { Status = ProcessingResult.Success };
+        new() { Status = Result.Success };
 
     public static MessageResult TransientFailure(string? message = null) =>
-        new() { Status = ProcessingResult.TransientFailure, ErrorMessage = message };
+        new() { Status = Result.TransientFailure, ErrorMessage = message };
 
     public static MessageResult PermanentFailure(string? message = null) =>
-        new() { Status = ProcessingResult.PermanentFailure, ErrorMessage = message };
+        new() { Status = Result.PermanentFailure, ErrorMessage = message };
+
+}
+
+public enum Result
+{
+    Success,
+    TransientFailure,
+    PermanentFailure
 }
