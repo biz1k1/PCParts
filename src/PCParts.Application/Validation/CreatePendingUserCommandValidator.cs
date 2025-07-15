@@ -8,7 +8,7 @@ public class CreatePendingUserCommandValidator : AbstractValidator<CreatePending
 {
     public CreatePendingUserCommandValidator()
     {
-        RuleFor(x => x.Phone)
+        RuleFor(x => x.Email)
             .Cascade(CascadeMode.Stop)
             .MinimumLength(3).WithErrorCode(ValidationErrorCode.TooSmall)
             .MaximumLength(15).WithErrorCode(ValidationErrorCode.TooLong);

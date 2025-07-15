@@ -27,7 +27,7 @@ public class PendingUserStorage : IPendingUserStorage
         var user = new PendingUser
         {
             Id = Guid.NewGuid(),
-            Phone = phone,
+            Email = phone,
             PasswordHash = passwordHash,
             CreatedAt = DateTimeOffset.UtcNow,
             EmailConfirmed = false,

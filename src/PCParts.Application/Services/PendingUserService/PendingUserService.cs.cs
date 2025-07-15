@@ -40,14 +40,14 @@ public class PendingUserService : IPendingUserService
         await _validationService.Validate(command);
 
         var existingUser = await _userStorage
-            .GetUser(x => x.Phone == command.Phone, cancellationToken);
+            .GetUser(x => x.Email == command.Email, cancellationToken);
         if (existingUser is not null)
         {
-            throw new EntityAlreadyExistsException(command.Phone);
+            throw new EntityAlreadyExistsException(command.Email);
         }
 
         var pendingUser = await _pendingUserStorage
-            .GetPendingUser(x => x.Phone == command.Phone, cancellationToken);
+            .GetPendingUser(x => x.Email == command.Email, cancellationToken);
         if (pendingUser is not null)
         {
             throw new PendingUserException();
@@ -60,7 +60,7 @@ public class PendingUserService : IPendingUserService
 
             var hash = _passwordHasher.Hash(command.Password);
 
-            var user = await createPendingUserStorage.CreatePendingUser(command.Phone, hash, cancellationToken);
+            var user = await createPendingUserStorage.CreatePendingUser(command.Email, hash, cancellationToken);
             var userDTO = _mapper.Map<PendingUser>(user);
 
             await createDomainEventsStorage.AddAsync(

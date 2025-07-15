@@ -1,3 +1,3 @@
 ﻿namespace PCParts.Application.Command;
 
-public record CreatePendingUserCommand(string Phone, string Password);
+public record CreatePendingUserCommand(string Email, string Password);
