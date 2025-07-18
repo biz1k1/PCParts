@@ -46,9 +46,9 @@ public class PendingUserService : IPendingUserService
             throw new EntityAlreadyExistsException(command.Email);
         }
 
-        var pendingUser = await _pendingUserStorage
+        var existingpendingUser = await _pendingUserStorage
             .GetPendingUser(x => x.Email == command.Email, cancellationToken);
-        if (pendingUser is not null)
+        if (existingpendingUser is not null)
         {
             throw new PendingUserException();
         }
@@ -62,6 +62,7 @@ public class PendingUserService : IPendingUserService
 
             var user = await createPendingUserStorage.CreatePendingUser(command.Email, hash, cancellationToken);
             var userDTO = _mapper.Map<PendingUser>(user);
+
 
             await createDomainEventsStorage.AddAsync(
                 RegistrationPendingUserEvent.EventCreated(userDTO), cancellationToken);

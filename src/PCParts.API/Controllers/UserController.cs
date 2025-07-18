@@ -30,7 +30,7 @@ public class UserController : ControllerBase
         [FromBody] CreatePendingUser request,
         CancellationToken cancellationToken)
     {
-        var command = new CreatePendingUserCommand(request.Phone, request.Password);
+        var command = new CreatePendingUserCommand(request.Email, request.Password);
         var pendingUser = await _pendingUserService.CreatePendingUser(command, cancellationToken);
         return Ok(_mapper.Map<PendingUser>(pendingUser));
     }

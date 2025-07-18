@@ -8,6 +8,6 @@ public interface IPendingUserStorage : IStorage
     public Task<PendingUser> GetPendingUser(Expression<Func<PendingUser, bool>> predicate,
         CancellationToken cancellationToken);
 
-    public Task<PendingUser> CreatePendingUser(string phone,
+    public Task<PendingUser> CreatePendingUser(string email,
         string passwordHash, CancellationToken cancellationToken);
 }

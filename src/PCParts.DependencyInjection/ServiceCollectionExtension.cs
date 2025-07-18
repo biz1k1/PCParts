@@ -17,6 +17,7 @@ using PCParts.Application.Services.ValidationService;
 using PCParts.Storage;
 using PCParts.Storage.BackgroundServices;
 using PCParts.Storage.Common.Authentication;
+using PCParts.Storage.Common.Authentication.JwtProvider;
 using PCParts.Storage.Common.Services.DbConnectionProvider;
 using PCParts.Storage.Common.Services.Deduplication;
 using PCParts.Storage.Common.Services.DomainEventReaderNotify;

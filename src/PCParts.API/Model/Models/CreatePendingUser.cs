@@ -2,6 +2,6 @@
 
 public record CreatePendingUser
 {
-    public string Phone { get; init; }
+    public string Email { get; init; }
     public string Password { get; init; }
 }
