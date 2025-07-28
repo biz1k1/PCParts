@@ -28,8 +28,8 @@ public static class MigrationExtensions
                     FROM pg_trigger 
                     WHERE tgname = 'domain_event_insert_trigger' ";
 
-                var triggerCount =  await dbContext.Database
-                    .SqlQueryRaw<IntResult> (checkTriggerSql)
+                var triggerCount = await dbContext.Database
+                    .SqlQueryRaw<IntResult>(checkTriggerSql)
                     .SingleAsync();
 
                 if (triggerCount.Value == 0)
@@ -60,22 +60,15 @@ public static class MigrationExtensions
             }
             catch (PostgresException pgEx)
             {
-
             }
             catch (DbUpdateException dbUpEx)
             {
-
-            }
-            catch (Exception ex)
-            {
-                throw;
             }
         }
-
-        
     }
+
     private class IntResult
     {
-        public int Value { get; set; }
+        public int Value { get; }
     }
 }

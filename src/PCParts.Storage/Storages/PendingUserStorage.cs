@@ -31,7 +31,7 @@ public class PendingUserStorage : IPendingUserStorage
             PasswordHash = passwordHash,
             CreatedAt = DateTimeOffset.UtcNow,
             EmailConfirmed = false,
-            EmailConfirmationToken = String.Empty
+            EmailConfirmationToken = string.Empty
         };
 
         _pgContext.PendingUsers.Add(user);

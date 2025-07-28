@@ -17,7 +17,6 @@ public class MessageResult
 
     public static MessageResult PermanentFailure(string? message = null) =>
         new() { Status = Result.PermanentFailure, ErrorMessage = message };
-
 }
 
 public enum Result

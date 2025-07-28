@@ -29,7 +29,8 @@ namespace PCParts.DependencyInjection;
 
 public static class ServiceCollectionExtension
 {
-    public static IServiceCollection AddServiceExtensions(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddServiceExtensions(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services
             .AddScoped<ICategoryStorage, CategoryStorage>()
@@ -46,9 +47,9 @@ public static class ServiceCollectionExtension
             .AddScoped<IPendingUserStorage, PendingUserStorage>()
             .AddScoped<IUserStorage, UserStorage>()
             .AddSingleton<IPasswordHasher, PasswordHasher>()
-            .AddSingleton<IJwtTokenProvider,JwtTokenProvider>()
+            .AddSingleton<IJwtTokenProvider, JwtTokenProvider>()
             .AddSingleton<IDeduplicationService, DeduplicationService>()
-            .AddSingleton<IDomainEventReaderNotify,DomainEventReaderNotify>()
+            .AddSingleton<IDomainEventReaderNotify, DomainEventReaderNotify>()
             .AddSingleton<IMemoryCache, MemoryCache>()
             .AddDbContextPool<PgContext>(options => options
                 .UseNpgsql(configuration["Database:default_connection_string"]));

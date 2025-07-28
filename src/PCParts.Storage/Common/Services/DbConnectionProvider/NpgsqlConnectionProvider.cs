@@ -6,13 +6,26 @@ namespace PCParts.Storage.Common.Services.DbConnectionProvider;
 public class NpgsqlConnectionProvider : IDbConnectionProvider<NpgsqlConnection>, IAsyncDisposable
 {
     private readonly string _connectionString;
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
     private NpgsqlConnection? _listeningConnection;
     private NpgsqlConnection? _queryConnection;
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
 
     public NpgsqlConnectionProvider(string connectionString)
     {
         _connectionString = connectionString;
+    }
+
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_listeningConnection != null)
+        {
+            await _listeningConnection.CloseAsync();
+            await _listeningConnection.DisposeAsync();
+            _listeningConnection = null;
+
+            GC.SuppressFinalize(this);
+        }
     }
 
     public async Task<NpgsqlConnection> GetOpenConnection(bool forListenOnly)
@@ -41,26 +54,9 @@ public class NpgsqlConnectionProvider : IDbConnectionProvider<NpgsqlConnection>,
 
             return _queryConnection;
         }
-        catch
-        {
-            throw;
-        }
         finally
         {
             _semaphore.Release();
-        }
-    }
-    
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_listeningConnection != null)
-        {
-            await _listeningConnection.CloseAsync();
-            await _listeningConnection.DisposeAsync();
-            _listeningConnection = null;
-
-            GC.SuppressFinalize(this);
         }
     }
 }

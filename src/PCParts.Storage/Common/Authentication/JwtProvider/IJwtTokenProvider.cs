@@ -1,10 +1,6 @@
-﻿using PCParts.Application.Command;
-using PCParts.Domain.Entities;
+﻿namespace PCParts.Storage.Common.Authentication.JwtProvider;
 
-namespace PCParts.Application.Abstraction.Authentication
+public interface IJwtTokenProvider
 {
-    public interface IJwtTokenProvider
-    {
-        string Create(Guid id, string email);
-    }
+    string Create(Guid id, string email);
 }

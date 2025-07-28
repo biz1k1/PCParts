@@ -47,7 +47,7 @@ public class NotificationPublisher : BackgroundService
 
         await _channelRabbitMq.QueueBindAsync(queue: "Notification.sms.events", exchange: "pcparts.events",
             routingKey: "pcparts.component.created", cancellationToken: stoppingToken);
-        
+
         while (!stoppingToken.IsCancellationRequested)
         {
             await _domainEventReaderNotify.EventSignal.WaitAsync(stoppingToken);
@@ -75,15 +75,16 @@ public class NotificationPublisher : BackgroundService
                     continue;
                 }
 
-                await _channelRabbitMq.BasicPublishAsync(exchange: "pcparts.events", routingKey: "pcparts.component.created",
+                await _channelRabbitMq.BasicPublishAsync(exchange: "pcparts.events",
+                    routingKey: "pcparts.component.created",
                     body: body, basicProperties: props, mandatory: true, cancellationToken: stoppingToken);
             }
 
-            await _domainEventReaderNotify.MarkEventsAsActivatedAsync(events.Select(x=>x.Id),stoppingToken);
+            await _domainEventReaderNotify.MarkEventsAsActivatedAsync(events.Select(x => x.Id), stoppingToken);
             await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
-
     }
+
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         if (_channelRabbitMq != null)
@@ -102,6 +103,7 @@ public class NotificationPublisher : BackgroundService
 
         await base.StopAsync(cancellationToken);
     }
+
     public new void Dispose()
     {
         base.Dispose();
