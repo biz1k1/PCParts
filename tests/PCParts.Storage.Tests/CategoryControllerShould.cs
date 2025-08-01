@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using PCParts.API.Model.Models;
 
-namespace PCParts.Storage.Tests;
+namespace PCParts.API.Tests;
 
 public class CategoryControllerShould : IClassFixture<ApiWebApplicationFactory>
 {

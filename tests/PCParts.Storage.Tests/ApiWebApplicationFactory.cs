@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PCParts.Storage;
 using Testcontainers.PostgreSql;
 
-namespace PCParts.Storage.Tests;
+namespace PCParts.API.Tests;
 
 public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
@@ -18,7 +19,11 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
         await pgContext.Database.MigrateAsync();
     }
 
-    public new async Task DisposeAsync() => await _dbContainer.DisposeAsync();
+    public async Task DisposeAsync()
+    {
+        await base.DisposeAsync();
+        await _dbContainer.DisposeAsync();
+    } 
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

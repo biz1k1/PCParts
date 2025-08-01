@@ -2,7 +2,6 @@
 using System.Net.Http.Json;
 using FluentAssertions;
 using PCParts.API.Model.Models;
-using PCParts.Storage.Tests;
 
 namespace PCParts.API.Tests
 {
