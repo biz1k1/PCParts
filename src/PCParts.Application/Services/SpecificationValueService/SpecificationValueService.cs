@@ -40,7 +40,8 @@ public class SpecificationValueService : ISpecificationValueService
         }
 
         var values = commands.Select(
-            dto => _mapper.Map<Domain.Entities.SpecificationValue>(commands));
+            dto => _mapper.Map<Domain.Entities.SpecificationValue>(dto));
+
         var specificationValue =
             await _specificationValueStorage.CreateSpecificationValue(component.Id, values, cancellationToken);
 

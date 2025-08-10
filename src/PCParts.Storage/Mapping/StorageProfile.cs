@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PCParts.Application.Command;
 using PCParts.Domain.Entities;
 
 namespace PCParts.Storage.Mapping;
@@ -21,5 +22,6 @@ public class StorageProfile : Profile
 
         CreateMap<PendingUser, Application.Model.Models.PendingUser>().ReverseMap();
         CreateMap<Application.Model.Models.PendingUser, PendingUser>();
+        CreateMap<CreateSpecificationValueCommand, SpecificationValue>();
     }
 }

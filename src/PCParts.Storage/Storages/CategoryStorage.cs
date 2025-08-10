@@ -63,8 +63,9 @@ public class CategoryStorage : ICategoryStorage
             Name = name
         };
 
-        _pgContext.Categories.Attach(category);
-        _pgContext.Entry(category).Property(c => c.Name).IsModified = true;
+        await _pgContext.Categories
+            .Where(c => c.Id == id)
+            .ExecuteUpdateAsync(c => c.SetProperty(x => x.Name, name));
 
         return await _pgContext.Categories
             .AsNoTracking()

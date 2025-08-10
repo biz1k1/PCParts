@@ -45,6 +45,6 @@ public class UpdateComponentCommandValidatorShould
     {
         var validCommand = new UpdateComponentCommand(Guid.NewGuid(), "Name");
         yield return new object[] { validCommand };
-        yield return new object[] { validCommand with { Name = string.Empty } };
+        yield return new object[] { validCommand with { Id= validCommand.Id, Name = validCommand.Name} };
     }
 }

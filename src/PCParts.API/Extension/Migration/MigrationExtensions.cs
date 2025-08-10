@@ -69,6 +69,6 @@ public static class MigrationExtensions
 
     private class IntResult
     {
-        public int Value { get; }
+        public int Value { get; set; }
     }
 }

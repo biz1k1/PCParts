@@ -35,7 +35,7 @@ public class SpecificationValueStorage : ISpecificationValueStorage
             Value = dto.Value,
             SpecificationId = dto.Id,
             ComponentId = componentId
-        }).ToList();
+        });
 
         await _pgContext.SpecificationsValue.AddRangeAsync(specificationValues, cancellationToken);
         await _pgContext.SaveChangesAsync(cancellationToken);

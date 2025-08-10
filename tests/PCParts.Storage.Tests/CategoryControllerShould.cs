@@ -8,7 +8,8 @@ namespace PCParts.API.Tests;
 public class CategoryControllerShould : IClassFixture<ApiWebApplicationFactory>
 {
     private readonly ApiWebApplicationFactory _factory;
-
+    private const string SampleCategoryName = "Category";
+    private const string SampleUpdateCategoryName = "UpdateCategory";
     public CategoryControllerShould(
         ApiWebApplicationFactory factory)
     {
@@ -16,86 +17,91 @@ public class CategoryControllerShould : IClassFixture<ApiWebApplicationFactory>
     }
 
     [Fact]
-    public async Task GetCategory()
+    public async Task GetCategories()
     {
-        const string categoryName = "category";
-
         using var httpClient = _factory.CreateClient();
 
-        using var response = await httpClient.PostAsync("/Categories",
-            JsonContent.Create(new { Name = categoryName }));
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        using var response = await httpClient.GetAsync("/Categories");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var category = await response.Content.ReadFromJsonAsync<Category>();
+        var categories = await response.Content.ReadFromJsonAsync<List<Category>>();
+        categories.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task GetCategory()
+    {
+        using var httpClient = _factory.CreateClient();
+
+        using var responsePost = await httpClient.PostAsync("/Categories",
+            JsonContent.Create(new { Name = SampleCategoryName }));
+        responsePost.StatusCode.Should().Be(HttpStatusCode.Created);
+        var createdCategory= await responsePost.Content.ReadFromJsonAsync<Category>();
+
+        using var responseGet = await httpClient.GetAsync($"{"/Categories"}/{createdCategory.Id}");
+        responseGet.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var category = await responseGet.Content.ReadFromJsonAsync<Category>();
         category
             .Should().NotBeNull().And
-            .Subject.As<Category>().Name.Should().Be(categoryName);
+            .Subject.As<Category>().Name.Should().Be(SampleCategoryName); ;
 
-        using var responseGet = await httpClient.GetAsync($"/Categories?id={category.Id}");
-        response.IsSuccessStatusCode.Should().BeTrue();
     }
 
     [Fact]
     public async Task CreateCategory()
     {
-        const string categoryName = "category";
-
         using var httpClient = _factory.CreateClient();
 
         using var response = await httpClient.PostAsync("/Categories",
-            JsonContent.Create(new { Name = categoryName }));
+            JsonContent.Create(new { Name = SampleCategoryName }));
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var category = await response.Content.ReadFromJsonAsync<Category>();
         category
             .Should().NotBeNull().And
-            .Subject.As<Category>().Name.Should().Be(categoryName);
+            .Subject.As<Category>().Name.Should().Be(SampleCategoryName);
     }
 
     [Fact]
     public async Task UpdateCategory()
     {
-        const string categoryName = "category";
-        const string updateCategoryName = "updateCategory";
-
         using var httpClient = _factory.CreateClient();
 
         using var responsePost = await httpClient.PostAsync("/Categories",
-            JsonContent.Create(new { Name = categoryName }));
+            JsonContent.Create(new { Name = SampleCategoryName }));
         responsePost.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var category = await responsePost.Content.ReadFromJsonAsync<Category>();
         category
             .Should().NotBeNull().And
-            .Subject.As<Category>().Name.Should().Be(categoryName);
+            .Subject.As<Category>().Name.Should().Be(SampleCategoryName);
 
         using var responseUpdate = await httpClient.PutAsync("/Categories",
-            JsonContent.Create(new { category.Id, Name = updateCategoryName }));
-        responsePost.IsSuccessStatusCode.Should().BeTrue();
+            JsonContent.Create(new { Id = category.Id, Name = SampleUpdateCategoryName }));
+        responseUpdate.IsSuccessStatusCode.Should().BeTrue();
 
         var updatedCategory = await responseUpdate.Content.ReadFromJsonAsync<Category>();
         updatedCategory
             .Should().NotBeNull().And
-            .Subject.As<Category>().Name.Should().Be(updateCategoryName);
+            .Subject.As<Category>().Name.Should().Be(SampleUpdateCategoryName);
     }
 
     [Fact]
     public async Task RemoveCategory()
     {
-        const string categoryName = "category";
-
         using var httpClient = _factory.CreateClient();
 
         using var responsePost = await httpClient.PostAsync("/Categories",
-            JsonContent.Create(new { Name = categoryName }));
+            JsonContent.Create(new { Name = SampleCategoryName }));
         responsePost.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var category = await responsePost.Content.ReadFromJsonAsync<Category>();
         category
             .Should().NotBeNull().And
-            .Subject.As<Category>().Name.Should().Be(categoryName);
+            .Subject.As<Category>().Name.Should().Be(SampleCategoryName);
 
-        using var responseRemove = await httpClient.DeleteAsync($"/Categories/{category.Id}");
+        using var responseRemove = await httpClient.DeleteAsync($"{"/Categories"}/{category.Id}");
         responseRemove.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 }

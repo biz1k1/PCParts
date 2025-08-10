@@ -9,6 +9,9 @@ namespace PCParts.API.Tests
     {
         private readonly ApiWebApplicationFactory _factory;
 
+        private const string categoryName = "category";
+        private const string componentName = "component";
+        private const string specificationName = "Specficiation";
         public ComponentControllerShould(
             ApiWebApplicationFactory factory)
         {
@@ -18,13 +21,9 @@ namespace PCParts.API.Tests
         [Fact]
         public async Task CreateComponent()
         {
-            const string categoryName = "category";
-            const string componentName = "component";
-            const string specificationName = "Specficiation";
-
             using var httpClient = _factory.CreateClient();
 
-            using var responseCategory = await httpClient.PostAsync("/Categories",
+            using var responseCategory = await httpClient.PostAsync("Categories",
                 JsonContent.Create(new { Name = categoryName }));
             responseCategory.StatusCode.Should().Be(HttpStatusCode.Created);
 

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using PCParts.Domain.Entities;
-using PendingUser = PCParts.Application.Model.Models.PendingUser;
+using PCParts.API.Model.Models;
 
 namespace PCParts.API.Mapping;
 
@@ -11,6 +10,7 @@ public class ApiProfile : Profile
         CreateMap<Category, Application.Model.Models.Category>().ReverseMap();
         CreateMap<Component, Application.Model.Models.Component>().ReverseMap();
         CreateMap<Specification, Application.Model.Models.Specification>().ReverseMap();
+        CreateMap<Application.Model.Models.Specification, Specification>().ReverseMap();
 
         CreateMap<SpecificationValue, Application.Model.Models.SpecificationValue>().ReverseMap()
             .ForMember(x => x.Id, x => x.MapFrom(x => x.Id))

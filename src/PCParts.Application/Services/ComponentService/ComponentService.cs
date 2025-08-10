@@ -8,6 +8,7 @@ using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
 using PCParts.Domain.Exceptions;
 using PCParts.Domain.Specification.Component;
+using System.Linq;
 
 namespace PCParts.Application.Services.ComponentService;
 
@@ -54,12 +55,15 @@ public class ComponentService : IComponentService
 
         var specifications = await _specificationService
             .GetSpecificationsByCategory(command.CategoryId, cancellationToken);
-        var missingSpecification = specifications.Select(x => x.Id)
-            .Except(command.SpecificationValues.Select(x => x.Id));
 
-        if (missingSpecification.Any())
+        var specificationIds = new HashSet<Guid>(specifications.Select(s => s.Id));
+        var missingIds = command.SpecificationValues
+            .Where(v => !specificationIds.Contains(v.Id))
+            .Select(v => v.Id);
+
+        if (missingIds.Any())
         {
-            throw new CollectionEntitiesNotFoundException(nameof(missingSpecification), missingSpecification);
+            throw new CollectionEntitiesNotFoundException(nameof(missingIds), missingIds.ToList());
         }
 
         var createComponentStorage = scope.GetStorage<IComponentStorage>();
