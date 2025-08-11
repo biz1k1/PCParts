@@ -1,4 +1,4 @@
-﻿using PCParts.Notifications.Common.Initializer.Connection;
+using PCParts.Notifications.Common.Initializer.Connection;
 using RabbitMQ.Client;
 
 namespace PCParts.Notifications.Common.Initializer;
@@ -21,6 +21,7 @@ public class RabbitMqInitializer : IRabbitMqInitializer, IAsyncDisposable
         if (_channel is not null)
         {
             await _channel.DisposeAsync();
+            GC.SuppressFinalize(this);
             _channel = null;
         }
     }

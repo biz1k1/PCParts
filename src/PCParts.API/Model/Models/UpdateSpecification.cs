@@ -1,4 +1,4 @@
-﻿using PCParts.Application.Model.Enum;
+using PCParts.Application.Model.Enums;
 
 namespace PCParts.API.Model.Models;
 

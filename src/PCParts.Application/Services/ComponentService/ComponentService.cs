@@ -8,7 +8,6 @@ using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
 using PCParts.Domain.Exceptions;
 using PCParts.Domain.Specification.Component;
-using System.Linq;
 
 namespace PCParts.Application.Services.ComponentService;
 
@@ -107,7 +106,7 @@ public class ComponentService : IComponentService
             throw new EntityNotFoundException(nameof(component), id);
         }
 
-        if (component.SpecificationValues.Any())
+        if (component.SpecificationValues.Count > 0)
         {
             throw new RemoveEntityWithChildrenException(nameof(component), nameof(component.SpecificationValues));
         }

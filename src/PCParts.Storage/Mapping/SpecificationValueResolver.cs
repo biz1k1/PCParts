@@ -1,7 +1,7 @@
-﻿using System.Globalization;
+using System.Globalization;
 using AutoMapper;
 using PCParts.Domain.Entities;
-using PCParts.Domain.Enum;
+using PCParts.Domain.Enums;
 
 namespace PCParts.Storage.Mapping;
 
@@ -10,26 +10,17 @@ public class Resolver : IValueResolver<SpecificationValue, Application.Model.Mod
     public object Resolve(SpecificationValue source, Application.Model.Models.SpecificationValue destination,
         object destMember, ResolutionContext context)
     {
-        if (source.Specification is null)
-        {
-            return null;
-        }
-
-        if (source.Specification.DataType is 0)
-        {
-            return source.Value;
-        }
-
-        return source.Specification.DataType switch
-        {
-            SpecificationDataType.INT => int.TryParse(source.Value, out var intValue) ? intValue : "Invalid INT",
-            SpecificationDataType.STRING => source.Value,
-            SpecificationDataType.DOUBLE => double.TryParse(source.Value, NumberStyles.Any,
-                CultureInfo.InvariantCulture, out var doubleValue)
-                ? doubleValue
-                : "Invalid DOUBLE",
-            SpecificationDataType.BOOL => bool.TryParse(source.Value, out var boolValue) ? boolValue : "Invalid BOOL",
-            _ => source.Value
-        };
+        return source.Specification is null
+            ? null
+            : source.Specification.DataType switch
+            {
+                0 => source.Value,
+                SpecificationDataType.IntType => int.TryParse(source.Value, out var intValue) ? intValue : "Invalid INT",
+                SpecificationDataType.StringType => source.Value,
+                SpecificationDataType.DoubleType => double.TryParse(source.Value, NumberStyles.Any,
+                    CultureInfo.InvariantCulture, out var doubleValue) ? doubleValue : "Invalid DOUBLE",
+                SpecificationDataType.BoolType => bool.TryParse(source.Value, out var boolValue) ? boolValue : "Invalid BOOL",
+                _ => source.Value
+            };
     }
 }

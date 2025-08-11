@@ -1,7 +1,7 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentValidation.TestHelper;
 using PCParts.Application.Command;
-using PCParts.Application.Model.Enum;
+using PCParts.Application.Model.Enums;
 using PCParts.Application.Validation;
 
 namespace PCParts.Application.Tests.Validation;
@@ -36,7 +36,7 @@ public class CreateSpecificationCommandValidatorShould
     public static IEnumerable<object[]> GetInvalidCommands()
     {
         var validCommand =
-            new CreateSpecificationCommand(Guid.NewGuid(), "Specification", SpecificationDataType.STRING);
+            new CreateSpecificationCommand(Guid.NewGuid(), "Specification", SpecificationDataType.StringType);
         var outOfLength = "A".PadRight(51, 'A');
 
         yield return new object[] { validCommand with { Name = string.Empty } };
@@ -48,7 +48,7 @@ public class CreateSpecificationCommandValidatorShould
     public static IEnumerable<object[]> GetValidCommands()
     {
         var validCommand =
-            new CreateSpecificationCommand(Guid.NewGuid(), "Specification", SpecificationDataType.STRING);
+            new CreateSpecificationCommand(Guid.NewGuid(), "Specification", SpecificationDataType.StringType);
         yield return new object[] { validCommand };
     }
 }

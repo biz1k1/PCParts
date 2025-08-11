@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
@@ -28,6 +28,6 @@ public class UserStorage : IUserStorage
         user.Id = new Guid();
 
         await _pgContext.AddAsync(user, cancellationToken);
-        return await _pgContext.Users.FindAsync(user.Id);
+        return await _pgContext.Users.FindAsync([user.Id], cancellationToken);
     }
 }

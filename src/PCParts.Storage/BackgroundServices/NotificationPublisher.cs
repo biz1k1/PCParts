@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Microsoft.Extensions.Hosting;
 using PCParts.Storage.Common.Helpers;
 using PCParts.Storage.Common.Services.Deduplication;
@@ -32,7 +32,7 @@ public class NotificationPublisher : BackgroundService
 
         _connectionRabbitMq = await _connectionFactory.CreateConnectionAsync(stoppingToken);
         _channelRabbitMq = await _connectionRabbitMq.CreateChannelAsync(cancellationToken: stoppingToken);
-        _ = Task.Run(() => _domainEventReaderNotify.StartListeningNotifyAsync(stoppingToken));
+        _ = Task.Run(() => _domainEventReaderNotify.StartListeningNotifyAsync(stoppingToken), stoppingToken);
 
         await _channelRabbitMq.ExchangeDeclareAsync(exchange: "pcparts.events", type: ExchangeType.Topic,
             durable: true, cancellationToken: stoppingToken);
@@ -60,13 +60,14 @@ public class NotificationPublisher : BackgroundService
                 var body = Encoding.UTF8.GetBytes(payload);
                 var messageId = HashHelper.ComputeSha256(payload);
 
-                var props = new BasicProperties();
-                props.MessageId = $"{messageId}";
-
-                props.Persistent = true;
-                props.Headers = new Dictionary<string, object?>
+                var props = new BasicProperties
                 {
-                    ["From"] = "NotificationPublisher-1"
+                    MessageId = $"{messageId}",
+                    Persistent = true,
+                    Headers = new Dictionary<string, object?>
+                    {
+                        ["From"] = "NotificationPublisher-1"
+                    }
                 };
 
                 var duplicate = _deduplicationService.IsDuplicate(messageId);

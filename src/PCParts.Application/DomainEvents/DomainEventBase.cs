@@ -1,6 +1,6 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using PCParts.Application.Abstraction.DomainEvent;
-using PCParts.Domain.Enum;
+using PCParts.Domain.Enums;
 
 namespace PCParts.Application.DomainEvents;
 

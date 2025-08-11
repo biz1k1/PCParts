@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
 using PCParts.Domain.Specification.Base;
@@ -27,9 +27,9 @@ public class SpecificationValueStorage : ISpecificationValueStorage
     }
 
     public async Task<SpecificationValue> CreateSpecificationValue(Guid componentId,
-        IEnumerable<SpecificationValue> entity, CancellationToken cancellationToken)
+        IEnumerable<SpecificationValue> specificationValues, CancellationToken cancellationToken)
     {
-        var specificationValues = entity.Select(dto => new SpecificationValue
+        var entities = specificationValues.Select(dto => new SpecificationValue
         {
             Id = Guid.NewGuid(),
             Value = dto.Value,
@@ -37,7 +37,7 @@ public class SpecificationValueStorage : ISpecificationValueStorage
             ComponentId = componentId
         });
 
-        await _pgContext.SpecificationsValue.AddRangeAsync(specificationValues, cancellationToken);
+        await _pgContext.SpecificationsValue.AddRangeAsync(entities, cancellationToken);
         await _pgContext.SaveChangesAsync(cancellationToken);
 
         return await _pgContext.Components

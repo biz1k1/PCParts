@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using PCParts.Application.Abstraction.Storage;
 
@@ -15,7 +15,7 @@ public class UnitOfWork(IServiceScopeFactory scopeFactory) : IUnitOfWork
     }
 }
 
-internal class UnitOfWorkTransaction(
+internal sealed class UnitOfWorkTransaction(
     IServiceScope scope,
     IDbContextTransaction transaction) : IUnitOfWorkTransaction
 {

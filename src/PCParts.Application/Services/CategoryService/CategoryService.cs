@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Application.Command;
 using PCParts.Application.Model.Models;
@@ -66,7 +66,7 @@ public class CategoryService : ICategoryService
             throw new EntityNotFoundException(nameof(category), id);
         }
 
-        if (category.Components.Any())
+        if (category.Components.Count > 0)
         {
             throw new RemoveEntityWithChildrenException(nameof(category), nameof(category.Components));
         }

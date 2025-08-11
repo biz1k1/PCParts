@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using PCParts.Storage;
 
@@ -8,10 +8,9 @@ public static class MigrationExtensions
 {
     public static async Task ApplyMigrationAsync(this IApplicationBuilder app)
     {
-        using IServiceScope scope = app.ApplicationServices.CreateAsyncScope();
+        await using AsyncServiceScope scope = app.ApplicationServices.CreateAsyncScope();
 
-        using var dbContext =
-            scope.ServiceProvider.GetRequiredService<PgContext>();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<PgContext>();
 
         if (dbContext.Database.ProviderName == "Npgsql.EntityFrameworkCore.PostgreSQL")
         {
@@ -67,7 +66,7 @@ public static class MigrationExtensions
         }
     }
 
-    private class IntResult
+    internal sealed class IntResult
     {
         public int Value { get; set; }
     }

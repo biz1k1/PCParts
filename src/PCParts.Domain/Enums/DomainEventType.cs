@@ -1,4 +1,4 @@
-﻿namespace PCParts.Domain.Enum;
+namespace PCParts.Domain.Enums;
 
 public enum DomainEventType
 {

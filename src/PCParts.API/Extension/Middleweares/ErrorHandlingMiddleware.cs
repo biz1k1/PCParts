@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using PCParts.Domain.Exceptions;
@@ -9,7 +9,7 @@ public class ErrorHandlingMiddleware(RequestDelegate next)
 {
     public async Task InvokeAsync(
         HttpContext httpContext,
-        ILogger<ErrorHandlingMiddleware> logger,
+        //ILogger<ErrorHandlingMiddleware> logger,
         ProblemDetailsFactory problemDetailsFactory)
     {
         try
@@ -18,27 +18,27 @@ public class ErrorHandlingMiddleware(RequestDelegate next)
         }
         catch (Exception exception)
         {
-            logger.LogError(
-                exception,
-                "Error has happened with {RequestPath}, the message is {ErrorMessage}",
-                httpContext.Request.Path.Value, exception.Message);
+            //logger.LogError(
+            //    exception,
+            //    "Error has happened with {RequestPath}, the message is {ErrorMessage}",
+            //    httpContext.Request.Path.Value, exception.Message);
 
             ProblemDetails problemDetails;
             switch (exception)
             {
                 case ValidationException validationException:
                     problemDetails = problemDetailsFactory.CreateFrom(httpContext, validationException);
-                    logger.LogInformation(validationException, "Somebody sent invalid request, oops");
+                    //logger.LogInformation(validationException, "Somebody sent invalid request, oops");
                     break;
                 case DomainException domainException:
                     problemDetails = problemDetailsFactory.CreateFrom(httpContext, domainException);
-                    logger.LogError(domainException, "Domain exception occured");
+                    //logger.LogError(domainException, "Domain exception occured");
                     break;
                 default:
                     problemDetails = problemDetailsFactory.CreateProblemDetails(
                         httpContext, StatusCodes.Status500InternalServerError,
                         $"Unhandled error! Please contact us. Erorr: {exception.Message}/ {exception.InnerException}");
-                    logger.LogError(exception, "Unhandled exception occured");
+                    //logger.LogError(exception, "Unhandled exception occured");
                     break;
             }
 

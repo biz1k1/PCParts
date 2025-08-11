@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace PCParts.Storage.Common.Helpers;
@@ -10,7 +10,7 @@ public static class HashHelper
         using (var sha256 = SHA256.Create())
         {
             var inputBytes = Encoding.UTF8.GetBytes(input);
-            var hashBytes = sha256.ComputeHash(inputBytes);
+            var hashBytes = SHA256.HashData(inputBytes);
 
             // Преобразуем в hex-строку
             var builder = new StringBuilder();

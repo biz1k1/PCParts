@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.Metrics;
+using System.Diagnostics.Metrics;
 
 namespace PCParts.Application.Monitoring;
 
-internal class DomainMetrics
+public class DomainMetrics
 {
     private readonly Counter<int> _categoryfetched;
 

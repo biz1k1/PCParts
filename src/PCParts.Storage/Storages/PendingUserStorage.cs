@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
@@ -21,13 +21,13 @@ public class PendingUserStorage : IPendingUserStorage
         return await _pgContext.PendingUsers.Where(predicate).FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<PendingUser?> CreatePendingUser(string phone,
+    public async Task<PendingUser?> CreatePendingUser(string email,
         string passwordHash, CancellationToken cancellationToken)
     {
         var user = new PendingUser
         {
             Id = Guid.NewGuid(),
-            Email = phone,
+            Email = email,
             PasswordHash = passwordHash,
             CreatedAt = DateTimeOffset.UtcNow,
             EmailConfirmed = false,

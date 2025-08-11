@@ -29,5 +29,7 @@
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
-
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
+  </PropertyGroup>
 </Project>

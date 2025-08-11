@@ -78,7 +78,7 @@ public class CategoryControllerShould : IClassFixture<ApiWebApplicationFactory>
             .Subject.As<Category>().Name.Should().Be(SampleCategoryName);
 
         using var responseUpdate = await httpClient.PutAsync("/Categories",
-            JsonContent.Create(new { Id = category.Id, Name = SampleUpdateCategoryName }));
+            JsonContent.Create(new { category.Id, Name = SampleUpdateCategoryName }));
         responseUpdate.IsSuccessStatusCode.Should().BeTrue();
 
         var updatedCategory = await responseUpdate.Content.ReadFromJsonAsync<Category>();

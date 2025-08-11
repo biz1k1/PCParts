@@ -3,13 +3,14 @@ root = true
 # ================================
 # Общие настройки форматирования
 # ================================
+
 [*.cs]
 # Общие Ошибки
-#dotnet_analyzer_diagnostic.severity = error
-#dotnet_analyzer_diagnostic.category-Style.severity = error
-#dotnet_analyzer_diagnostic.category-Maintainability.severity = error
-#dotnet_analyzer_diagnostic.category-Reliability.severity = error
-#dotnet_analyzer_diagnostic.category-Performance.severity = error
+dotnet_analyzer_diagnostic.severity = error
+dotnet_analyzer_diagnostic.category-Style.severity = error
+dotnet_analyzer_diagnostic.category-Maintainability.severity = error
+dotnet_analyzer_diagnostic.category-Reliability.severity = error
+dotnet_analyzer_diagnostic.category-Performance.severity = error
 
 # Ошибки для формата
 dotnet_diagnostic.IDE0011.severity = error   # Добавить фигурные скобки в if/while/for/foreach
@@ -20,8 +21,13 @@ dotnet_diagnostic.IDE0022.severity = error   # Использовать тело
 dotnet_diagnostic.IDE0027.severity = error   # Использовать тело-выражение для свойств
 dotnet_diagnostic.IDE0040.severity = error   # Добавить модификаторы доступа
 dotnet_diagnostic.IDE0055.severity = error   # Исправить форматирование
-
+dotnet_diagnostic.SA1516.severity = error    # Обязательные проблемы (методами, классами и т.п.)
 dotnet_diagnostic.IDE1005.severity = error   # Размещение директив using
+dotnet_diagnostic.IDE0022.severity = none    # Use block body for method (для лямбд)
+dotnet_diagnostic.CA1305.severity = none     # Behavior based on local settings(например:int.Parse(myString, CultureInfo.InvariantCulture)
+dotnet_diagnostic.IDE0032.severity = none    # Выключение auto property
+dotnet_diagnostic.IDE0066.severity = none    # Выключает упрощение switch и тд
+
 
 # Игнорирование ошибок
 dotnet_diagnostic.IDE0160.severity = none    # Ругается на блочный namespace
@@ -29,14 +35,6 @@ dotnet_diagnostic.IDE0008.severity = none    # Ругается на var
 dotnet_diagnostic.IDE0290.severity = none    # primary конструктор
 dotnet_diagnostic.IDE0011.severity = none    # Упрощение if statement
 dotnet_diagnostic.IDE0058.severity = none    # Ругается на exprassion(мапер)
-
-
-indent_style = space
-indent_size = 4
-charset = utf-8
-insert_final_newline = true
-dotnet_sort_system_directives_first = true
-max_line_length = 120                        # Максимальная длина строки — 120 символов
 
 # ================================
 # Стиль C#
@@ -49,5 +47,11 @@ csharp_style_var_when_type_is_apparent = true:suggestion
 csharp_style_var_elsewhere = false:suggestion
 dotnet_style_require_braces = always      # необходимы ковычки для везде
 
+# Стиль
+indent_style = space
+indent_size = 4
+charset = utf-8
+insert_final_newline = true
+dotnet_sort_system_directives_first = true
 
 

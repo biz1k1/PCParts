@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
 using PCParts.Domain.Specification.Base;
@@ -65,7 +65,7 @@ public class CategoryStorage : ICategoryStorage
 
         await _pgContext.Categories
             .Where(c => c.Id == id)
-            .ExecuteUpdateAsync(c => c.SetProperty(x => x.Name, name));
+            .ExecuteUpdateAsync(c => c.SetProperty(x => x.Name, name), cancellationToken);
 
         return await _pgContext.Categories
             .AsNoTracking()

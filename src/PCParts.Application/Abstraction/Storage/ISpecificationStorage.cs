@@ -1,5 +1,5 @@
-﻿using PCParts.Domain.Entities;
-using PCParts.Domain.Enum;
+using PCParts.Domain.Entities;
+using PCParts.Domain.Enums;
 using PCParts.Domain.Specification.Base;
 
 namespace PCParts.Application.Abstraction.Storage;

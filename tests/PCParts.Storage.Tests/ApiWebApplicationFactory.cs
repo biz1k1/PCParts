@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PCParts.Storage;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
 using DotNetEnv;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace PCParts.API.Tests;
 
@@ -32,8 +32,7 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Env.Load(AppContext.BaseDirectory+"../../../../../solution-item/env/backend.env");
-        var variables = Environment.GetEnvironmentVariable("RabbitMQ__HostName");
+        Env.Load(AppContext.BaseDirectory + "../../../../../solution-item/env/backend.env");
         builder.UseEnvironment("Testing");
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
@@ -41,7 +40,7 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
                 ["ConnectionStrings:pgsql"] = _dbContainer.GetConnectionString()! ?? throw new InvalidOperationException("Connection string missing"),
                 ["Database:default_connection_string"] = _dbContainer.GetConnectionString(),
                 ["RabbitMQ:Host"] = Environment.GetEnvironmentVariable("RabbitMQ__HostName"),
-                ["RabbitMQ:Port"] = int.Parse(Environment.GetEnvironmentVariable("RabbitMQ__Port")!).ToString(),
+                ["RabbitMQ:Port"] = Environment.GetEnvironmentVariable("RabbitMQ__Port"),
                 ["RabbitMQ:Username"] = Environment.GetEnvironmentVariable("RabbitMQ__UserName"),
                 ["RabbitMQ:Password"] = Environment.GetEnvironmentVariable("RabbitMQ__Password"),
             }).Build();

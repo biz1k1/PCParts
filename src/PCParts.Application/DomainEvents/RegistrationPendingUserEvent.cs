@@ -1,9 +1,9 @@
-﻿using PCParts.Application.Model.Models;
-using PCParts.Domain.Enum;
+using PCParts.Application.Model.Models;
+using PCParts.Domain.Enums;
 
 namespace PCParts.Application.DomainEvents;
 
-class RegistrationPendingUserEvent : DomainEventBase<RegistrationPendingUserEvent.PendingUserPayload>
+internal sealed class RegistrationPendingUserEvent : DomainEventBase<RegistrationPendingUserEvent.PendingUserPayload>
 {
     public RegistrationPendingUserEvent(PendingUserPayload payload) : base(payload)
     {
@@ -23,7 +23,7 @@ class RegistrationPendingUserEvent : DomainEventBase<RegistrationPendingUserEven
         return new RegistrationPendingUserEvent(payload);
     }
 
-    public class PendingUserPayload
+    internal sealed class PendingUserPayload
     {
         public Guid PendingUserId { get; set; }
         public string Phone { get; set; }

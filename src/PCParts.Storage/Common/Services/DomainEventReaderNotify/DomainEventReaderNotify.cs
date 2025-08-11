@@ -1,5 +1,3 @@
-﻿using System.Data.Common;
-using Microsoft.EntityFrameworkCore.Design;
 using Npgsql;
 using PCParts.Domain.Entities;
 using PCParts.Storage.Common.Extensions;
@@ -7,7 +5,7 @@ using PCParts.Storage.Common.Services.DbConnectionProvider;
 
 namespace PCParts.Storage.Common.Services.DomainEventReaderNotify
 {
-    public class DomainEventReaderNotify : IDomainEventReaderNotify
+    public class DomainEventReaderNotify : IDomainEventReaderNotify, IDisposable
     {
         private readonly IDbConnectionProvider<NpgsqlConnection> _connectionProvider;
         private readonly AsyncSignal _eventSignal = new();
@@ -23,8 +21,7 @@ namespace PCParts.Storage.Common.Services.DomainEventReaderNotify
         public async Task<List<DomainEvents>> GetAllNonActivatedEventsAsync(CancellationToken cancellationToken)
         {
             var connection = await _connectionProvider.GetOpenConnection(false);
-            const string nonActivatedEventsQuery = 
-                @"SELECT * FROM ""DomainEvents"" WHERE ""ActivityAt"" IS NULL;";
+            const string nonActivatedEventsQuery = @"SELECT * FROM ""DomainEvents"" WHERE ""ActivityAt"" IS NULL;";
 
             var list = new List<DomainEvents>();
 
@@ -83,6 +80,12 @@ namespace PCParts.Storage.Common.Services.DomainEventReaderNotify
             {
                 await _listenerConnection.WaitAsync(cancellationToken);
             }
+        }
+
+        public void Dispose()
+        {
+            _eventSignal.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using PCParts.Application.Helpers;
-using PCParts.Application.Model.Enum;
+using PCParts.Application.Model.Enums;
 
 namespace PCParts.Application.Tests.Helpers;
 
@@ -24,30 +24,30 @@ public class ValidationHelperShould
 
     public static IEnumerable<object[]> GetInvalidCommands()
     {
-        var validCommand = new CommandForTestValidationHelper(SpecificationDataType.INT, "text");
+        var validCommand = new CommandForTestValidationHelper(SpecificationDataType.IntType, "text");
         yield return new object[] { validCommand };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.INT, Value = "10,5" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.INT, Value = "true" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.STRING, Value = "10" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.STRING, Value = "10,5" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.STRING, Value = "true" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.DOUBLE, Value = "text" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.DOUBLE, Value = "10" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.DOUBLE, Value = "true" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.BOOL, Value = "text" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.BOOL, Value = "10,5" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.BOOL, Value = "10" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.IntType, Value = "10,5" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.IntType, Value = "true" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.StringType, Value = "10" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.StringType, Value = "10,5" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.StringType, Value = "true" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.DoubleType, Value = "text" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.DoubleType, Value = "10" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.DoubleType, Value = "true" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.BoolType, Value = "text" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.BoolType, Value = "10,5" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.BoolType, Value = "10" } };
     }
 
     public static IEnumerable<object[]> GetValidCommands()
     {
-        var validCommand = new CommandForTestValidationHelper(SpecificationDataType.STRING, "text");
+        var validCommand = new CommandForTestValidationHelper(SpecificationDataType.StringType, "text");
 
         yield return new object[] { validCommand };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.INT, Value = "10" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.BOOL, Value = "true" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.BOOL, Value = "false" } };
-        yield return new object[] { validCommand with { Type = SpecificationDataType.DOUBLE, Value = "10,5" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.IntType, Value = "10" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.BoolType, Value = "true" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.BoolType, Value = "false" } };
+        yield return new object[] { validCommand with { Type = SpecificationDataType.DoubleType, Value = "10,5" } };
     }
 }
 

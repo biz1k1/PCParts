@@ -1,4 +1,4 @@
-﻿using PCParts.Domain.Enum;
+using PCParts.Domain.Enums;
 
 namespace PCParts.Application.Abstraction.DomainEvent;
 

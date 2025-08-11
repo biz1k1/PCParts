@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using PCParts.Domain.Enum;
+using PCParts.Domain.Enums;
 
 namespace PCParts.Domain.Entities;
 

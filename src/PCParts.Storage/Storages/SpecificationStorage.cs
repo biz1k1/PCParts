@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
-using PCParts.Domain.Enum;
+using PCParts.Domain.Enums;
 using PCParts.Domain.Specification.Base;
 using PCParts.Storage.Common.Extensions;
 
@@ -47,12 +47,12 @@ public class SpecificationStorage : ISpecificationStorage
             .FirstAsync(cancellationToken);
     }
 
-    public async Task<Specification?> GetSpecification(Guid id, ISpecification<Specification> spec,
+    public async Task<Specification?> GetSpecification(Guid id, ISpecification<Specification> specification,
         CancellationToken cancellationToken)
     {
         return await _pgContext.Specifications
             .Where(x => x.Id == id)
-            .ApplySpecification(spec)
+            .ApplySpecification(specification)
             .FirstOrDefaultAsync(cancellationToken);
     }
 

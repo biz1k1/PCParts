@@ -1,4 +1,4 @@
-﻿using PCParts.Application.Model.Enum;
+using PCParts.Application.Model.Enums;
 
 namespace PCParts.Application.Helpers;
 
@@ -6,21 +6,15 @@ public static class ValidationHelper
 {
     public static bool IsValueValid(SpecificationDataType? type, string value)
     {
-        switch (type)
+        return type switch
         {
-            case SpecificationDataType.INT:
-                return int.TryParse(value, out _);
-            case SpecificationDataType.STRING:
-                return !(int.TryParse(value, out _)
-                         || double.TryParse(value, out _)
-                         || bool.TryParse(value, out _));
-            case SpecificationDataType.DOUBLE:
-                return double.TryParse(value, out _)
-                       && (value.Contains('.') || value.Contains(','));
-            case SpecificationDataType.BOOL:
-                return bool.TryParse(value, out _);
-            default:
-                return false;
-        }
+            SpecificationDataType.IntType => int.TryParse(value, out _),
+            SpecificationDataType.StringType => !(int.TryParse(value, out _) || double.TryParse(value, out _) ||
+                                                  bool.TryParse(value, out _)),
+            SpecificationDataType.DoubleType => double.TryParse(value, out _) &&
+                                                (value.Contains('.') || value.Contains(',')),
+            SpecificationDataType.BoolType => bool.TryParse(value, out _),
+            _ => false
+        };
     }
 }

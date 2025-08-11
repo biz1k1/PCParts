@@ -1,10 +1,10 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Application.Command;
 using PCParts.Application.Helpers;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.ValidationService;
-using PCParts.Domain.Enum;
+using PCParts.Domain.Enums;
 using PCParts.Domain.Exceptions;
 using PCParts.Domain.Specification.Specification;
 
