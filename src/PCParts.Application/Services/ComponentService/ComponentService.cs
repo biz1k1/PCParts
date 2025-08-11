@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Application.Command;
 using PCParts.Application.DomainEvents;
@@ -63,7 +63,7 @@ public class ComponentService : IComponentService
 
         if (missingIds.Any())
         {
-            throw new CollectionEntitiesNotFoundException(nameof(missingIds), missingIds.ToList());
+            throw new CollectionEntitiesNotFoundException(nameof(missingIds), missingIds);
         }
 
         var createComponentStorage = scope.GetStorage<IComponentStorage>();

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PCParts.Application.Command;
 using PCParts.Domain.Entities;
 

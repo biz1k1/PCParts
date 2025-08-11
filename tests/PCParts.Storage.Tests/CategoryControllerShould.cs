@@ -36,7 +36,7 @@ public class CategoryControllerShould : IClassFixture<ApiWebApplicationFactory>
         using var responsePost = await httpClient.PostAsync("/Categories",
             JsonContent.Create(new { Name = SampleCategoryName }));
         responsePost.StatusCode.Should().Be(HttpStatusCode.Created);
-        var createdCategory= await responsePost.Content.ReadFromJsonAsync<Category>();
+        var createdCategory = await responsePost.Content.ReadFromJsonAsync<Category>();
 
         using var responseGet = await httpClient.GetAsync($"{"/Categories"}/{createdCategory.Id}");
         responseGet.StatusCode.Should().Be(HttpStatusCode.OK);
