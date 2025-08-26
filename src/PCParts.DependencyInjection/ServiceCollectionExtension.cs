@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -46,8 +46,8 @@ public static class ServiceCollectionExtension
             .AddScoped<IPendingUserService, PendingUserService>()
             .AddScoped<IPendingUserStorage, PendingUserStorage>()
             .AddScoped<IUserStorage, UserStorage>()
-            .AddSingleton<IPasswordHasher, PasswordHasher>()
-            .AddSingleton<IJwtTokenProvider, JwtTokenProvider>()
+            .AddTransient<IPasswordHasher, PasswordHasher>()
+            .AddTransient<IJwtTokenProvider, JwtTokenProvider>()
             .AddSingleton<IDeduplicationService, DeduplicationService>()
             .AddSingleton<IDomainEventReaderNotify, DomainEventReaderNotify>()
             .AddSingleton<IMemoryCache, MemoryCache>()
@@ -63,8 +63,7 @@ public static class ServiceCollectionExtension
         });
         services.AddSingleton<IDbConnectionProvider<NpgsqlConnection>>(sp =>
         {
-            var config = sp.GetRequiredService<IConfiguration>();
-            var connStr = configuration["Database:default_connection_string"];
+            var connStr = configuration["Database:default_connection_string"]!;
             return new NpgsqlConnectionProvider(connStr);
         });
         services.AddScoped<IUnitOfWork, UnitOfWork>();

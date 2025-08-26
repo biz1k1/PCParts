@@ -2,15 +2,20 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using PCParts.API.Extension.Middleweares;
 using PCParts.API.Extension.Migration;
+using PCParts.API.Monitoring;
 using PCParts.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services
+    .AddApiLogging(builder.Configuration, builder.Environment);
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options => { options.JsonSerializerOptions.ReferenceHandler = null; })
-    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = null;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    })
     .ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = false; });
 ;
 builder.Services.AddEndpointsApiExplorer();
@@ -22,10 +27,11 @@ builder.Services.AddSwaggerGen(x =>
 });
 builder.Services.AddServiceExtensions(builder.Configuration);
 builder.Services.AddAutoMapper(config => config.AddMaps(Assembly.GetExecutingAssembly()));
-//builder.Services.AddApiMetrics();
-builder.Logging.AddConsole();
+
 var app = builder.Build();
-// Configure the HTTP request pipeline.
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -36,7 +42,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.UseMiddleware<ErrorHandlingMiddleware>();
 //app.MapPrometheusScrapingEndpoint();
 
 app.Run();

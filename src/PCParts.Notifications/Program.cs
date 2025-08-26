@@ -7,6 +7,7 @@ using PCParts.Notifications.Common.Services.NotificationConsumerService;
 using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.Configure<ElasticEmailOptions>(builder.Configuration.GetSection("ElasticEmail"));
 builder.Services.AddHostedService<NotificationBackground>();
 builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
@@ -15,13 +16,13 @@ builder.Services.AddSingleton<INotificationSenderService, NotificationSenderServ
 builder.Services.AddSingleton<INotificationConsumerService, NotificationConsumerService>();
 builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory
 {
-    HostName = "rabbitmq",
-    Port = 5672,
-    UserName = "guest",
-    Password = "guest"
+    HostName = builder.Configuration["RabbitMQ:HostName"]!,
+    Port = builder.Configuration.GetValue<int>("RabbitMQ:Port"),
+    UserName = builder.Configuration["RabbitMQ:UserName"]!,
+    Password = builder.Configuration["RabbitMQ:Password"]!
 });
 builder.Services.AddHttpClient("ElasticEmail.client",
-        client => { client.BaseAddress = new Uri("https://api.elasticemail.com/v2/email/send"); })
+        client => { client.BaseAddress = new Uri(builder.Configuration["ElasticApi:Uri"]!); })
     .UseSocketsHttpHandler((handler, _) =>
     {
         handler.PooledConnectionLifetime = TimeSpan.FromMinutes(15);

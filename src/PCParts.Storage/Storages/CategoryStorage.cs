@@ -57,12 +57,6 @@ public class CategoryStorage : ICategoryStorage
 
     public async Task<Category> UpdateCategory(Guid id, string name, CancellationToken cancellationToken)
     {
-        var category = new Category
-        {
-            Id = id,
-            Name = name
-        };
-
         await _pgContext.Categories
             .Where(c => c.Id == id)
             .ExecuteUpdateAsync(c => c.SetProperty(x => x.Name, name), cancellationToken);

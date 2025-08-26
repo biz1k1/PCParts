@@ -14,23 +14,47 @@ services:
       - '8929:8929'
       - '2224:22'
       - '5050:5050'
+      - '5001:5001'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://gitlab.example.com:8929'
         gitlab_rails['gitlab_shell_ssh_port'] = 2224
+        gitlab_rails['registry_enabled'] = true
+        registry_external_url 'http://localhost:5001'
     volumes:
       - 'gl-config:/etc/gitlab'
       - 'gl-logs:/var/log/gitlab'
       - 'gl-data:/var/opt/gitlab'
     shm_size: '256m'
+    networks:
+      default:
+        aliases:
+          - gitlab.example.com
+
   runner-1:
     image: gitlab/gitlab-runner:latest
-    ports: 
-     - '8093:8093'
     hostname: 'gitlab.runner-1.com'
     volumes:
         - './runner-config.toml:/etc/gitlab-runner/config.toml'
+        - '/var/run/docker.sock:/var/run/docker.sock' 
+    networks:
+        - default
+  runner-2:
+    image: gitlab/gitlab-runner:latest
+    hostname: 'gitlab.runner-2.com'
+    volumes:
+        - './runner-config2.toml:/etc/gitlab-runner/config.toml'
+        - '/var/run/docker.sock:/var/run/docker.sock' 
+    networks:
+        - default
+  runner-3:
+    image: gitlab/gitlab-runner:latest
+    hostname: 'gitlab.runner-3.com'
+    volumes:
+        - './runner-config3.toml:/etc/gitlab-runner/config.toml'
         - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+        - default
 volumes:
   gl-config:
   gl-logs:

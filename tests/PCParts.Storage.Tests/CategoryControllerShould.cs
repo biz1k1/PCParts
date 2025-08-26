@@ -44,7 +44,7 @@ public class CategoryControllerShould : IClassFixture<ApiWebApplicationFactory>
         var category = await responseGet.Content.ReadFromJsonAsync<Category>();
         category
             .Should().NotBeNull().And
-            .Subject.As<Category>().Name.Should().Be(SampleCategoryName); ;
+            .Subject.As<Category>().Name.Should().Be(SampleCategoryName);
 
     }
 

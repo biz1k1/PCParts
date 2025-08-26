@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Domain.Entities;
 using PCParts.Domain.Specification.Base;
@@ -56,14 +56,9 @@ public class ComponentStorage : IComponentStorage
 
     public async Task<Component> UpdateComponent(Guid id, string name, CancellationToken cancellationToken)
     {
-        var component = new Component
-        {
-            Id = id,
-            Name = name
-        };
-
-        _pgContext.Components.Attach(component);
-        _pgContext.Entry(component).Property(c => c.Name).IsModified = true;
+        await _pgContext.Components
+            .Where(c => c.Id == id)
+            .ExecuteUpdateAsync(c => c.SetProperty(x => x.Name, name), cancellationToken);
 
         return await _pgContext.Components
             .AsNoTracking()

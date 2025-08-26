@@ -33,9 +33,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gitlab", "gitlab", "{964E64
 		solution-item\gitlab\runner-config.toml = solution-item\gitlab\runner-config.toml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "env", "env", "{C08A9D7E-FA42-4FAC-BA27-A1EEB9402B2E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "env", "env", "{352EF0DA-6F2F-4A3E-A628-16D4E6AFB719}"
 	ProjectSection(SolutionItems) = preProject
 		solution-item\env\backend.env = solution-item\env\backend.env
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{7DB97E1A-0AF3-42DE-A284-595BB32B19F4}"
+	ProjectSection(SolutionItems) = preProject
+		solution-item\grafana\loki-config.yaml = solution-item\grafana\loki-config.yaml
 	EndProjectSection
 EndProject
 Global
@@ -95,7 +100,8 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A} = {1DEBCAB9-5C5F-4185-9ABB-876091B5CB1D}
 		{19A04996-24F9-4A04-89BE-8E7D214FD28A} = {1DEBCAB9-5C5F-4185-9ABB-876091B5CB1D}
 		{964E64E3-EF7D-4C12-9A66-5435E77CCCAB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{C08A9D7E-FA42-4FAC-BA27-A1EEB9402B2E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{352EF0DA-6F2F-4A3E-A628-16D4E6AFB719} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{7DB97E1A-0AF3-42DE-A284-595BB32B19F4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4AD82AB7-213E-4321-8C84-4A4DBEDADD03}

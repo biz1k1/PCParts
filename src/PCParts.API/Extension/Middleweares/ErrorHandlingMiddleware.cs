@@ -7,9 +7,21 @@ namespace PCParts.API.Extension.Middleweares;
 
 public class ErrorHandlingMiddleware(RequestDelegate next)
 {
+    private static readonly Action<ILogger, string, string, Exception> _logException =
+        LoggerMessage.Define<string, string>(
+            LogLevel.Error,
+            new EventId(1, "UnhandledException"),
+            "Error has happened with {RequestPath}, the message is {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception> _logInfo =
+        LoggerMessage.Define<string>(
+            LogLevel.Information,
+            new EventId(2, "Info"),
+            "Info: {Message}");
+
     public async Task InvokeAsync(
         HttpContext httpContext,
-        //ILogger<ErrorHandlingMiddleware> logger,
+        ILogger<ErrorHandlingMiddleware> logger,
         ProblemDetailsFactory problemDetailsFactory)
     {
         try
@@ -18,27 +30,24 @@ public class ErrorHandlingMiddleware(RequestDelegate next)
         }
         catch (Exception exception)
         {
-            //logger.LogError(
-            //    exception,
-            //    "Error has happened with {RequestPath}, the message is {ErrorMessage}",
-            //    httpContext.Request.Path.Value, exception.Message);
+            _logException(logger, httpContext.Request.Path.Value, exception.Message, exception);
 
             ProblemDetails problemDetails;
             switch (exception)
             {
                 case ValidationException validationException:
                     problemDetails = problemDetailsFactory.CreateFrom(httpContext, validationException);
-                    //logger.LogInformation(validationException, "Somebody sent invalid request, oops");
+                    _logInfo(logger, validationException.Message, validationException);
                     break;
                 case DomainException domainException:
                     problemDetails = problemDetailsFactory.CreateFrom(httpContext, domainException);
-                    //logger.LogError(domainException, "Domain exception occured");
+                    _logInfo(logger, domainException.Message, domainException);
                     break;
                 default:
                     problemDetails = problemDetailsFactory.CreateProblemDetails(
                         httpContext, StatusCodes.Status500InternalServerError,
                         $"Unhandled error! Please contact us. Erorr: {exception.Message}/ {exception.InnerException}");
-                    //logger.LogError(exception, "Unhandled exception occured");
+                    _logException(logger, httpContext.Request.Path.Value, exception.Message, exception);
                     break;
             }
 

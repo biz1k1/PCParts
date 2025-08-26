@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PCParts.API.Model.Models;
 using PCParts.API.Model.ResponseType;
@@ -50,8 +50,7 @@ public class ComponentController : ControllerBase
         CancellationToken cancellationToken)
     {
         var valuesCommand = request.SpecificationValues
-            .Select(x => new CreateSpecificationValueCommand(x.SpecificationId, x.Value))
-            .ToList();
+            .Select(x => new CreateSpecificationValueCommand(x.SpecificationId, x.Value)).ToList();
         var command = new CreateComponentCommand(request.Name, request.CategoryId, valuesCommand);
         var component = await _componentService.CreateComponent(command, cancellationToken);
         return CreatedAtAction(nameof(GetComponent), new { componentId = component.Id },

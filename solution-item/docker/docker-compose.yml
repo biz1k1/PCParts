@@ -26,7 +26,8 @@ services:
     environment:
     - ASPNETCORE_ENVIRONMENT=Development
     env_file:
-      - ../env/backend.env
+     - ../env/backend.env
+    
 
   pcparts.database:
     image: postgres:latest
@@ -35,6 +36,8 @@ services:
     -  ../../.containers/api-db:/var/lib/postgresql/data 
     ports:
     - "5431:5432"
+    env_file:
+      - ../env/backend.env
     networks:
       - pcparts_network
     healthcheck:
@@ -52,7 +55,7 @@ services:
     networks:
       - pcparts_network 
 
-  RabbitMq: 
+  rabbitMq: 
     image: rabbitmq:3-management
     container_name: rabbitMq
     restart: always
@@ -61,12 +64,33 @@ services:
     ports:
       - "5672:5672"     
       - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+    env_file:
+     - ../env/backend.env
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    env_file:
+     - ../env/backend.env
+    ports:
+     - '3000:3000'
+    volumes: 
+      - grafana-storage:/var/lib/grafana
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ../grafana/loki-config.yaml:/etc/loki/local-config.yaml
+  
+
 volumes:
   rabbitmq-data:
+  grafana-storage:
     
