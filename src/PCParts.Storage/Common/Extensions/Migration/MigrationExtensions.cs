@@ -1,11 +1,12 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using PCParts.Storage;
-
-namespace PCParts.API.Extension.Migration;
+namespace PCParts.Storage.Common.Extensions.Migration;
 
 public static class MigrationExtensions
 {
+    
     public static async Task ApplyMigrationAsync(this IApplicationBuilder app)
     {
         await using AsyncServiceScope scope = app.ApplicationServices.CreateAsyncScope();

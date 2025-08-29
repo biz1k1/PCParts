@@ -8,6 +8,7 @@ using Npgsql;
 using PCParts.Application.Abstraction.Authentication;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Application.Model.Models;
+using PCParts.Application.Monitoring;
 using PCParts.Application.Services.CategoryService;
 using PCParts.Application.Services.ComponentService;
 using PCParts.Application.Services.PendingUserService;
@@ -71,7 +72,7 @@ public static class ServiceCollectionExtension
             .AddMaps(Assembly.GetAssembly(typeof(PgContext))));
         services.AddAutoMapper(typeof(StorageProfile));
         services.AddValidatorsFromAssemblyContaining<Category>(includeInternalTypes: true);
-
+        services.AddSingleton<DomainMetrics>();
         return services;
     }
 }

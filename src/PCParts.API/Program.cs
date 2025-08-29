@@ -1,14 +1,15 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
 using PCParts.API.Extension.Middleweares;
-using PCParts.API.Extension.Migration;
 using PCParts.API.Monitoring;
 using PCParts.DependencyInjection;
+using PCParts.Storage.Common.Extensions.Migration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddApiLogging(builder.Configuration, builder.Environment);
+    .AddApiLogging(builder.Configuration, builder.Environment)
+    .AddApiMetrics();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -42,7 +43,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-//app.MapPrometheusScrapingEndpoint();
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();
 
