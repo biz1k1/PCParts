@@ -43,6 +43,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{7DB9
 		solution-item\grafana\loki-config.yaml = solution-item\grafana\loki-config.yaml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PCParts.Storage.Tests", "PCParts.Storage.Tests\PCParts.Storage.Tests.csproj", "{E54A7907-3D6E-4C66-9BD3-2223B753E12C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,10 @@ Global
 		{19A04996-24F9-4A04-89BE-8E7D214FD28A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19A04996-24F9-4A04-89BE-8E7D214FD28A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19A04996-24F9-4A04-89BE-8E7D214FD28A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E54A7907-3D6E-4C66-9BD3-2223B753E12C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E54A7907-3D6E-4C66-9BD3-2223B753E12C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E54A7907-3D6E-4C66-9BD3-2223B753E12C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E54A7907-3D6E-4C66-9BD3-2223B753E12C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,6 +108,7 @@ Global
 		{964E64E3-EF7D-4C12-9A66-5435E77CCCAB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{352EF0DA-6F2F-4A3E-A628-16D4E6AFB719} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{7DB97E1A-0AF3-42DE-A284-595BB32B19F4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{E54A7907-3D6E-4C66-9BD3-2223B753E12C} = {3587E4AB-6431-43B5-80EF-38E465F863AF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4AD82AB7-213E-4321-8C84-4A4DBEDADD03}

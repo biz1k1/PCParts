@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using PCParts.Domain.Exceptions;
 
-namespace PCParts.API.Extension.Middleweares;
+namespace PCParts.API.Extension.Middlewares;
 
 public class ErrorHandlingMiddleware(RequestDelegate next)
 {

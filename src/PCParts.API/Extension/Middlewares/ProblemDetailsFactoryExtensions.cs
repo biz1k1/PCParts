@@ -1,10 +1,10 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using PCParts.Domain.Exceptions;
 
-namespace PCParts.API.Extension.Middleweares;
+namespace PCParts.API.Extension.Middlewares;
 
 public static class ProblemDetailsFactoryExtensions
 {

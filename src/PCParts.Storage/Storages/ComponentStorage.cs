@@ -47,11 +47,11 @@ public class ComponentStorage : IComponentStorage
     public async Task<IEnumerable<Component>> GetComponents(
         ISpecification<Component> specification, CancellationToken cancellationToken)
     {
-        var e = await _pgContext.Components
+        var components = await _pgContext.Components
             .AsNoTracking()
             .ApplySpecification(specification)
             .ToArrayAsync(cancellationToken);
-        return e;
+        return components;
     }
 
     public async Task<Component> UpdateComponent(Guid id, string name, CancellationToken cancellationToken)

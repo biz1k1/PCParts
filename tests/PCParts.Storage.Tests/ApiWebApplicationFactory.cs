@@ -28,7 +28,7 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
         await base.DisposeAsync();
         await _dbContainer.DisposeAsync();
         await _rabbitMqContainer.DisposeAsync();
-    } 
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -44,6 +44,7 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
                 ["RabbitMQ:Username"] = Environment.GetEnvironmentVariable("RabbitMQ__UserName"),
                 ["RabbitMQ:Password"] = Environment.GetEnvironmentVariable("RabbitMQ__Password"),
             }).Build();
+
         builder.UseConfiguration(configuration);
 
         base.ConfigureWebHost(builder);

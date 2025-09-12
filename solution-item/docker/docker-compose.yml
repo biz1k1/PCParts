@@ -15,6 +15,10 @@ services:
     depends_on:
        pcparts.database:
          condition: service_healthy
+       redis:
+         condition: service_healthy
+       rabbitMq:
+         condition: service_healthy
     networks:
       - pcparts_network 
     ports:
@@ -68,7 +72,12 @@ services:
      - ../env/backend.env
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
-
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
   grafana:
     image: grafana/grafana
     container_name: pcparts.grafana
@@ -88,6 +97,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - ../grafana/loki-config.yaml:/etc/loki/local-config.yaml
+
   prometheus:
     image: prom/prometheus:latest
     container_name: pcparts.prometheus
@@ -96,9 +106,26 @@ services:
     ports:
       - "9090:9090"
     restart: always
-  
 
+  redis:
+      image: redis:7
+      container_name: pcparts.redis
+      networks:
+        - pcparts_network
+      ports:
+        - "6379:6379"
+      command: >
+        redis-server --port 6379 --appendonly yes
+      volumes:
+        - redis_data:/data
+      healthcheck:
+        test: ["CMD", "redis-cli", "ping"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+   
 volumes:
   rabbitmq-data:
   grafana-storage:
+  redis_data:
     

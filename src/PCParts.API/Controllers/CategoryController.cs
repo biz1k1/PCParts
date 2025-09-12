@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PCParts.API.Model.Models;
 using PCParts.API.Model.ResponseType;
@@ -45,7 +45,7 @@ public class CategoryController : ControllerBase
 
     [HttpGet("{categoryId:guid}")]
     [ProducesResponseType(200, Type = typeof(Category))]
-    public async Task<IActionResult> GetCategory(
+    public async Task<ActionResult<Category?>> GetCategory(
         Guid categoryId,
         CancellationToken cancellationToken)
     {

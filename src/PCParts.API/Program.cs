@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
-using PCParts.API.Extension.Middleweares;
+using PCParts.API.Extension.Middlewares;
 using PCParts.API.Monitoring;
 using PCParts.DependencyInjection;
 using PCParts.Storage.Common.Extensions.Migration;
@@ -42,6 +42,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseMiddleware<CachingMiddleware>();
 app.MapControllers();
 app.MapPrometheusScrapingEndpoint();
 

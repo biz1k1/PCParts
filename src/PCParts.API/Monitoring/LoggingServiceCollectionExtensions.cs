@@ -23,7 +23,7 @@ namespace PCParts.API.Monitoring
                 .CreateLogger()));
     }
 
-    sealed internal class TraceEnrich : ILogEventEnricher
+    internal sealed class TraceEnrich : ILogEventEnricher
     {
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {

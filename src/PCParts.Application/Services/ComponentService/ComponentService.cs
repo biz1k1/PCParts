@@ -50,36 +50,42 @@ public class ComponentService : IComponentService
     public async Task<Component> CreateComponent(CreateComponentCommand command, CancellationToken cancellationToken)
     {
         await _validationService.Validate(command);
+
+        Component componentDTO;
+
         await using var scope = await _unitOfWork.StartScope(cancellationToken);
 
-        var specifications = await _specificationService
-            .GetSpecificationsByCategory(command.CategoryId, cancellationToken);
-
-        var specificationIds = new HashSet<Guid>(specifications.Select(s => s.Id));
-        var missingIds = command.SpecificationValues
-            .Where(v => !specificationIds.Contains(v.Id))
-            .Select(v => v.Id);
-
-        if (missingIds.Any())
         {
-            throw new CollectionEntitiesNotFoundException(nameof(missingIds), missingIds);
+            var specifications = await _specificationService
+                .GetSpecificationsByCategory(command.CategoryId, cancellationToken);
+
+            var specificationIds = new HashSet<Guid>(specifications.Select(s => s.Id));
+            var missingIds = command.SpecificationValues
+                .Where(v => !specificationIds.Contains(v.Id))
+                .Select(v => v.Id);
+
+            if (missingIds.Any())
+            {
+                throw new CollectionEntitiesNotFoundException(nameof(missingIds), missingIds);
+            }
+
+            var createComponentStorage = scope.GetStorage<IComponentStorage>();
+            var createSpecificationsValues = scope.GetStorage<ISpecificationValueService>();
+            var domainEventsStorage = scope.GetStorage<IDomainEventsStorage>();
+
+            var component =
+                await createComponentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
+            componentDTO = _mapper.Map<Component>(component);
+
+            var specificationValue = await createSpecificationsValues
+                .CreateSpecificationsValues(component.Id, command.SpecificationValues, cancellationToken);
+
+            await domainEventsStorage.AddAsync(ComponentDomainEvent.EventCreated(componentDTO, specificationValue),
+                cancellationToken);
+
+            await scope.Commit(cancellationToken);
+
         }
-
-        var createComponentStorage = scope.GetStorage<IComponentStorage>();
-        var createSpecificationsValues = scope.GetStorage<ISpecificationValueService>();
-        var domainEventsStorage = scope.GetStorage<IDomainEventsStorage>();
-
-        var component =
-            await createComponentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
-        var componentDTO = _mapper.Map<Component>(component);
-
-        var specificationValue = await createSpecificationsValues
-            .CreateSpecificationsValues(component.Id, command.SpecificationValues, cancellationToken);
-
-        await domainEventsStorage.AddAsync(ComponentDomainEvent.EventCreated(componentDTO, specificationValue),
-            cancellationToken);
-
-        await scope.Commit(cancellationToken);
 
         return componentDTO;
     }
