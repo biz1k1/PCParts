@@ -1,0 +1,59 @@
+image: mcr.microsoft.com/dotnet/sdk:8.0
+
+# ### Define variables
+#
+variables:
+  OBJECTS_DIRECTORY: 'obj'
+  NUGET_PACKAGES_DIRECTORY: '.nuget'
+  SOURCE_CODE_PATH: '*/*/'
+  DOCKER_TLS_CERTDIR: ""
+
+cache:
+  key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+  paths:
+    - '$SOURCE_CODE_PATH$OBJECTS_DIRECTORY/project.assets.json'
+    - '$SOURCE_CODE_PATH$OBJECTS_DIRECTORY/*.csproj.nuget.*'
+    - '$NUGET_PACKAGES_DIRECTORY'
+  policy: pull-push
+
+before_script:
+  - 'dotnet restore PCParts.sln --packages $NUGET_PACKAGES_DIRECTORY'
+
+services:
+   - name: docker:20.10.24-dind
+     command: ["--tls=false"]
+
+stages:
+  - build
+  - test
+  - linter
+  
+build:
+  stage: build    
+  script:
+    - 'dotnet build PCParts.sln --no-restore'
+
+tests:
+  stage: test
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+  script:
+  - dotnet test --restore --logger html --results-directory testreport || true
+  - ls -la testreport
+  
+  artifacts:
+    paths:
+      - testreport/*.html
+    expire_in: 1 hour
+
+linter:
+  stage: linter
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  script:
+    - dotnet tool install -g dotnet-format
+    - export PATH="$PATH:/root/.dotnet/tools"
+    - dotnet format --check
+  only:
+    - merge_requests
+    - main
+
