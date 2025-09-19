@@ -1,9 +1,9 @@
-﻿using PCParts.Domain.Entities;
+using PCParts.Domain.Entities;
 using PCParts.Domain.Specification.Base;
 
 namespace PCParts.Application.Abstraction.Storage;
 
-public interface ISpecificationValueStorage
+public interface ISpecificationValueStorage : IStorage
 {
     Task<SpecificationValue> GetSpecificationValue(Guid specificationValueId, ISpecification<SpecificationValue> spec,
         CancellationToken cancellationToken);

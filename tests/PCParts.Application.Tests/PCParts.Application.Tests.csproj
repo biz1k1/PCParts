@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PCParts.Application\PCParts.Application.csproj" />
+    <ProjectReference Include="..\..\src\PCParts.Storage\PCParts.Storage.csproj" />
   </ItemGroup>
 
   <ItemGroup>
