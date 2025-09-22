@@ -2,6 +2,7 @@ using PCParts.Notifications;
 using PCParts.Notifications.Common.Initializer;
 using PCParts.Notifications.Common.Initializer.Connection;
 using PCParts.Notifications.Common.Models;
+using PCParts.Notifications.Common.Polly;
 using PCParts.Notifications.Common.Services.EmailService;
 using PCParts.Notifications.Common.Services.NotificationConsumerService;
 using RabbitMQ.Client;
@@ -14,6 +15,7 @@ builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
 builder.Services.AddSingleton<IRabbitMqInitializer, RabbitMqInitializer>();
 builder.Services.AddSingleton<INotificationSenderService, NotificationSenderService>();
 builder.Services.AddSingleton<INotificationConsumerService, NotificationConsumerService>();
+builder.Services.AddSingleton<IPolicyFactory, RabbitMqPolicyFactory>();
 builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory
 {
     HostName = builder.Configuration["RabbitMQ:HostName"]!,

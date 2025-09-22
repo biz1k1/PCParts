@@ -14,10 +14,11 @@ public class RedisCacheService : IRedisCacheService
         (
             IConnectionMultiplexer connectionMultiplexer,
             IPolicyFactory policyFactory,
-            IOptions<RedisCacheOptions> options)
+            IOptions<RedisCacheOptions> options,
+            IEnumerable<IPolicyFactory> policies)
     {
         _connectionMultiplexer = connectionMultiplexer;
-        _policyFactory = policyFactory;
+        _policyFactory = policies.FirstOrDefault(x => x is RedisPolicyFactory);
 
         _options = options.Value;
     }

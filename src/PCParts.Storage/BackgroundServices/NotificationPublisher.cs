@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.Extensions.Hosting;
 using PCParts.Storage.Common.Helpers;
+using PCParts.Storage.Common.Polly;
 using PCParts.Storage.Common.Services.Deduplication;
 using PCParts.Storage.Common.Services.DomainEventReaderNotify;
 using RabbitMQ.Client;
@@ -12,26 +13,40 @@ public class NotificationPublisher : BackgroundService
     private readonly IConnectionFactory _connectionFactory;
     private readonly IDeduplicationService _deduplicationService;
     private readonly IDomainEventReaderNotify _domainEventReaderNotify;
-
+    private readonly IPolicyFactory _rabbitPolicy;
     private IChannel? _channelRabbitMq;
     private IConnection? _connectionRabbitMq;
 
     public NotificationPublisher(
         IConnectionFactory connectionFactory,
         IDeduplicationService deduplicationService,
-        IDomainEventReaderNotify domainEventReaderNotify)
+        IDomainEventReaderNotify domainEventReaderNotify,
+        IEnumerable<IPolicyFactory> policies)
     {
         _connectionFactory = connectionFactory;
         _deduplicationService = deduplicationService;
         _domainEventReaderNotify = domainEventReaderNotify;
+        _rabbitPolicy = policies.FirstOrDefault(x => x is RabbitMqPolicyFactory);
+
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Yield();
 
-        _connectionRabbitMq = await _connectionFactory.CreateConnectionAsync(stoppingToken);
-        _channelRabbitMq = await _connectionRabbitMq.CreateChannelAsync(cancellationToken: stoppingToken);
+        _connectionRabbitMq = await _rabbitPolicy
+            .GetPolicy<IConnection>()
+            .ExecuteAsync(() => _connectionFactory.CreateConnectionAsync(stoppingToken) ?? null);
+
+        _channelRabbitMq = await _rabbitPolicy
+            .GetPolicy<IChannel>()
+            .ExecuteAsync(() => _connectionRabbitMq.CreateChannelAsync(cancellationToken: stoppingToken) ?? null);
+
+        if (_channelRabbitMq == null || _connectionRabbitMq == null)
+        {
+            return;
+        }
+
         _ = Task.Run(() => _domainEventReaderNotify.StartListeningNotifyAsync(stoppingToken), stoppingToken);
 
         await _channelRabbitMq.ExchangeDeclareAsync(exchange: "pcparts.events", type: ExchangeType.Topic,

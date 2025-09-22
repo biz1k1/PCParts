@@ -61,6 +61,7 @@ public static class ServiceCollectionExtension
         // singleton
         services
             .AddSingleton<IPolicyFactory, RedisPolicyFactory>()
+            .AddSingleton<IPolicyFactory, RabbitMqPolicyFactory>()
             .AddSingleton<IDomainEventReaderNotify, DomainEventReaderNotify>()
             .AddSingleton<IMemoryCache, MemoryCache>()
             .AddSingleton<IConnectionFactory>(_ => new ConnectionFactory

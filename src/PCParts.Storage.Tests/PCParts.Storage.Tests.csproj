@@ -33,7 +33,6 @@
   <ItemGroup>
     <ProjectReference Include="..\PCParts.Domain\PCParts.Domain.csproj" />
     <ProjectReference Include="..\PCParts.Storage\PCParts.Storage.csproj" />
-    <ProjectReference Include="..\src\PCParts.API\PCParts.API.csproj" />
   </ItemGroup>
 
 </Project>
