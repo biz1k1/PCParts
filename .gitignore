@@ -101,7 +101,7 @@ StyleCopReport.xml
 *.env.*
 /.env
 .env
-!.env.example
+!solution-item/env/example.env
 
 # Chutzpah Test files
 _Chutzpah*

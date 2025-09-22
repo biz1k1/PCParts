@@ -20,8 +20,8 @@ builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory
 {
     HostName = builder.Configuration["RabbitMQ:HostName"]!,
     Port = builder.Configuration.GetValue<int>("RabbitMQ:Port"),
-    UserName = builder.Configuration["RabbitMQ:UserName"]!,
-    Password = builder.Configuration["RabbitMQ:Password"]!
+    UserName = builder.Configuration["RABBITMQ_DEFAULT_USER"]!,
+    Password = builder.Configuration["RABBITMQ_DEFAULT_PASS"]!
 });
 builder.Services.AddHttpClient("ElasticEmail.client",
         client => { client.BaseAddress = new Uri(builder.Configuration["ElasticApi:Uri"]!); })

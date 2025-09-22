@@ -50,6 +50,7 @@ public class CachingMiddleware
         {
             if (_memoryCache.TryGetValue(cacheKey, out bool existsFlag) && !existsFlag)
             {
+                context.Response.Headers["Cache-Control"] = "cache";
                 return;
             }
 
@@ -62,6 +63,7 @@ public class CachingMiddleware
                 });
 
                 context.Response.ContentType = "application/json; charset=utf-8";
+                context.Response.Headers["Cache-Control"] = "cache";
                 await context.Response.Body.WriteAsync(cachedBytes);
                 return;
             }
@@ -76,6 +78,7 @@ public class CachingMiddleware
             {
                 cachedBytes = memoryStream.ToArray();
                 await _redisCacheService.SetAsync(cacheKey, cachedBytes);
+                context.Response.Headers["Cache-Control"] = "no-cache";
             }
         }
         catch (Exception exception)

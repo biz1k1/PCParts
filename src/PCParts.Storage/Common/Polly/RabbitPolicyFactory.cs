@@ -10,11 +10,6 @@ namespace PCParts.Storage.Common.Polly
     {
         private readonly ILogger<RabbitMqPolicyFactory> _logger;
 
-        private const int RETRY_COUNT = 3;
-        private const int BREAKER_FAILURES = 2;
-        private static readonly TimeSpan RETRY_DELAY = TimeSpan.FromMilliseconds(200);
-        private static readonly TimeSpan BREAKER_DURATION = TimeSpan.FromSeconds(10);
-
         public RabbitMqPolicyFactory(
             ILogger<RabbitMqPolicyFactory> logger)
         {
@@ -23,17 +18,11 @@ namespace PCParts.Storage.Common.Polly
 
         public AsyncPolicyWrap<T> GetPolicy<T>()
         {
-            var retry = Policy<T>
-                .Handle<BrokerUnreachableException>()
-                .Or<AlreadyClosedException>()
-                .Or<OperationInterruptedException>()
-                .WaitAndRetryAsync(RETRY_COUNT, attempt => RETRY_DELAY);
-
             var breaker = Policy<T>
                 .Handle<BrokerUnreachableException>()
                 .Or<AlreadyClosedException>()
                 .Or<OperationInterruptedException>()
-                .CircuitBreakerAsync(BREAKER_FAILURES, BREAKER_DURATION);
+                .CircuitBreakerAsync(1, TimeSpan.FromMilliseconds(5000));
 
             var fallback = Policy<T>
                 .Handle<BrokerUnreachableException>()
@@ -50,7 +39,7 @@ namespace PCParts.Storage.Common.Polly
                     }
                 );
 
-            return Policy.WrapAsync(fallback, retry, breaker);
+            return Policy.WrapAsync(fallback, breaker);
         }
     }
 }

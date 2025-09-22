@@ -13,7 +13,6 @@ public class RedisCacheService : IRedisCacheService
     public RedisCacheService
         (
             IConnectionMultiplexer connectionMultiplexer,
-            IPolicyFactory policyFactory,
             IOptions<RedisCacheOptions> options,
             IEnumerable<IPolicyFactory> policies)
     {

@@ -36,6 +36,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "env", "env", "{352EF0DA-6F2F-4A3E-A628-16D4E6AFB719}"
 	ProjectSection(SolutionItems) = preProject
 		solution-item\env\backend.env = solution-item\env\backend.env
+		solution-item\env\example.env = solution-item\env\example.env
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{7DB97E1A-0AF3-42DE-A284-595BB32B19F4}"

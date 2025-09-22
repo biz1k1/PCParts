@@ -68,8 +68,8 @@ public static class ServiceCollectionExtension
             {
                 HostName = configuration["RabbitMQ:HostName"]!,
                 Port = configuration.GetValue<int>("RabbitMQ:Port"),
-                UserName = configuration["RabbitMQ:UserName"]!,
-                Password = configuration["RabbitMQ:Password"]!
+                UserName = configuration["RABBITMQ_DEFAULT_USER"]!,
+                Password = configuration["RABBITMQ_DEFAULT_PASS"]!
             })
             .AddSingleton<IDbConnectionProvider<NpgsqlConnection>>(sp =>
             {
@@ -80,8 +80,11 @@ public static class ServiceCollectionExtension
             ConnectionMultiplexer.Connect(new ConfigurationOptions
             {
                 EndPoints = { configuration["Redis:Ip"]! },
-                ReconnectRetryPolicy = new ExponentialRetry(5000),
+                ReconnectRetryPolicy = new ExponentialRetry(0),
                 KeepAlive = 60,
+                ConnectTimeout = 5000,
+                SyncTimeout = 0,
+                AsyncTimeout = 0,
                 AllowAdmin = false,
                 ClientName = "PCPartsAPI",
                 AbortOnConnectFail = false

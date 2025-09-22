@@ -15,10 +15,6 @@ services:
     depends_on:
        pcparts.database:
          condition: service_healthy
-       redis:
-         condition: service_healthy
-       rabbitMq:
-         condition: service_healthy
     networks:
       - pcparts_network 
     ports:
@@ -114,8 +110,7 @@ services:
         - pcparts_network
       ports:
         - "6379:6379"
-      command: >
-        redis-server --port 6379 --appendonly yes
+      command: sh -c "redis-server --port 6379 --appendonly yes"
       volumes:
         - redis_data:/data
       healthcheck:
@@ -123,6 +118,7 @@ services:
         interval: 10s
         timeout: 5s
         retries: 5
+
    
 volumes:
   rabbitmq-data:

@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Wrap;
+using RabbitMQ.Client.Exceptions;
 using StackExchange.Redis;
 
 namespace PCParts.Storage.Common.Polly
@@ -9,23 +10,24 @@ namespace PCParts.Storage.Common.Polly
     public class RedisPolicyFactory : IPolicyFactory
     {
         private readonly ILogger<RedisPolicyFactory> _logger;
+
         public RedisPolicyFactory(
             ILogger<RedisPolicyFactory> logger)
         {
             _logger = logger;
         }
+
         public AsyncPolicyWrap<T> GetPolicy<T>()
         {
-            var retry = Policy<T>
-                .Handle<RedisConnectionException>()
-                .WaitAndRetryAsync(3, attempt => TimeSpan.FromMilliseconds(200));
 
             var breaker = Policy<T>
                 .Handle<RedisConnectionException>()
-                .CircuitBreakerAsync(2, TimeSpan.FromSeconds(10));
+                .Or<AlreadyClosedException>()
+                .CircuitBreakerAsync(1, TimeSpan.FromMilliseconds(5000));
 
             var fallback = Policy<T>
                 .Handle<RedisConnectionException>()
+                .Or<AlreadyClosedException>()
                 .Or<BrokenCircuitException>()
                 .Or<NullReferenceException>()
                 .FallbackAsync(
@@ -37,7 +39,7 @@ namespace PCParts.Storage.Common.Polly
                     }
                 );
 
-            return Policy.WrapAsync(fallback, retry, breaker);
+            return Policy.WrapAsync(fallback, breaker);
         }
     }
 }
