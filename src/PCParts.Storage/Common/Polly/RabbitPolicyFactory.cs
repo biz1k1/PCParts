@@ -3,6 +3,7 @@ using Polly.CircuitBreaker;
 using Polly;
 using Polly.Wrap;
 using RabbitMQ.Client.Exceptions;
+using PCParts.Shared.Monitoring.Logs;
 
 namespace PCParts.Storage.Common.Polly
 {
@@ -31,10 +32,10 @@ namespace PCParts.Storage.Common.Polly
                 .Or<OperationInterruptedException>()
                 .Or<NullReferenceException>()
                 .FallbackAsync(
-                    fallbackValue: default(T)!,
+                    fallbackValue: default!,
                     onFallbackAsync: async (outcome, context) =>
                     {
-                        _logger.LogError(outcome.Exception, "RabbitMQ call failed, fallback executed");
+                        _logger.LogErrorException(nameof(RabbitMqPolicyFactory), outcome.Exception.Message);
                         await Task.CompletedTask;
                     }
                 );

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Application.Command;
 using PCParts.Application.Helpers;

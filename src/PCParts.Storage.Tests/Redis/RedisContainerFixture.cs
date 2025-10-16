@@ -3,7 +3,6 @@ using PCParts.Storage.Common.Polly;
 using PCParts.Storage.Redis;
 using StackExchange.Redis;
 using Testcontainers.Redis;
-using DotNetEnv;
 
 namespace PCParts.Storage.Tests.Redis
 {
@@ -11,6 +10,8 @@ namespace PCParts.Storage.Tests.Redis
     {
         private readonly RedisContainer _container = new RedisBuilder().Build();
         private ConnectionMultiplexer? _connection;
+        private readonly IEnumerable<IPolicyFactory> policies;
+
         public RedisCacheService? Service { get; private set; }
         public async Task InitializeAsync()
         {
@@ -20,14 +21,13 @@ namespace PCParts.Storage.Tests.Redis
                 _container.GetConnectionString()
             );
 
-            var policyFactory = new RedisPolicyFactory();
 
             var options = Options.Create(new RedisCacheOptions
             {
                 DefaultTtl = TimeSpan.FromMinutes(10)
             });
 
-            Service = new RedisCacheService(_connection, policyFactory, options);
+            Service = new RedisCacheService(_connection, options, policies);
         }
 
         public async Task DisposeAsync()

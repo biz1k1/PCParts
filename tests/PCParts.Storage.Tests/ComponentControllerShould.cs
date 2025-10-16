@@ -69,7 +69,7 @@ public class ComponentControllerShould : IClassFixture<ApiWebApplicationFactory>
         var component = await responseComponentCreate.Content.ReadFromJsonAsync<Component>();
         component
             .Should().NotBeNull().And
-            .Subject.As<Component>().Name.Should().Be(SampleComponentName);
+            .Subject.As<Component>().Category.Should().Be(SampleComponentName);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class ComponentControllerShould : IClassFixture<ApiWebApplicationFactory>
         var component = await responseComponentGet.Content.ReadFromJsonAsync<Component>();
         component
             .Should().NotBeNull().And
-            .Subject.As<Component>().Name.Should().Be(SampleComponentName);
+            .Subject.As<Component>().Category.Should().Be(SampleComponentName);
     }
 
     [Fact]
@@ -302,7 +302,7 @@ public class ComponentControllerShould : IClassFixture<ApiWebApplicationFactory>
         var updatedComponent = await responseComponentUpdate.Content.ReadFromJsonAsync<Component>();
         updatedComponent
             .Should().NotBeNull().And
-            .Subject.As<Component>().Name.Should().Be(SampleUpdateCategoryName);
+            .Subject.As<Component>().Category.Should().Be(SampleUpdateCategoryName);
 
 
     }

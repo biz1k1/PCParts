@@ -1,17 +1,22 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
+using Microsoft.Extensions.Logging;
+using PCParts.Shared.Monitoring.Logs;
+
 namespace PCParts.Storage.Common.Extensions.Migration;
 
 public static class MigrationExtensions
 {
-    
     public static async Task ApplyMigrationAsync(this IApplicationBuilder app)
     {
         await using AsyncServiceScope scope = app.ApplicationServices.CreateAsyncScope();
 
+        var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
+        var logger = loggerFactory.CreateLogger("MigrationLogger");
+
         await using var dbContext = scope.ServiceProvider.GetRequiredService<PgContext>();
+
 
         if (dbContext.Database.ProviderName == "Npgsql.EntityFrameworkCore.PostgreSQL")
         {
@@ -58,11 +63,9 @@ public static class MigrationExtensions
                     await dbContext.Database.ExecuteSqlRawAsync(createTriggerSql);
                 }
             }
-            catch (PostgresException pgEx)
+            catch (Exception ex)
             {
-            }
-            catch (DbUpdateException dbUpEx)
-            {
+                logger.LogCriticalException(nameof(MigrationExtensions), ex.Message, ex);
             }
         }
     }

@@ -15,6 +15,8 @@ services:
     depends_on:
        pcparts.database:
          condition: service_healthy
+       rabbitMq:
+        condition: service_healthy
     networks:
       - pcparts_network 
     ports:
@@ -24,9 +26,11 @@ services:
        - "8080"
        - "8081"
     environment:
-    - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080;http://+:8081
     env_file:
-     - ../env/backend.env
+      - ../env/backend.env
+
     
 
   pcparts.database:
@@ -45,15 +49,25 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 15s 
+    restart: unless-stopped
   
   pcparts.notifications:
     container_name: pcparts.notification
-    image: pcparts-consumer
     build:
       context: ../../src
       dockerfile: PCParts.Notifications/Dockerfile
     networks:
       - pcparts_network 
+    depends_on:
+       pcparts.api:
+         condition: service_started
+       rabbitMq:
+         condition: service_healthy
+    env_file:
+     - ../env/backend.env
+    restart: unless-stopped
+
 
   rabbitMq: 
     image: rabbitmq:3-management
@@ -77,6 +91,8 @@ services:
   grafana:
     image: grafana/grafana
     container_name: pcparts.grafana
+    networks:
+      - pcparts_network
     restart: unless-stopped
     env_file:
      - ../env/backend.env
@@ -84,24 +100,35 @@ services:
      - '3000:3000'
     volumes: 
       - grafana-storage:/var/lib/grafana
+      - ../grafana/provisioning/datasources/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ../grafana/provisioning/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ../grafana/provisioning/dashboards_json:/etc/grafana/provisioning/dashboards_json
 
   loki:
     image: grafana/loki:latest
     container_name: pcparts.loki
+    networks:
+      - pcparts_network
     ports:
       - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
+    command: --config.file=/etc/loki/local-config.yaml
     volumes:
       - ../grafana/loki-config.yaml:/etc/loki/local-config.yaml
+      - loki-storage:/loki
+    env_file:
+     - ../env/backend.env
+    restart: unless-stopped
 
   prometheus:
     image: prom/prometheus:latest
     container_name: pcparts.prometheus
+    networks:
+      - pcparts_network
     volumes:
       - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
       - "9090:9090"
-    restart: always
+    restart: unless-stopped
 
   redis:
       image: redis:7
@@ -118,10 +145,25 @@ services:
         interval: 10s
         timeout: 5s
         retries: 5
+      restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:2.9.3
+    container_name: pcparts.promtail
+    networks:
+        - pcparts_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ../grafana/promtail/promtail-config.yaml:/etc/promtail/config.yaml:ro
+    command: -config.file=/etc/promtail/config.yaml
+    depends_on:
+      - loki
 
    
 volumes:
   rabbitmq-data:
   grafana-storage:
   redis_data:
+  loki-storage:
     

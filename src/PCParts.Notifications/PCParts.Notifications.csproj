@@ -15,4 +15,8 @@
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PCParts.Shared\PCParts.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

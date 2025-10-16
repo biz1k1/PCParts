@@ -1,6 +1,9 @@
-﻿using PCParts.Notifications.Common.MessagesResult;
+using PCParts.Notifications.Common.MessagesResult;
+using PCParts.Notifications.Common.Models;
 using PCParts.Notifications.Common.Services.EmailService;
 using PCParts.Notifications.Common.Services.NotificationConsumerService;
+using PCParts.Shared.Monitoring.Logs;
+using PCParts.Shared.Monitoring.Metrics;
 
 namespace PCParts.Notifications;
 
@@ -8,26 +11,30 @@ public class NotificationBackground : BackgroundService
 {
     private readonly INotificationConsumerService _notificationConsumerService;
     private readonly INotificationSenderService _notificationSenderervice;
+    private readonly ILogger<NotificationBackground> _logger;
 
     public NotificationBackground(
         INotificationConsumerService notificationConsumerService,
-        INotificationSenderService notificationSenderervice)
+        INotificationSenderService notificationSenderervice,
+        ILogger<NotificationBackground> logger
+        )
     {
         _notificationConsumerService = notificationConsumerService;
         _notificationSenderervice = notificationSenderervice;
+        _logger = logger;
     }
 
-    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Yield();
 
-        await _notificationConsumerService.StartConsuming(stoppingToken);
-
-        while (!stoppingToken.IsCancellationRequested)
+        try
         {
-            try
+            await _notificationConsumerService.StartConsuming(stoppingToken);
+
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var message = await _notificationConsumerService.GetNotification(stoppingToken);
+                Message message = await _notificationConsumerService.GetNotification(stoppingToken);
                 if (!message.Result.IsSuccess)
                 {
                     await _notificationConsumerService.ConfirmMessageProcessingAsync(message.Result,
@@ -36,7 +43,7 @@ public class NotificationBackground : BackgroundService
                     continue;
                 }
 
-                var emailResult = await _notificationSenderervice.Send(message);
+                MessageResult emailResult = await _notificationSenderervice.Send(message);
                 if (!emailResult.IsSuccess)
                 {
                     await _notificationConsumerService.ConfirmMessageProcessingAsync(emailResult, message.DeliveryTag,
@@ -48,11 +55,14 @@ public class NotificationBackground : BackgroundService
                     message.DeliveryTag,
                     stoppingToken);
 
+
                 await Task.Delay(10, stoppingToken);
             }
-            catch (Exception)
-            {
-            }
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogCriticalException(nameof(NotificationBackground), ex.Message, ex);
         }
     }
 }

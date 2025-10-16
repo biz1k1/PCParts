@@ -36,7 +36,10 @@ dotnet_diagnostic.IDE0008.severity = none    # Ругается на var
 dotnet_diagnostic.IDE0290.severity = none    # primary конструктор
 dotnet_diagnostic.IDE0011.severity = none    # Упрощение if statement
 dotnet_diagnostic.IDE0058.severity = none    # Ругается на exprassion(мапер)
-
+dotnet_diagnostic.ASP0015.severity = none    # Ругается на кеш 
+dotnet_diagnostic.CA1716.severity = none     # юзинг
+dotnet_diagnostic.SYSLIB1045.severity = none # regex
+ 
 # ================================
 # Стиль C#
 # ================================

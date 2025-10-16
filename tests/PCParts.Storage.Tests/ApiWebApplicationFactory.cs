@@ -41,8 +41,8 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
                 ["Database:default_connection_string"] = _dbContainer.GetConnectionString(),
                 ["RabbitMQ:Host"] = Environment.GetEnvironmentVariable("RabbitMQ__HostName"),
                 ["RabbitMQ:Port"] = Environment.GetEnvironmentVariable("RabbitMQ__Port"),
-                ["RabbitMQ:Username"] = Environment.GetEnvironmentVariable("RabbitMQ__UserName"),
-                ["RabbitMQ:Password"] = Environment.GetEnvironmentVariable("RabbitMQ__Password"),
+                ["RabbitMQ:Username"] = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER"),
+                ["RabbitMQ:Password"] = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS"),
             }).Build();
 
         builder.UseConfiguration(configuration);

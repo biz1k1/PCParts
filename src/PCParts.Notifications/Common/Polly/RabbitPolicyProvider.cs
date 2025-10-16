@@ -2,6 +2,7 @@ using Polly.CircuitBreaker;
 using Polly;
 using Polly.Wrap;
 using RabbitMQ.Client.Exceptions;
+using PCParts.Shared.Monitoring.Logs;
 
 namespace PCParts.Notifications.Common.Polly
 {
@@ -10,7 +11,7 @@ namespace PCParts.Notifications.Common.Polly
         private readonly ILogger<RabbitMqPolicyFactory> _logger;
 
         private const int RETRY_COUNT = 3;
-        private const int BREAKER_FAILURES = 2;
+        private const int BREAKER_FAILURES = 5;
         private static readonly TimeSpan RETRY_DELAY = TimeSpan.FromMilliseconds(200);
         private static readonly TimeSpan BREAKER_DURATION = TimeSpan.FromSeconds(10);
 
@@ -40,10 +41,10 @@ namespace PCParts.Notifications.Common.Polly
                 .Or<OperationInterruptedException>()
                 .Or<NullReferenceException>()
                 .FallbackAsync(
-                    fallbackValue: default(T)!,
+                    fallbackValue: default!,
                     onFallbackAsync: async (outcome, context) =>
                     {
-                        _logger.LogError(outcome.Exception, "RabbitMQ call failed, fallback executed");
+                        _logger.LogErrorException(nameof(RabbitMqPolicyFactory), outcome.Exception.Message);
                         await Task.CompletedTask;
                     }
                 );

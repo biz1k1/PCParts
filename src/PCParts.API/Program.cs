@@ -1,15 +1,16 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
 using PCParts.API.Extension.Middlewares;
-using PCParts.API.Monitoring;
 using PCParts.DependencyInjection;
 using PCParts.Storage.Common.Extensions.Migration;
+using PCParts.Shared.Monitoring.Logs;
+using PCParts.Shared.Monitoring.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddApiLogging(builder.Configuration, builder.Environment)
-    .AddApiMetrics();
+    .AddLogging(builder.Environment)
+    .AddAppMetrics();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -37,15 +38,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    if (!app.Environment.IsEnvironment("Testing")) await app.ApplyMigrationAsync();
+    await app.ApplyMigrationAsync();
 }
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseMiddleware<CachingMiddleware>();
 app.MapControllers();
-app.MapPrometheusScrapingEndpoint();
-
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 app.Run();
 
 public partial class Program

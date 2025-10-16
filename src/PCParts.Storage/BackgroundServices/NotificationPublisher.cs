@@ -1,5 +1,8 @@
 using System.Text;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using PCParts.Shared.Monitoring.Logs;
+using PCParts.Shared.Monitoring.Metrics;
 using PCParts.Storage.Common.Helpers;
 using PCParts.Storage.Common.Polly;
 using PCParts.Storage.Common.Services.Deduplication;
@@ -14,6 +17,8 @@ public class NotificationPublisher : BackgroundService
     private readonly IDeduplicationService _deduplicationService;
     private readonly IDomainEventReaderNotify _domainEventReaderNotify;
     private readonly IPolicyFactory _rabbitPolicy;
+    private readonly ILogger<NotificationPublisher> _logger;
+    private readonly IAppMetrics _metrics;
     private IChannel? _channelRabbitMq;
     private IConnection? _connectionRabbitMq;
 
@@ -21,12 +26,16 @@ public class NotificationPublisher : BackgroundService
         IConnectionFactory connectionFactory,
         IDeduplicationService deduplicationService,
         IDomainEventReaderNotify domainEventReaderNotify,
-        IEnumerable<IPolicyFactory> policies)
+        IEnumerable<IPolicyFactory> policies,
+        ILogger<NotificationPublisher> logger,
+        IAppMetrics metrics)
     {
         _connectionFactory = connectionFactory;
         _deduplicationService = deduplicationService;
         _domainEventReaderNotify = domainEventReaderNotify;
         _rabbitPolicy = policies.FirstOrDefault(x => x is RabbitMqPolicyFactory);
+        _logger = logger;
+        _metrics = metrics;
 
     }
 
@@ -34,70 +43,80 @@ public class NotificationPublisher : BackgroundService
     {
         await Task.Yield();
 
-        _connectionRabbitMq = await _rabbitPolicy
-            .GetPolicy<IConnection>()
-            .ExecuteAsync(() => _connectionFactory.CreateConnectionAsync(stoppingToken) ?? null);
-
-        _channelRabbitMq = await _rabbitPolicy
-            .GetPolicy<IChannel>()
-            .ExecuteAsync(() => _connectionRabbitMq.CreateChannelAsync(cancellationToken: stoppingToken) ?? null);
-
-        if (_channelRabbitMq == null || _connectionRabbitMq == null)
+        try
         {
-            return;
-        }
 
-        _ = Task.Run(() => _domainEventReaderNotify.StartListeningNotifyAsync(stoppingToken), stoppingToken);
+            _connectionRabbitMq = await _rabbitPolicy
+                .GetPolicy<IConnection>()
+                .ExecuteAsync(() => _connectionFactory.CreateConnectionAsync(stoppingToken) ?? null);
 
-        await _channelRabbitMq.ExchangeDeclareAsync(exchange: "pcparts.events", type: ExchangeType.Topic,
-            durable: true, cancellationToken: stoppingToken);
+            _channelRabbitMq = await _rabbitPolicy
+                .GetPolicy<IChannel>()
+                .ExecuteAsync(() => _connectionRabbitMq.CreateChannelAsync(cancellationToken: stoppingToken) ?? null);
 
-        await _channelRabbitMq.QueueDeclareAsync(queue: "Notification.sms.events", durable: true,
-            exclusive: false, autoDelete: false,
-            arguments: new Dictionary<string, object>
+            if (_channelRabbitMq == null || _connectionRabbitMq == null)
             {
-                { "x-dead-letter-exchange", "pcparts.dlx.exchange.fail" },
-                { "x-dead-letter-routing-key", "" }
-            }, cancellationToken: stoppingToken);
-
-        await _channelRabbitMq.QueueBindAsync(queue: "Notification.sms.events", exchange: "pcparts.events",
-            routingKey: "pcparts.component.created", cancellationToken: stoppingToken);
-
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            await _domainEventReaderNotify.EventSignal.WaitAsync(stoppingToken);
-
-            var events = await _domainEventReaderNotify.GetAllNonActivatedEventsAsync(stoppingToken);
-
-            foreach (var msg in events)
-            {
-                var payload = msg.Content;
-                var body = Encoding.UTF8.GetBytes(payload);
-                var messageId = HashHelper.ComputeSha256(payload);
-
-                var props = new BasicProperties
-                {
-                    MessageId = $"{messageId}",
-                    Persistent = true,
-                    Headers = new Dictionary<string, object?>
-                    {
-                        ["From"] = "NotificationPublisher-1"
-                    }
-                };
-
-                var duplicate = _deduplicationService.IsDuplicate(messageId);
-                if (duplicate)
-                {
-                    continue;
-                }
-
-                await _channelRabbitMq.BasicPublishAsync(exchange: "pcparts.events",
-                    routingKey: "pcparts.component.created",
-                    body: body, basicProperties: props, mandatory: true, cancellationToken: stoppingToken);
+                return;
             }
 
-            await _domainEventReaderNotify.MarkEventsAsActivatedAsync(events.Select(x => x.Id), stoppingToken);
-            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+            _ = Task.Run(() => _domainEventReaderNotify.StartListeningNotifyAsync(stoppingToken), stoppingToken);
+
+            await _channelRabbitMq.ExchangeDeclareAsync(exchange: "pcparts.events", type: ExchangeType.Topic,
+                durable: true, cancellationToken: stoppingToken);
+
+            await _channelRabbitMq.QueueDeclareAsync(queue: "Notification.sms.events", durable: true,
+                exclusive: false, autoDelete: false,
+                arguments: new Dictionary<string, object>
+                {
+                    { "x-dead-letter-exchange", "pcparts.dlx.exchange.fail" },
+                    { "x-dead-letter-routing-key", "" }
+                }, cancellationToken: stoppingToken);
+
+            await _channelRabbitMq.QueueBindAsync(queue: "Notification.sms.events", exchange: "pcparts.events",
+                routingKey: "pcparts.component.created", cancellationToken: stoppingToken);
+
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await _domainEventReaderNotify.EventSignal.WaitAsync(stoppingToken);
+
+                var events = await _domainEventReaderNotify.GetAllNonActivatedEventsAsync(stoppingToken);
+
+                foreach (var msg in events)
+                {
+                    var payload = msg.Content;
+                    var body = Encoding.UTF8.GetBytes(payload);
+                    var messageId = HashHelper.ComputeSha256(payload);
+
+                    var props = new BasicProperties
+                    {
+                        MessageId = $"{messageId}",
+                        Persistent = true,
+                        Headers = new Dictionary<string, object?>
+                        {
+                            ["From"] = "NotificationPublisher-1"
+                        }
+                    };
+
+                    var duplicate = _deduplicationService.IsDuplicate(messageId);
+                    if (duplicate)
+                    {
+                        continue;
+                    }
+
+                    await _channelRabbitMq.BasicPublishAsync(exchange: "pcparts.events",
+                        routingKey: "pcparts.component.created",
+                        body: body, basicProperties: props, mandatory: true, cancellationToken: stoppingToken);
+                }
+
+                _metrics.IncrementCount("notification.rabbitmq.sent", 1);
+
+                await _domainEventReaderNotify.MarkEventsAsActivatedAsync(events.Select(x => x.Id), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCriticalException(nameof(NotificationPublisher), ex.Message, ex);
         }
     }
 

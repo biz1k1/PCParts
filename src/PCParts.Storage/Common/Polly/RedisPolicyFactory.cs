@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using PCParts.Shared.Monitoring.Logs;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Wrap;
@@ -31,10 +32,10 @@ namespace PCParts.Storage.Common.Polly
                 .Or<BrokenCircuitException>()
                 .Or<NullReferenceException>()
                 .FallbackAsync(
-                    fallbackValue: default(T)!,
+                    fallbackValue: default!,
                     onFallbackAsync: async (outcome, context) =>
                     {
-                        _logger.LogError(outcome.Exception, "Redis call failed, fallback executed");
+                        _logger.LogErrorException(nameof(RedisPolicyFactory), outcome.Exception.Message, outcome.Exception);
                         await Task.CompletedTask;
                     }
                 );

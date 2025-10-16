@@ -8,13 +8,13 @@ using Npgsql;
 using PCParts.Application.Abstraction.Authentication;
 using PCParts.Application.Abstraction.Storage;
 using PCParts.Application.Model.Models;
-using PCParts.Application.Monitoring;
 using PCParts.Application.Services.CategoryService;
 using PCParts.Application.Services.ComponentService;
 using PCParts.Application.Services.PendingUserService;
 using PCParts.Application.Services.SpecificationService;
 using PCParts.Application.Services.SpecificationValueService;
 using PCParts.Application.Services.ValidationService;
+using PCParts.Shared.Monitoring.Metrics;
 using PCParts.Storage;
 using PCParts.Storage.BackgroundServices;
 using PCParts.Storage.Common.Authentication;
@@ -60,6 +60,7 @@ public static class ServiceCollectionExtension
 
         // singleton
         services
+            .AddSingleton<IAppMetrics, AppMetrics>()
             .AddSingleton<IPolicyFactory, RedisPolicyFactory>()
             .AddSingleton<IPolicyFactory, RabbitMqPolicyFactory>()
             .AddSingleton<IDomainEventReaderNotify, DomainEventReaderNotify>()
@@ -68,8 +69,9 @@ public static class ServiceCollectionExtension
             {
                 HostName = configuration["RabbitMQ:HostName"]!,
                 Port = configuration.GetValue<int>("RabbitMQ:Port"),
-                UserName = configuration["RABBITMQ_DEFAULT_USER"]!,
-                Password = configuration["RABBITMQ_DEFAULT_PASS"]!
+                UserName = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER")!,
+                Password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS")!,
+                VirtualHost = "/"
             })
             .AddSingleton<IDbConnectionProvider<NpgsqlConnection>>(sp =>
             {
@@ -90,10 +92,9 @@ public static class ServiceCollectionExtension
                 AbortOnConnectFail = false
             }))
             .AddSingleton<IDeduplicationService, DeduplicationService>()
-            .AddSingleton<DomainMetrics>()
             .AddSingleton<IRedisCacheService, RedisCacheService>();
 
-
+        // other
         services
             .AddDbContextPool<PgContext>(options => options
                 .UseNpgsql(configuration["Database:default_connection_string"]));

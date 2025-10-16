@@ -5,6 +5,7 @@ using PCParts.Notifications.Common.Initializer;
 using PCParts.Notifications.Common.MessagesResult;
 using PCParts.Notifications.Common.Models;
 using PCParts.Notifications.Common.Polly;
+using PCParts.Shared.Monitoring.Metrics;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
@@ -17,14 +18,17 @@ public class NotificationConsumerService : INotificationConsumerService
     private readonly Channel<Message> _messageChannel;
     private readonly IRabbitMqInitializer _rabbitMqInitializer;
     private readonly IPolicyFactory _rabbitMqPolicy;
+    private readonly IAppMetrics _metrics;
     private IChannel _channel;
 
     public NotificationConsumerService(
         IRabbitMqInitializer rabbitMqInitializer,
-        IPolicyFactory rabbitMqPolicy)
+        IPolicyFactory rabbitMqPolicy,
+        IAppMetrics metrics)
     {
         _rabbitMqInitializer = rabbitMqInitializer;
         _rabbitMqPolicy = rabbitMqPolicy;
+        _metrics = metrics;
         _messageChannel = Channel.CreateBounded<Message>(new BoundedChannelOptions(capacity: 1000)
         {
             FullMode = BoundedChannelFullMode.Wait
@@ -65,6 +69,8 @@ public class NotificationConsumerService : INotificationConsumerService
                             return;
                         }
                     }
+
+                    _metrics.IncrementCount("notification.rabbitmq.received", 1);
 
                     message.Result = MessageResult.Success();
                     await _messageChannel.Writer.WriteAsync(message, stoppingToken);

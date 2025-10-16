@@ -5,6 +5,8 @@ using PCParts.Notifications.Common.Models;
 using PCParts.Notifications.Common.Polly;
 using PCParts.Notifications.Common.Services.EmailService;
 using PCParts.Notifications.Common.Services.NotificationConsumerService;
+using PCParts.Shared.Monitoring.Logs;
+using PCParts.Shared.Monitoring.Metrics;
 using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,13 +18,21 @@ builder.Services.AddSingleton<IRabbitMqInitializer, RabbitMqInitializer>();
 builder.Services.AddSingleton<INotificationSenderService, NotificationSenderService>();
 builder.Services.AddSingleton<INotificationConsumerService, NotificationConsumerService>();
 builder.Services.AddSingleton<IPolicyFactory, RabbitMqPolicyFactory>();
+builder.Services.AddSingleton<IAppMetrics, AppMetrics>();
 builder.Services.AddSingleton<IConnectionFactory>(_ => new ConnectionFactory
 {
     HostName = builder.Configuration["RabbitMQ:HostName"]!,
     Port = builder.Configuration.GetValue<int>("RabbitMQ:Port"),
-    UserName = builder.Configuration["RABBITMQ_DEFAULT_USER"]!,
-    Password = builder.Configuration["RABBITMQ_DEFAULT_PASS"]!
+    UserName = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER")!,
+    Password = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS")!,
+    VirtualHost = "/",
+    AutomaticRecoveryEnabled = true
 });
+
+builder.Services
+    .AddLogging(builder.Environment)
+    .AddAppMetrics();
+
 builder.Services.AddHttpClient("ElasticEmail.client",
         client => { client.BaseAddress = new Uri(builder.Configuration["ElasticApi:Uri"]!); })
     .UseSocketsHttpHandler((handler, _) =>

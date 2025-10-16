@@ -1,7 +1,8 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Microsoft.Extensions.Options;
 using PCParts.Notifications.Common.MessagesResult;
 using PCParts.Notifications.Common.Models;
+using PCParts.Shared.Monitoring.Logs;
 
 namespace PCParts.Notifications.Common.Services.EmailService;
 
@@ -10,13 +11,16 @@ public class NotificationSenderService : INotificationSenderService
     private readonly HttpClient _httpClient;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ElasticEmailOptions _options;
+    private readonly ILogger<NotificationSenderService> _logger;
 
     public NotificationSenderService(
         IHttpClientFactory iHttpClientFactory,
-        IOptions<ElasticEmailOptions> options)
+        IOptions<ElasticEmailOptions> options,
+        ILogger<NotificationSenderService> logger)
     {
         _httpClientFactory = iHttpClientFactory;
         _options = options.Value;
+        _logger = logger;
         _httpClient = _httpClientFactory.CreateClient();
     }
 
@@ -38,20 +42,14 @@ public class NotificationSenderService : INotificationSenderService
                 return MessageResult.PermanentFailure($"API error: {(int)response.StatusCode} {response.ReasonPhrase}");
             }
         }
-        catch (HttpRequestException ex)
+        catch(Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
+            _logger.LogErrorException(nameof(NotificationSenderService), ex.Message, ex);
             return MessageResult.TransientFailure(ex.Message);
         }
-        catch (TaskCanceledException ex)
+        catch (Exception ex) when (ex is JsonException or Exception)
         {
-            return MessageResult.TransientFailure(ex.Message);
-        }
-        catch (JsonException ex)
-        {
-            return MessageResult.PermanentFailure(ex.Message);
-        }
-        catch (Exception ex)
-        {
+            _logger.LogCriticalException(nameof(NotificationSenderService), ex.Message, ex);
             return MessageResult.PermanentFailure(ex.Message);
         }
 

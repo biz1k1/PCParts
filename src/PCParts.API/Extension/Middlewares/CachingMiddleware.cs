@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Caching.Memory;
 using PCParts.API.Extension.SemaphorePoolProvider;
+using PCParts.Shared.Monitoring.Metrics;
 using PCParts.Storage.Redis;
 
 namespace PCParts.API.Extension.Middlewares;
@@ -10,6 +11,7 @@ public class CachingMiddleware
     private readonly IRedisCacheService _redisCacheService;
     private readonly IMemoryCache _memoryCache;
     private readonly SemaphorePool _semaphorePool = new(128);
+    private readonly IAppMetrics _metrics;
 
     private static readonly Action<ILogger, string, string, Exception> _logException =
         LoggerMessage.Define<string, string>(
@@ -21,23 +23,25 @@ public class CachingMiddleware
     public CachingMiddleware(
         RequestDelegate next,
         IRedisCacheService redisCacheService,
-        IMemoryCache memoryCache)
+        IMemoryCache memoryCache,
+        IAppMetrics metrics)
     {
         _next = next;
         _redisCacheService = redisCacheService;
         _memoryCache = memoryCache;
+        _metrics = metrics;
     }
 
     public async Task InvokeAsync(
         HttpContext context,
         ILogger<CachingMiddleware> logger)
     {
-        if (!HttpMethods.IsGet(context.Request.Method))
+        if (!HttpMethods.IsGet(context.Request.Method)||
+            context.Request.Path.StartsWithSegments("/internal/metrics"))
         {
             await _next(context);
             return;
         }
-
         var cacheKey = $"{context.Request.Method}:{context.Request.Path}:{context.Request.QueryString}";
 
         SemaphoreSlim semaphore = _semaphorePool.GetOrAddSemaphore(cacheKey);
@@ -48,24 +52,19 @@ public class CachingMiddleware
 
         try
         {
-            if (_memoryCache.TryGetValue(cacheKey, out bool existsFlag) && !existsFlag)
+            if (_memoryCache.TryGetValue(cacheKey, out bool existsFlag) && existsFlag)
             {
-                context.Response.Headers["Cache-Control"] = "cache";
-                return;
-            }
-
-            var cachedBytes = await _redisCacheService.GetBytesAsync(cacheKey);
-            if (cachedBytes is not null)
-            {
-                _memoryCache.Set(cacheKey, true, new MemoryCacheEntryOptions
+                var cachedBytes = await _redisCacheService.GetBytesAsync(cacheKey);
+                if (cachedBytes is not null)
                 {
-                    SlidingExpiration = TimeSpan.FromSeconds(20)
-                });
+                    context.Response.ContentType = "application/json; charset=utf-8";
+                    context.Response.Headers["Cache-Control"] = "cache";
+                    await context.Response.Body.WriteAsync(cachedBytes);
 
-                context.Response.ContentType = "application/json; charset=utf-8";
-                context.Response.Headers["Cache-Control"] = "cache";
-                await context.Response.Body.WriteAsync(cachedBytes);
-                return;
+                    _metrics.IncrementCount("cache.hit",1);
+
+                    return;
+                }
             }
 
             originalBodyStream = context.Response.Body;
@@ -76,9 +75,17 @@ public class CachingMiddleware
 
             if (context.Response.StatusCode is StatusCodes.Status200OK)
             {
-                cachedBytes = memoryStream.ToArray();
-                await _redisCacheService.SetAsync(cacheKey, cachedBytes);
+                var bytes = memoryStream.ToArray();
+                await _redisCacheService.SetAsync(cacheKey, bytes);
+
+                _memoryCache.Set(cacheKey, true, new MemoryCacheEntryOptions
+                {
+                    SlidingExpiration = TimeSpan.FromSeconds(30)
+                });
+
                 context.Response.Headers["Cache-Control"] = "no-cache";
+
+                _metrics.IncrementCount("cache.miss", 1);
             }
         }
         catch (Exception exception)
@@ -87,6 +94,7 @@ public class CachingMiddleware
         }
         finally
         {
+
             semaphore.Release();
 
             if (memoryStream is not null && originalBodyStream is not null)

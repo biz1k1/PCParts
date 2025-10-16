@@ -22,7 +22,7 @@ COPY . .
 WORKDIR "/src/PCParts.API"
 RUN dotnet build "./PCParts.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-#  Директория и генерацция для сертификата
+#  пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 RUN mkdir -p /https
 RUN dotnet dev-certs https -ep /https/aspnetapp.pfx -p password123
 
@@ -37,7 +37,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Настройка сертификата
+# пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password=password123
 ENV ASPNETCORE_URLS=https://+:443;http://+:8080

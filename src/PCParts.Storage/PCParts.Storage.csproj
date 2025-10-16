@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\PCParts.Application\PCParts.Application.csproj" />
     <ProjectReference Include="..\..\src\PCParts.Domain\PCParts.Domain.csproj" />
+    <ProjectReference Include="..\PCParts.Shared\PCParts.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
