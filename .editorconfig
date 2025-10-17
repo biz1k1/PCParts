@@ -28,6 +28,7 @@ dotnet_diagnostic.CA1305.severity = none     # Behavior based on local settings(
 dotnet_diagnostic.IDE0032.severity = none    # Выключение auto property
 dotnet_diagnostic.IDE0066.severity = none    # Выключает упрощение switch и тд
 dotnet_diagnostic.IDE0028.severity = none    # Отключение упрощения кода
+dotnet_diagnostic.IDE0270.severity = none    # Null check simplified
 
 
 # Игнорирование ошибок

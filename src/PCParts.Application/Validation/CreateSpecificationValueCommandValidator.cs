@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using PCParts.Application.Command;
 using PCParts.Domain.Exceptions;
 
@@ -8,7 +8,7 @@ public class CreateSpecificationValueCommandValidator : AbstractValidator<Create
 {
     public CreateSpecificationValueCommandValidator()
     {
-        RuleFor(x => x.Id)
+        RuleFor(x => x.SpecificationId)
             .NotEmpty().WithErrorCode(ValidationErrorCode.Empty);
         RuleFor(x => x.Value)
             .Cascade(CascadeMode.Stop)

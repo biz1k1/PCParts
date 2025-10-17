@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PCParts.API\PCParts.API.csproj" />
-    <ProjectReference Include="..\..\src\PCParts.DependencyInjection\PCParts.DependencyInjection.csproj" />
   </ItemGroup>
 
   <ItemGroup>

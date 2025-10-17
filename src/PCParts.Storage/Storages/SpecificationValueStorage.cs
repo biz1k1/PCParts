@@ -33,7 +33,7 @@ public class SpecificationValueStorage : ISpecificationValueStorage
         {
             Id = Guid.NewGuid(),
             Value = dto.Value,
-            SpecificationId = dto.Id,
+            SpecificationId = dto.SpecificationId,
             ComponentId = componentId
         });
 
@@ -43,6 +43,7 @@ public class SpecificationValueStorage : ISpecificationValueStorage
         return await _pgContext.Components
             .Where(x => x.Id == componentId)
             .SelectMany(x => x.SpecificationValues)
+            .Include(x => x.Specification)
             .FirstAsync(cancellationToken);
     }
 

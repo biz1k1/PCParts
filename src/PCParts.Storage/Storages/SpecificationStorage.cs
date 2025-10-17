@@ -26,6 +26,15 @@ public class SpecificationStorage : ISpecificationStorage
             .ToArrayAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<Specification>> GetSpecificationByIds(IEnumerable<Guid> ids, ISpecification<Specification> specification,
+        CancellationToken cancellationToken)
+    {
+        return await _pgContext.Specifications
+            .Where(x => ids.Contains(x.Id))        
+            .ApplySpecification(specification)
+            .ToArrayAsync(cancellationToken);
+    }
+
     public async Task<Specification> CreateSpecification(Guid categoryId, string name,
         SpecificationDataType dataType, CancellationToken cancellationToken)
     {

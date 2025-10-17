@@ -3,20 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PCParts.Storage;
 using Testcontainers.PostgreSql;
-using Testcontainers.RabbitMq;
 using DotNetEnv;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client;
+using Moq;
 
 namespace PCParts.API.Tests;
 
 public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder().Build();
-    private readonly RabbitMqContainer _rabbitMqContainer = new RabbitMqBuilder().Build();
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
-        await _rabbitMqContainer.StartAsync();
 
         var pgContext = new PgContext(new DbContextOptionsBuilder<PgContext>()
             .UseNpgsql(_dbContainer.GetConnectionString()).Options);
@@ -27,7 +27,6 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
     {
         await base.DisposeAsync();
         await _dbContainer.DisposeAsync();
-        await _rabbitMqContainer.DisposeAsync();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -37,17 +36,26 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
             {
-                ["ConnectionStrings:pgsql"] = _dbContainer.GetConnectionString()! ?? throw new InvalidOperationException("Connection string missing"),
-                ["Database:default_connection_string"] = _dbContainer.GetConnectionString(),
-                ["RabbitMQ:Host"] = Environment.GetEnvironmentVariable("RabbitMQ__HostName"),
-                ["RabbitMQ:Port"] = Environment.GetEnvironmentVariable("RabbitMQ__Port"),
-                ["RabbitMQ:Username"] = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_USER"),
-                ["RabbitMQ:Password"] = Environment.GetEnvironmentVariable("RABBITMQ_DEFAULT_PASS"),
+                ["Database:default_connection_string"] = _dbContainer.GetConnectionString()!,
             }).Build();
 
         builder.UseConfiguration(configuration);
 
-        base.ConfigureWebHost(builder);
+        builder.ConfigureServices(services =>
+        {
+            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IConnectionFactory));
+            if (descriptor != null)
+                services.Remove(descriptor);
+
+            var mockConnection = new Mock<IConnection>();
+
+            var mockFactory = new Mock<IConnectionFactory>();
+            mockFactory
+                .Setup(f => f.CreateConnectionAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(mockConnection.Object);
+
+            services.AddSingleton(_ => mockFactory.Object);
+        });
     }
 
 }

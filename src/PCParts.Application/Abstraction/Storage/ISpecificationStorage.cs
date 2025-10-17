@@ -12,6 +12,9 @@ public interface ISpecificationStorage
     Task<IEnumerable<Specification>> GetSpecificationsByCategory(Guid categoryId,
         CancellationToken cancellationToken);
 
+    Task<IEnumerable<Specification>> GetSpecificationByIds(IEnumerable<Guid> ids,
+        ISpecification<Specification> specification, CancellationToken cancellationToken);
+
     Task<Specification> CreateSpecification(Guid categoryId, string name,
         SpecificationDataType dataType, CancellationToken cancellationToken);
 

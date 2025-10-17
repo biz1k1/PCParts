@@ -61,8 +61,8 @@ public class ComponentService : IComponentService
 
             var specificationIds = new HashSet<Guid>(specifications.Select(s => s.Id));
             var missingIds = command.SpecificationValues
-                .Where(v => !specificationIds.Contains(v.Id))
-                .Select(v => v.Id);
+                .Where(v => !specificationIds.Contains(v.SpecificationId))
+                .Select(v => v.SpecificationId);
 
             if (missingIds.Any())
             {

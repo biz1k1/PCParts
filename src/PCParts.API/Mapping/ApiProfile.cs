@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using PCParts.API.Model.Models;
 
 namespace PCParts.API.Mapping;
@@ -19,7 +19,8 @@ public class ApiProfile : Profile
         CreateMap<PendingUser, Model.Models.PendingUser>().ReverseMap();
 
         CreateMap<Application.Model.Models.Category, Model.Models.Category>();
-        CreateMap<Application.Model.Models.Component, Model.Models.Component>();
+        CreateMap<Application.Model.Models.Component, Model.Models.Component>()
+            .ForMember(x => x.Category, x => x.MapFrom(x => x.Category.Name)); 
         CreateMap<Application.Model.Models.SpecificationValue, Model.Models.SpecificationValue>();
     }
 }

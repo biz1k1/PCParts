@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using PCParts.Domain.Specification.Base;
 
 namespace PCParts.Domain.Specification.Component;
@@ -7,7 +7,7 @@ public class ComponentWithSpecificationValueWithSpecificationSpec : Specificatio
 {
     public ComponentWithSpecificationValueWithSpecificationSpec()
     {
-        AddInclude(c => c.SpecificationValues);
+        AddInclude(c => c.Category);
         AddThenInclude(x => x.SpecificationValues, x => x.Specification);
     }
 

@@ -1,7 +1,7 @@
-﻿namespace PCParts.API.Model.Models;
+namespace PCParts.API.Model.Models;
 
 public record UpdateSpecificationValue
 {
-    public Guid Id { get; init; }
+    public Guid SpecificationId { get; init; }
     public string Value { get; init; }
 }

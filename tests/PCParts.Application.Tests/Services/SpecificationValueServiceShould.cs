@@ -19,6 +19,7 @@ namespace PCParts.Application.Tests.Services
         private readonly Mock<IComponentStorage> _componentStorage;
         private readonly Mock<ISpecificationValueStorage> _specificationValueStorage;
         private readonly Mock<IValidationService> _validator;
+        private readonly Mock<ISpecificationStorage> _specificationStorage;
         private readonly Mapper _mapper;
 
         public SpecificationValueServiceShould()
@@ -26,12 +27,14 @@ namespace PCParts.Application.Tests.Services
             _componentStorage = new Mock<IComponentStorage>();
             _specificationValueStorage = new Mock<ISpecificationValueStorage>();
             _validator = new Mock<IValidationService>();
+            _specificationStorage = new Mock<ISpecificationStorage>();
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile(new StorageProfile())));
 
             _sut = new SpecificationValueService(
                 _componentStorage.Object,
                 _specificationValueStorage.Object,
                 _validator.Object,
+                _specificationStorage.Object,
                 _mapper
             );
         }
@@ -44,7 +47,7 @@ namespace PCParts.Application.Tests.Services
             var commands = new CreateSpecificationValueCommand[] {
                 new(specificationValueId, "name")
                 {
-                    Id = specificationValueId
+                    SpecificationId = specificationValueId
                 }};
 
             var domainComponent = new Domain.Entities.Component()

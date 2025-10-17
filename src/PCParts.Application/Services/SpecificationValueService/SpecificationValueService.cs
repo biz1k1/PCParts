@@ -5,6 +5,7 @@ using PCParts.Application.Helpers;
 using PCParts.Application.Model.Models;
 using PCParts.Application.Services.ValidationService;
 using PCParts.Domain.Exceptions;
+using PCParts.Domain.Specification.Specification;
 using PCParts.Domain.Specification.SpecificationValue;
 
 namespace PCParts.Application.Services.SpecificationValueService;
@@ -15,16 +16,19 @@ public class SpecificationValueService : ISpecificationValueService
     private readonly IMapper _mapper;
     private readonly ISpecificationValueStorage _specificationValueStorage;
     private readonly IValidationService _validationService;
+    private readonly ISpecificationStorage _specificationStorage;
 
     public SpecificationValueService(
         IComponentStorage componentStorage,
         ISpecificationValueStorage specificationValueStorage,
         IValidationService validationService,
+        ISpecificationStorage specificationStorage,
         IMapper mapper)
     {
         _specificationValueStorage = specificationValueStorage;
         _componentStorage = componentStorage;
         _validationService = validationService;
+        _specificationStorage = specificationStorage;
         _mapper = mapper;
     }
 
@@ -39,8 +43,26 @@ public class SpecificationValueService : ISpecificationValueService
             throw new EntityNotFoundException(nameof(component), componentId);
         }
 
-        var values = commands.Select(
-            dto => _mapper.Map<Domain.Entities.SpecificationValue>(dto));
+        var specificationIds = commands.Select(c => c.SpecificationId).ToList();
+        var specifications = await _specificationStorage.GetSpecificationByIds(
+            specificationIds, new SpecificationWithSpecificationValueSpec(), cancellationToken);
+
+        var dto = _mapper.Map<IEnumerable<Specification>>(specifications);
+
+        foreach (var command in commands)
+        {
+            var spec = dto.FirstOrDefault(s => s.Id == command.SpecificationId);
+            if (spec == null)
+            {
+                throw new EntityNotFoundException(nameof(Specification), command.SpecificationId);
+            }
+
+            if (!ValidationHelper.IsValueValid(spec.Type, command.Value ?? string.Empty))
+            {
+                throw new InvalidSpecificationTypeException(command.Value, spec.Type.ToString());
+            }
+        }
+        var values = commands.Select(_mapper.Map<Domain.Entities.SpecificationValue>);
 
         var specificationValue =
             await _specificationValueStorage.CreateSpecificationValue(component.Id, values, cancellationToken);

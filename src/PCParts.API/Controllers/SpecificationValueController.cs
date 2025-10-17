@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PCParts.API.Model.Models;
 using PCParts.API.Model.ResponseType;
@@ -30,7 +30,7 @@ public class SpecificationValueController : ControllerBase
         [FromBody] UpdateSpecificationValue request,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateSpecificationValueCommand(request.Id, request.Value);
+        var command = new UpdateSpecificationValueCommand(request.SpecificationId, request.Value);
         var specification = await _specificationValueService.UpdateSpecificationValue(command, cancellationToken);
         return Ok(_mapper.Map<SpecificationValue>(specification));
     }

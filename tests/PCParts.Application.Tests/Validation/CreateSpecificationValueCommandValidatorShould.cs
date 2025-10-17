@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using FluentValidation.TestHelper;
 using PCParts.Application.Command;
 using PCParts.Application.Validation;
@@ -37,7 +37,7 @@ public class CreateSpecificationValueCommandValidatorShould
         var validCommand = new CreateSpecificationValueCommand(Guid.NewGuid(), "Value");
         var outOfLength = "A".PadRight(51, 'A');
 
-        yield return new object[] { validCommand with { Id = Guid.Empty } };
+        yield return new object[] { validCommand with { SpecificationId = Guid.Empty } };
         yield return new object[] { validCommand with { Value = string.Empty } };
         yield return new object[] { validCommand with { Value = outOfLength } };
     }
