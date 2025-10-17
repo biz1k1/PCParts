@@ -23,7 +23,8 @@ docker-compose -f solution-item/docker/docker-compose.yml up
 https://localhost:8081/swagger/index.html
 ```
 
-## Создание моделей
+## Краткая информация по проекту
+### Создание моделей
 Общая логика выглядит так: \
 `Category → Specification → SpecificationValue ← Component ← Category`
 
@@ -33,8 +34,6 @@ https://localhost:8081/swagger/index.html
 2. Specification – создаём спецификации для категории.
 3. Component – создаём компонент в категории.
 4. SpecificationValue – добавляем значения спецификаций к компоненту.
-
-## Используемые сервисы
 
 ### Логи и метрики
 
