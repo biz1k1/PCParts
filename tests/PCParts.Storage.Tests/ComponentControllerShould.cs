@@ -13,7 +13,7 @@ public class ComponentControllerShould : IClassFixture<ApiWebApplicationFactory>
     private const string SampleCategoryName = "category";
     private const string SampleComponentName = "component";
     private const string SampleComponentName2 = "component2";
-    private const string SampleUpdateCategoryName = "newComponentName";
+    private const string SampleUpdateComponentName = "newComponentName";
     private const string SampleSpecificationName = "Specficiation";
 
     public ComponentControllerShould(
@@ -69,7 +69,7 @@ public class ComponentControllerShould : IClassFixture<ApiWebApplicationFactory>
         var component = await responseComponentCreate.Content.ReadFromJsonAsync<Component>();
         component
             .Should().NotBeNull().And
-            .Subject.As<Component>().Category.Should().Be(SampleComponentName);
+            .Subject.As<Component>().Name.Should().Be(SampleComponentName);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class ComponentControllerShould : IClassFixture<ApiWebApplicationFactory>
         var component = await responseComponentGet.Content.ReadFromJsonAsync<Component>();
         component
             .Should().NotBeNull().And
-            .Subject.As<Component>().Category.Should().Be(SampleComponentName);
+            .Subject.As<Component>().Name.Should().Be(SampleComponentName);
     }
 
     [Fact]
@@ -290,19 +290,22 @@ public class ComponentControllerShould : IClassFixture<ApiWebApplicationFactory>
         responseComponentCreate.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var component = await responseComponentCreate.Content.ReadFromJsonAsync<Component>();
+        component
+            .Should().NotBeNull().And
+            .Subject.As<Component>().Name.Should().Be(SampleComponentName);
 
         using var responseComponentUpdate = await httpClient.PutAsync("/Components",
             JsonContent.Create(new UpdateComponent
             {
                 Id = component.Id,
-                Name = SampleUpdateCategoryName
+                Name = SampleUpdateComponentName
             }));
         responseComponentUpdate.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var updatedComponent = await responseComponentUpdate.Content.ReadFromJsonAsync<Component>();
         updatedComponent
             .Should().NotBeNull().And
-            .Subject.As<Component>().Category.Should().Be(SampleUpdateCategoryName);
+            .Subject.As<Component>().Name.Should().Be(SampleUpdateComponentName);
 
 
     }

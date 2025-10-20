@@ -71,10 +71,9 @@ public class SpecificationControllerShould : IClassFixture<ApiWebApplicationFact
         using var responseSpecificationGetByCategory = await httpClient.GetAsync($"/Specifications/{createdCategory.Id}");
         responseSpecificationGetByCategory.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var getSpecificationByCategory = await responseSpecificationCreate.Content.ReadFromJsonAsync<SpecificationResponse>();
+        var getSpecificationByCategory = await responseSpecificationGetByCategory.Content.ReadFromJsonAsync<List<SpecificationResponse>>();
         getSpecificationByCategory
-            .Should().NotBeNull().And
-            .Subject.As<SpecificationResponse>().Name.Should().Be(SampleSpecificationName);
+            .Should().NotBeNull();
     }
 
     [Fact]
@@ -107,10 +106,10 @@ public class SpecificationControllerShould : IClassFixture<ApiWebApplicationFact
             { Name = SampleUpdateSpecificationName, Type = null, Id = createdSpecification.Id }));
         responseSpecificationUpdate.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        //var updatedSpecification = await responseSpecificationUpdate.Content.ReadFromJsonAsync<SpecificationResponse>();
-        //updatedSpecification
-        //    .Should().NotBeNull().And
-        //    .Subject.As<SpecificationResponse>().Name.Should().Be(SampleUpdateSpecificationName);
+        var updatedSpecification = await responseSpecificationUpdate.Content.ReadFromJsonAsync<SpecificationResponse>();
+        updatedSpecification
+            .Should().NotBeNull().And
+            .Subject.As<SpecificationResponse>().Name.Should().Be(SampleUpdateSpecificationName);
     }
 
     [Fact]

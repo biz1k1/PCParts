@@ -71,7 +71,6 @@ public class ComponentService : IComponentService
 
             var createComponentStorage = scope.GetStorage<IComponentStorage>();
             var createSpecificationsValues = scope.GetStorage<ISpecificationValueService>();
-            var domainEventsStorage = scope.GetStorage<IDomainEventsStorage>();
 
             var component =
                 await createComponentStorage.CreateComponent(command.Name, command.CategoryId, cancellationToken);
@@ -79,9 +78,9 @@ public class ComponentService : IComponentService
 
             var specificationValue = await createSpecificationsValues
                 .CreateSpecificationsValues(component.Id, command.SpecificationValues, cancellationToken);
+            specificationValue = _mapper.Map<SpecificationValue>(specificationValue);
 
-            await domainEventsStorage.AddAsync(ComponentDomainEvent.EventCreated(componentDTO, specificationValue),
-                cancellationToken);
+            componentDTO.SpecificationValues.Add(specificationValue);
 
             await scope.Commit(cancellationToken);
 

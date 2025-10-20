@@ -84,7 +84,8 @@ public class SpecificationService : ISpecificationService
     {
         await _validationService.Validate(command);
 
-        var specification = await _specificationStorage.GetSpecification(command.Id, null, cancellationToken);
+        var spec = new SpecificationWithSpecificationValueSpec();
+        var specification = await _specificationStorage.GetSpecification(command.Id, spec, cancellationToken);
         if (specification is null)
         {
             throw new EntityNotFoundException(nameof(specification), command.Id);
@@ -92,10 +93,6 @@ public class SpecificationService : ISpecificationService
 
         var specificationValue =
             await _specificationValueStorage.GetSpecificationValue(specification.Id, null, cancellationToken);
-        if (specificationValue is null)
-        {
-            throw new EntityNotFoundException(nameof(specificationValue), specification.Id);
-        }
 
         if (command.Type is not null)
         {

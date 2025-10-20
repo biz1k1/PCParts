@@ -30,7 +30,7 @@ public class SpecificationValueController : ControllerBase
         [FromBody] UpdateSpecificationValue request,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateSpecificationValueCommand(request.SpecificationId, request.Value);
+        var command = new UpdateSpecificationValueCommand(request.SpecificationValueId, request.Value);
         var specification = await _specificationValueService.UpdateSpecificationValue(command, cancellationToken);
         return Ok(_mapper.Map<SpecificationValue>(specification));
     }

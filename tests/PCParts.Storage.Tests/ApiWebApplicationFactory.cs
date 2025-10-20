@@ -1,13 +1,14 @@
+using DotNetEnv;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using PCParts.Storage;
-using Testcontainers.PostgreSql;
-using DotNetEnv;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using RabbitMQ.Client;
 using Moq;
+using PCParts.Storage;
+using PCParts.Storage.Redis;
+using RabbitMQ.Client;
+using Testcontainers.PostgreSql;
 
 namespace PCParts.API.Tests;
 
@@ -55,6 +56,10 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
                 .ReturnsAsync(mockConnection.Object);
 
             services.AddSingleton(_ => mockFactory.Object);
+
+            var mockRedisService = new Mock<IRedisCacheService>();
+
+            services.AddSingleton(_ => mockRedisService.Object);
         });
     }
 

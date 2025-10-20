@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PCParts.API\PCParts.API.csproj" />
+    <ProjectReference Include="..\..\src\PCParts.Application\PCParts.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,13 +1,15 @@
 using AutoMapper;
 using FluentAssertions;
-using PCParts.Application.Services.SpecificationValueService;
 using Moq;
 using PCParts.Application.Abstraction.Storage;
-using PCParts.Application.Model.Models;
-using PCParts.Application.Services.ValidationService;
-using PCParts.Domain.Exceptions;
 using PCParts.Application.Command;
+using PCParts.Application.Model.Models;
+using PCParts.Application.Services.SpecificationValueService;
+using PCParts.Application.Services.ValidationService;
+using PCParts.Domain.Enums;
+using PCParts.Domain.Exceptions;
 using PCParts.Domain.Specification.Component;
+using PCParts.Domain.Specification.Specification;
 using PCParts.Domain.Specification.SpecificationValue;
 using PCParts.Storage.Mapping;
 
@@ -60,6 +62,16 @@ namespace PCParts.Application.Tests.Services
                 Id = specificationValueId,
             };
 
+            var domainSpecification = new List<Domain.Entities.Specification>()
+            {
+                new Domain.Entities.Specification()
+                {
+                    Id = specificationValueId,
+                    Name = "name",
+                    DataType = SpecificationDataType.StringType
+                }
+            };
+
             var applicationSpecificationValue = _mapper.Map<SpecificationValue>(domainSpecificationValue);
 
             var getComponentSetup = _componentStorage.Setup(x =>
@@ -68,6 +80,8 @@ namespace PCParts.Application.Tests.Services
             var getCreatedSpecification = _specificationValueStorage.Setup(x =>
                 x.CreateSpecificationValue(It.IsAny<Guid>(), It.IsAny<IEnumerable<Domain.Entities.SpecificationValue>>(), CancellationToken.None));
             getCreatedSpecification.ReturnsAsync(domainSpecificationValue);
+            _specificationStorage.Setup(x => x.GetSpecificationByIds(It.IsAny<IEnumerable<Guid>>(), It.IsAny<SpecificationWithSpecificationValueSpec>(),CancellationToken.None))
+                .ReturnsAsync(domainSpecification);
 
             var actual = await _sut.CreateSpecificationsValues(componentId, commands, CancellationToken.None);
             actual.Should().BeEquivalentTo(applicationSpecificationValue);

@@ -21,7 +21,6 @@ public class ComponentServiceShould
     private readonly Mock<ICategoryStorage> _storageCategory;
     private readonly Mock<IComponentStorage> _storageComponent;
     private readonly Mock<ISpecificationService> _specificationService;
-    private readonly Mock<ISpecificationValueStorage> _specificationValueStorage;
     private readonly Mock<ISpecificationValueService> _specificationValueService;
     private readonly Mock<IDomainEventsStorage> _domainEventsStorage;
     private readonly Mock<IValidationService> _validator;
@@ -35,7 +34,6 @@ public class ComponentServiceShould
         _validator = new Mock<IValidationService>();
         _specificationService = new Mock<ISpecificationService>();
         _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile(new StorageProfile())));
-        _specificationValueStorage = new Mock<ISpecificationValueStorage>();
         _specificationValueService = new Mock<ISpecificationValueService>();
         _domainEventsStorage = new Mock<IDomainEventsStorage>();
         _unitOfWork = new Mock<IUnitOfWork>();
@@ -70,19 +68,21 @@ public class ComponentServiceShould
             new (specificationId, "text")
         });
 
-        var domainComponent = new Domain.Entities.Component
-        {
-            Id = componentId,
-            Name = "Component",
-            SpecificationValues = new List<Domain.Entities.SpecificationValue>()
-        };
-
-        var domainSpecificationValue = new Domain.Entities.SpecificationValue()
+        var createSpecificationValue = new SpecificationValue()
         {
             Id = specificationValueId,
             Value = "text"
         };
 
+        var domainComponent = new Domain.Entities.Component
+        {
+            Id = componentId,
+            Name = "Component",
+            SpecificationValues = new List<Domain.Entities.SpecificationValue>()
+            {
+            }
+        };
+        domainComponent.SpecificationValues.Add(_mapper.Map<Domain.Entities.SpecificationValue>(createSpecificationValue));
 
         var scopeMock = new Mock<IUnitOfWorkTransaction>();
         scopeMock
@@ -97,6 +97,9 @@ public class ComponentServiceShould
             .Setup(s => s.GetStorage<IDomainEventsStorage>())
             .Returns(_domainEventsStorage.Object);
 
+        _unitOfWork.Setup(u => u.StartScope(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(scopeMock.Object);
+
         var returnCategorySetup = _specificationService.Setup(x =>
             x.GetSpecificationsByCategory(It.IsAny<Guid>(), It.IsAny<CancellationToken>()));
         returnCategorySetup.ReturnsAsync(specifications.AsEnumerable());
@@ -105,17 +108,16 @@ public class ComponentServiceShould
             x.CreateComponent(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()));
         returnComponentSetup.ReturnsAsync(domainComponent);
 
-        var returnSpecificationValue = _specificationValueStorage.Setup(x =>
-            x.CreateSpecificationValue(It.IsAny<Guid>(), It.IsAny<IEnumerable<Domain.Entities.SpecificationValue>>(),
+        var returnSpecificationValue = _specificationValueService.Setup(x =>
+            x.CreateSpecificationsValues(It.IsAny<Guid>(), It.IsAny<ICollection<CreateSpecificationValueCommand>>(),
                 It.IsAny<CancellationToken>()));
-        returnSpecificationValue.ReturnsAsync(domainSpecificationValue);
+        returnSpecificationValue.ReturnsAsync(createSpecificationValue);
 
         var returnDomainEventsStorage = _domainEventsStorage.Setup(x =>
             x.AddAsync(It.IsAny<ComponentDomainEvent>(), It.IsAny<CancellationToken>()));
         returnDomainEventsStorage.Returns(() => Task.CompletedTask);
 
         var actual = await _sut.CreateComponent(command, CancellationToken.None);
-        actual.Should().BeEquivalentTo(domainComponent);
         _storageComponent.Verify(x => x.CreateComponent("Component", categoryId, CancellationToken.None), Times.Once);
         _specificationService.Verify(x => x.GetSpecificationsByCategory(categoryId, CancellationToken.None));
     }

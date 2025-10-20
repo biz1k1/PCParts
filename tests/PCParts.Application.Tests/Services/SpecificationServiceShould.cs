@@ -106,7 +106,7 @@ public class SpecificationServiceShould
         var applicationUpdatedSpecification = _mapper.Map<Specification>(domainUpdatedSpecification);
 
         var getSpecificationSetup = _specificationStorage.Setup(x =>
-            x.GetSpecification(It.IsAny<Guid>(), null, CancellationToken.None));
+            x.GetSpecification(It.IsAny<Guid>(), It.IsAny<SpecificationWithSpecificationValueSpec>(), CancellationToken.None));
         getSpecificationSetup.ReturnsAsync(domainSpecification);
         var updateSpecificationSetup = _specificationStorage.Setup(x =>
             x.UpdateSpecification(It.IsAny<Domain.Entities.Specification>(), It.IsAny<Dictionary<string, object>>(), CancellationToken.None));
@@ -117,7 +117,7 @@ public class SpecificationServiceShould
 
         var actual = await _sut.UpdateSpecification(command, CancellationToken.None);
         actual.Should().BeEquivalentTo(applicationUpdatedSpecification);
-        _specificationStorage.Verify(x => x.GetSpecification(specificationId, null, CancellationToken.None));
+        _specificationStorage.Verify(x => x.GetSpecification(specificationId, It.IsAny<SpecificationWithSpecificationValueSpec>(), CancellationToken.None));
         _specificationStorage.Verify(x => x.UpdateSpecification(domainSpecification, It.IsAny<Dictionary<string, object>>(), CancellationToken.None), Times.Once);
         _specificationValueStorage.Verify(x => x.GetSpecificationValue(specificationId, null, CancellationToken.None), Times.Once);
     }

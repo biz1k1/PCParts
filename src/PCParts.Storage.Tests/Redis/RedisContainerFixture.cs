@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PCParts.Storage.Common.Polly;
 using PCParts.Storage.Redis;
@@ -10,7 +11,6 @@ namespace PCParts.Storage.Tests.Redis
     {
         private readonly RedisContainer _container = new RedisBuilder().Build();
         private ConnectionMultiplexer? _connection;
-        private readonly IEnumerable<IPolicyFactory> policies;
 
         public RedisCacheService? Service { get; private set; }
         public async Task InitializeAsync()
@@ -27,6 +27,12 @@ namespace PCParts.Storage.Tests.Redis
                 DefaultTtl = TimeSpan.FromMinutes(10)
             });
 
+            var policies = new List<IPolicyFactory>
+            {
+                new RedisPolicyFactory(
+                    new Logger<RedisPolicyFactory>(new LoggerFactory())
+                )
+            };
             Service = new RedisCacheService(_connection, options, policies);
         }
 
